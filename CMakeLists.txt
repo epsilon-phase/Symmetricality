@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.2)
+project(Symmetricality)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+set(SOURCE_FILES main.cpp)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_BUILD_TYPE RELEASE)
+add_executable(Symmetricality ${SOURCE_FILES} PlanRenderer.cpp PlanRenderer.h utilities.hpp Symmetry.cpp Symmetry.h city.cc city.h Hud.cpp Hud.h)
+find_package(SFML 2 REQUIRED system window graphics network audio)
+target_link_libraries(Symmetricality ${SFML_LIBRARIES})
+configure_file(LinLibertine_DRah.ttf LinLibertine_DRah.ttf COPYONLY)
