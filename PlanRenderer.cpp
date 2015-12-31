@@ -5,9 +5,10 @@
 #include "PlanRenderer.h"
 #include <iostream>
 #include <fstream>
+
 PlanRenderer::PlanRenderer() {
-    this->Designations[0]=std::unordered_map<sf::Vector2i,char>();
-    this->current_floor=&Designations.begin()->second;
+    this->Designations[0] = std::unordered_map<sf::Vector2i, char>();
+    this->current_floor = &Designations.begin()->second;
 
 }
 
@@ -16,26 +17,29 @@ PlanRenderer::~PlanRenderer() {
 }
 
 void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    states.transform*=getTransform();
-    states.texture=NULL;
-    target.draw(Rendering_plan,states);
-    target.draw(Symmetries,states);
-    if(is_designating)
-        target.draw(Designation_preview,states);
+    states.transform *= getTransform();
+    states.texture = NULL;
+    target.draw(Rendering_plan, states);
+    target.draw(Symmetries, states);
+    if (is_designating)
+        target.draw(Designation_preview, states);
 
 }
 //terrible practice to make a square for a remarkably inflexible piece of code
-#define MAK_SQUAR(X,Y,C) current[0].position=sf::Vector2f(X*m_square_size,Y*m_square_size);\
+#define MAK_SQUAR(X, Y, C) current[0].position=sf::Vector2f(X*m_square_size,Y*m_square_size);\
                          current[1].position=sf::Vector2f((X+1)*m_square_size,Y*m_square_size);\
                          current[2].position=sf::Vector2f((X+1)*m_square_size,(1+ Y)*m_square_size);\
                          current[3].position=sf::Vector2f((X)*m_square_size,(1+Y)*m_square_size);\
                          for(int z=0;z<4;z++)\
                             current[z].color=C;
+
 void PlanRenderer::build_vertex_array() {
     sf::Vertex *current;
     Rendering_plan.resize(current_floor->size() * 4 + 4 + 4 * is_designating);
     Rendering_plan.setPrimitiveType(sf::PrimitiveType::Quads);
-    if(designations_updated) {
+    if (designations_updated) {
+        //TODO figure out a more efficient way to do this..
+        //TODO figure out if it makes sense to make it more efficient than this.
         int iter = 0;
         for (auto i:*current_floor) {
             current = &Rendering_plan[iter];
@@ -48,53 +52,53 @@ void PlanRenderer::build_vertex_array() {
             iter += 4;
         }
     }
-    if(is_designating){
-        current=&Rendering_plan[Rendering_plan.getVertexCount()-8];
-        MAK_SQUAR(m_start_desig.x,m_start_desig.y, sf::Color(255,220,220));
+    if (current_designation_type!=NONE) {
+        current = &Rendering_plan[Rendering_plan.getVertexCount() - 8];
+        MAK_SQUAR(m_start_desig.x, m_start_desig.y, sf::Color(255, 220, 220));
     }
-    current=&Rendering_plan[Rendering_plan.getVertexCount()-4];
-    current[0].position.x=cursorpos.x*m_square_size;
-    current[0].position.y=cursorpos.y*m_square_size;
-    current[1].position=sf::Vector2f(current[0].position.x+m_square_size,current[0].position.y);
-    current[2].position=sf::Vector2f(current[1].position.x,current[1].position.y+m_square_size);
-    current[3].position=sf::Vector2f(current[2].position.x-m_square_size,current[2].position.y);
-    for(int z=0;z<4;z++)
-        current[z].color=sf::Color(255,255,255);
-    Symmetries.resize(3*symmetries.size());
+    current = &Rendering_plan[Rendering_plan.getVertexCount() - 4];
+    current[0].position.x = cursorpos.x * m_square_size;
+    current[0].position.y = cursorpos.y * m_square_size;
+    current[1].position = sf::Vector2f(current[0].position.x + m_square_size, current[0].position.y);
+    current[2].position = sf::Vector2f(current[1].position.x, current[1].position.y + m_square_size);
+    current[3].position = sf::Vector2f(current[2].position.x - m_square_size, current[2].position.y);
+    for (int z = 0; z < 4; z++)
+        current[z].color = sf::Color(255, 255, 255);
+    Symmetries.resize(3 * symmetries.size());
     Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
 
-    for(int i=0;i<symmetries.size();i++){
-        current=&Symmetries[i*3];
-        auto v=symmetries[i].getCursor();
-        current[0].position=sf::Vector2f(v.x*m_square_size,v.y*m_square_size);
-        current[1].position=sf::Vector2f((1+v.x)*m_square_size,v.y*m_square_size);
-        current[2].position=sf::Vector2f((0.5+v.x)*m_square_size,(1+v.y)*m_square_size);
-        for(int z=0;z<3;z++)
-            current[z].color=symmetries[i].getColor();
+    for (int i = 0; i < symmetries.size(); i++) {
+        current = &Symmetries[i * 3];
+        auto v = symmetries[i].getCursor();
+        current[0].position = sf::Vector2f(v.x * m_square_size, v.y * m_square_size);
+        current[1].position = sf::Vector2f((1 + v.x) * m_square_size, v.y * m_square_size);
+        current[2].position = sf::Vector2f((0.5 + v.x) * m_square_size, (1 + v.y) * m_square_size);
+        for (int z = 0; z < 3; z++)
+            current[z].color = symmetries[i].getColor();
     }
     build_designation();
 }
 
 void PlanRenderer::set_pos(sf::Vector2i i, char i1) {
-    (*current_floor)[i]=i1;
+    (*current_floor)[i] = i1;
     build_vertex_array();
 }
 
 void PlanRenderer::handle_event(sf::Event event) {
-    if(event.type==sf::Event::KeyPressed){
-        int offset_size=event.key.shift?10:1;
-        switch(event.key.code){
+    if (event.type == sf::Event::KeyPressed) {
+        int offset_size = event.key.shift ? 10 : 1;
+        switch (event.key.code) {
             case sf::Keyboard::Left:
-                move_cursor(-offset_size,0);
+                move_cursor(-offset_size, 0);
                 break;
             case sf::Keyboard::Right:
-                move_cursor(offset_size,0);
+                move_cursor(offset_size, 0);
                 break;
             case sf::Keyboard::Up:
-                move_cursor(0,-offset_size);
+                move_cursor(0, -offset_size);
                 break;
             case sf::Keyboard::Down:
-                move_cursor(0,offset_size);
+                move_cursor(0, offset_size);
                 break;
             case sf::Keyboard::Space:
                 insert();
@@ -124,7 +128,7 @@ void PlanRenderer::handle_event(sf::Event event) {
                 change_designation(false);
                 break;
             case sf::Keyboard::Return:
-                do_desig();
+                do_designation();
                 break;
         }
     }
@@ -132,131 +136,143 @@ void PlanRenderer::handle_event(sf::Event event) {
 }
 
 void PlanRenderer::move_cursor(int x, int y) {
-    cursorpos.x+=x;
-    cursorpos.y+=y;
-    if(is_designating)
-        m_end_desig=sf::Vector3i(cursorpos.x,cursorpos.y,Floornum);
+    cursorpos.x += x;
+    cursorpos.y += y;
+    if (is_designating)
+        m_end_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
     build_vertex_array();
 }
 
 void PlanRenderer::move_z(int offset) {
-    this->Floornum+=offset;
-    current_floor=&Designations[Floornum];
+    this->Floornum += offset;
+    current_floor = &Designations[Floornum];
     build_vertex_array();
 }
 
 void PlanRenderer::set_Designation(int x, int y, int z) {
-    if(!is_removing)
-        Designations[z][sf::Vector2i(x,y)]=current_designation->first;
+    if (!is_removing)
+        Designations[z][sf::Vector2i(x, y)] = current_designation->first;
     else
-        Designations[z].erase(sf::Vector2i(x,y));
+        Designations[z].erase(sf::Vector2i(x, y));
 }
 
-void PlanRenderer::insert(int x,int y,int z) {
+void PlanRenderer::insert(int x, int y, int z) {
     std::vector<sf::Vector2i> things_accrued;
-    things_accrued.push_back(sf::Vector2i(x,y));
+    things_accrued.push_back(sf::Vector2i(x, y));
     std::vector<sf::Vector2i> temp;
-    for(auto s : symmetries){
-        for(auto i : things_accrued) {
-            sf::Vector2i a=i;
-            for(int z=0;z<s.getRepetitionRequired();z++){
-                a=s.fromPos(a);
+    for (auto s : symmetries) {
+        for (auto i : things_accrued) {
+            sf::Vector2i a = i;
+            for (int z = 0; z < s.getRepetitionRequired(); z++) {
+                a = s.fromPos(a);
                 temp.push_back(a);
             }
         }
-        for(auto f:temp)
-        things_accrued.push_back(f);
+        for (auto f:temp)
+            things_accrued.push_back(f);
         temp.clear();
     }
-    for(auto i:things_accrued) {
+    for (auto i:things_accrued) {
         set_Designation(i.x, i.y, z);
     }
-    designations_updated=true;
+    designations_updated = true;
 }
 
 void PlanRenderer::insert() {
-    insert(cursorpos.x,cursorpos.y,Floornum);
+    insert(cursorpos.x, cursorpos.y, Floornum);
 }
 
 void PlanRenderer::add_symmetry(Symmetry::Symmetry_Type type) {
-    auto s=Symmetry(type);
+    auto s = Symmetry(type);
     s.setCursor(cursorpos);
-    auto v=std::find(symmetries.begin(),symmetries.end(),s);
-    if(v!=symmetries.end()){
+    auto v = std::find(symmetries.begin(), symmetries.end(), s);
+    if (v != symmetries.end()) {
         symmetries.erase(v);
-    }else{
+    } else {
         symmetries.push_back(s);
     }
 
 }
-void PlanRenderer::do_desig() {
-    if(is_designating)
-    {
-        m_end_desig=sf::Vector3i(cursorpos.x,cursorpos.y,Floornum);
-        if(m_start_desig.x>m_end_desig.x)
-            std::swap(m_start_desig.x,m_end_desig.x);
-        if(m_start_desig.y>m_end_desig.y)
-            std::swap(m_start_desig.y,m_end_desig.y);
-        if(m_start_desig.z>m_end_desig.z)
-            std::swap(m_start_desig.z,m_end_desig.z);
 
-        for(int x=m_start_desig.x;x<=m_end_desig.x;x++){
-            for(int y=m_start_desig.y;y<=m_end_desig.y;y++){
-                for(int z=m_start_desig.z;z<=m_end_desig.z;z++){
-                    insert(x,y,z);
+void PlanRenderer::do_designation() {
+    if (current_designation_type != NONE) {
+        m_end_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
+        if (m_start_desig.x > m_end_desig.x)
+            std::swap(m_start_desig.x, m_end_desig.x);
+        if (m_start_desig.y > m_end_desig.y)
+            std::swap(m_start_desig.y, m_end_desig.y);
+        if (m_start_desig.z > m_end_desig.z)
+            std::swap(m_start_desig.z, m_end_desig.z);
+        switch (current_designation_type) {
+            case RECTANGLE:
+                for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
+                    for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
+                        for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
+                            insert(x, y, z);
+                        }
+                    }
                 }
-            }
+                break;
+            case CIRCLE:
+                designate_circle();
+                break;
+            case LINE:
+                designate_line();
+                break;
         }
-        is_designating=false;
+        current_designation_type = NONE;
         build_vertex_array();
-    }else {
+    } else {
         is_designating = true;
-        m_start_desig=sf::Vector3i(cursorpos.x,cursorpos.y,Floornum);
+        current_designation_type=RECTANGLE;
+        m_start_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
     }
 }
 
 void PlanRenderer::build_designation() {
-    if(is_designating){
-        const sf::Vector3i & start=m_start_desig;
-        const sf::Vector3i & end=m_end_desig;
+    if (current_designation_type!=NONE) {
+        const sf::Vector3i &start = m_start_desig;
+        const sf::Vector3i &end = m_end_desig;
         Designation_preview.resize(8);
         Designation_preview.setPrimitiveType(sf::PrimitiveType::Lines);
-        sf::Vertex*the_square =&Designation_preview[0];
-        the_square[0].position=sf::Vector2f((0.5f+start.x)*m_square_size,(0.5f+start.y)*m_square_size);
-        the_square[1].position=sf::Vector2f((0.5f+end.x)*m_square_size,(0.5f+start.y)*m_square_size);
-        the_square[2].position=sf::Vector2f((0.5f+start.x)*m_square_size,(0.5+start.y)*m_square_size);
-        the_square[3].position=sf::Vector2f((0.5f+start.x)*m_square_size,(0.5+end.y)*m_square_size);
-        the_square[4].position=sf::Vector2f((0.5f+end.x)*m_square_size,(0.5f+start.y)*m_square_size);
-        the_square[5].position=sf::Vector2f((0.5f+end.x)*m_square_size,(0.5f+end.y)*m_square_size);
-        the_square[6].position=sf::Vector2f((0.5f+start.x)*m_square_size,(0.5f+end.y)*m_square_size);
-        the_square[7].position=sf::Vector2f((0.5f+end.x)*m_square_size,(0.5f+end.y)*m_square_size);
-        for(int i=0;i<8;i++)
-            the_square[i].color=sf::Color(109,93,98);
+        sf::Vertex *the_square = &Designation_preview[0];
+        the_square[0].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5f + start.y) * m_square_size);
+        the_square[1].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + start.y) * m_square_size);
+        the_square[2].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5 + start.y) * m_square_size);
+        the_square[3].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5 + end.y) * m_square_size);
+        the_square[4].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + start.y) * m_square_size);
+        the_square[5].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + end.y) * m_square_size);
+        the_square[6].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5f + end.y) * m_square_size);
+        the_square[7].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + end.y) * m_square_size);
+        for (int i = 0; i < 8; i++)
+            the_square[i].color = sf::Color(109, 93, 98);
+    }else{
+        Designation_preview.resize(0);
     }
 
 }
 
 void PlanRenderer::change_designation(bool up) {
-    if(up){
+    if (up) {
         current_designation++;
-        if(current_designation==designation_colors.end())
-            current_designation=designation_colors.begin();
-    }else{
-        if(current_designation==designation_colors.begin())
-            current_designation=designation_colors.end();
+        if (current_designation == designation_colors.end())
+            current_designation = designation_colors.begin();
+    } else {
+        if (current_designation == designation_colors.begin())
+            current_designation = designation_colors.end();
         current_designation--;
     }
-    is_removing= current_designation->first == 'x';
+    is_removing = current_designation->first == 'x';
 }
 
 void PlanRenderer::export_csv(const std::string &string) const {
-    auto r=Designations.rbegin();
-    int minx,miny,maxx,maxy;
-    getBounds(minx,miny,maxx,maxy);
+    auto r = Designations.rbegin();
+    int minx, miny, maxx, maxy;
+    getBounds(minx, miny, maxx, maxy);
     std::ofstream zzip(string);
-    zzip<<"#dig"<<std::endl;
-    while(r!=Designations.rend()){
-        for(int y=miny;y<=maxy;y++) {
+    zzip << "#dig" << std::endl;
+    while (r != Designations.rend()) {
+        for (int y = miny; y <= maxy; y++) {
             for (int x = minx; x <= maxx; x++) {
                 auto f = r->second.find(sf::Vector2i(x, y));
                 if (f != r->second.end()) {
@@ -269,36 +285,70 @@ void PlanRenderer::export_csv(const std::string &string) const {
             zzip << "#" << std::endl;
         }
         r++;
-        if(r!=Designations.rend()){
-            zzip<<"#>\r\n";
+        if (r != Designations.rend()) {
+            zzip << "#>\r\n";
         }
     }
     zzip.close();
 }
 
 void PlanRenderer::serialize(const std::string &string) const {
-
+    std::ofstream output(string);
+    for (auto i:Designations) {
+        for (auto z:i.second) {
+            auto position = z.first;
+            output << position.x << " " << position.y << " " << z.second << " " << i.first << "\n";
+        }
+    }
+    output.close();
 }
 
-void PlanRenderer::deseserialize(const std::string &string) {
-
+void PlanRenderer::deserialize(const std::string &string) {
+    char d;
+    int x, y, z;
+    std::ifstream input(string);
+    Designations.clear();
+    while (input >> x >> y >> z >> d) {
+        Designations[z][sf::Vector2i(x, y)] = d;
+    }
+    build_vertex_array();
 }
 
 void PlanRenderer::getBounds(int &minx, int &miny, int &maxx, int &maxy) const {
-    minx=1<<30;
-    miny=1<<30;
-    maxx=-minx;
-    maxy=-miny;
-    for(auto i: Designations){
-        for(auto a:i.second){
-            if(a.first.x<minx)
-                minx=a.first.x;
-            if(a.first.x>maxx)
-                maxx=a.first.x;
-            if(a.first.y<miny)
-                miny=a.first.y;
-            if(a.first.y>maxy)
-                maxy=a.first.y;
+    minx = 1 << 30;
+    miny = 1 << 30;
+    maxx = -minx;
+    maxy = -miny;
+    for (auto i: Designations) {
+        for (auto a:i.second) {
+            if (a.first.x < minx)
+                minx = a.first.x;
+            if (a.first.x > maxx)
+                maxx = a.first.x;
+            if (a.first.y < miny)
+                miny = a.first.y;
+            if (a.first.y > maxy)
+                maxy = a.first.y;
         }
     }
+}
+
+void PlanRenderer::designate_circle() {
+    int dx = m_start_desig.x - m_end_desig.x,
+            dy = m_start_desig.y - m_end_desig.y;
+    int radius = std::sqrt(dx * dx + dy * dy);
+    for (int x = m_start_desig.x - radius; x < m_start_desig.x + radius; x++) {
+        for (int y = m_start_desig.y - radius; y <= m_start_desig.y + radius; y++) {
+            dx = m_start_desig.x - x;
+            dy = m_start_desig.y - y;
+            if (std::sqrt(dx * dx + dy * dy) <= radius) {
+                for (int z = m_start_desig.z; z <= m_end_desig.z; z++)
+                    set_Designation(x, y, z);
+            }
+        }
+    }
+}
+
+void PlanRenderer::designate_line() {
+//TODO write line function
 }
