@@ -72,7 +72,7 @@ void PlanRenderer::build_vertex_array() {
         auto v = symmetries[i].getCursor();
         current[0].position = sf::Vector2f(v.x * m_square_size, v.y * m_square_size);
         current[1].position = sf::Vector2f((1 + v.x) * m_square_size, v.y * m_square_size);
-        current[2].position = sf::Vector2f((0.5 + v.x) * m_square_size, (1 + v.y) * m_square_size);
+        current[2].position = sf::Vector2f((0.5f + v.x) * m_square_size, (1 + v.y) * m_square_size);
         for (int z = 0; z < 3; z++)
             current[z].color = symmetries[i].getColor();
     }
@@ -231,8 +231,8 @@ void PlanRenderer::build_designation() {
         sf::Vertex *the_square = &Designation_preview[0];
         the_square[0].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5f + start.y) * m_square_size);
         the_square[1].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + start.y) * m_square_size);
-        the_square[2].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5 + start.y) * m_square_size);
-        the_square[3].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5 + end.y) * m_square_size);
+        the_square[2].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5f + start.y) * m_square_size);
+        the_square[3].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5f + end.y) * m_square_size);
         the_square[4].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + start.y) * m_square_size);
         the_square[5].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + end.y) * m_square_size);
         the_square[6].position = sf::Vector2f((0.5f + start.x) * m_square_size, (0.5f + end.y) * m_square_size);
@@ -325,11 +325,26 @@ void PlanRenderer::getBounds(int &minx, int &miny, int &maxx, int &maxy) const {
         }
     }
 }
+void PlanRenderer::designate_rectangle() {
+    if (m_start_desig.x > m_end_desig.x)
+        std::swap(m_start_desig.x, m_end_desig.x);
+    if (m_start_desig.y > m_end_desig.y)
+        std::swap(m_start_desig.y, m_end_desig.y);
+    if (m_start_desig.z > m_end_desig.z)
+        std::swap(m_start_desig.z, m_end_desig.z);
+    for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
+        for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
+            for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
+                insert(x, y, z);
+            }
+        }
+    }
+}
 
 void PlanRenderer::designate_circle() {
     int dx = m_start_desig.x - m_end_desig.x,
             dy = m_start_desig.y - m_end_desig.y;
-    int radius = std::sqrt(dx * dx + dy * dy);
+    int radius =(int) std::sqrt(dx * dx + dy * dy);
     for (int x = m_start_desig.x - radius; x <= m_start_desig.x + radius; x++) {
         for (int y = m_start_desig.y - radius; y <= m_start_desig.y + radius; y++) {
             dx = m_start_desig.x - x;
@@ -346,18 +361,3 @@ void PlanRenderer::designate_line() {
 //TODO write line function
 }
 
-void PlanRenderer::designate_rectangle() {
-    if (m_start_desig.x > m_end_desig.x)
-        std::swap(m_start_desig.x, m_end_desig.x);
-    if (m_start_desig.y > m_end_desig.y)
-        std::swap(m_start_desig.y, m_end_desig.y);
-    if (m_start_desig.z > m_end_desig.z)
-        std::swap(m_start_desig.z, m_end_desig.z);
-    for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
-        for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
-            for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
-                insert(x, y, z);
-            }
-        }
-    }
-}

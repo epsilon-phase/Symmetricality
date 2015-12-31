@@ -17,7 +17,6 @@ const static std::map<char, sf::Color> designation_colors = {{'d', sf::Color(200
                                                              {'i', sf::Color(0, 255, 0)},
                                                              {'u', sf::Color(255, 0, 0)},
                                                              {'x',sf::Color(0,0,0)}};
-
 class PlanRenderer : public sf::Drawable, sf::Transformable {
 friend class Hud;
     sf::VertexArray Rendering_plan;
