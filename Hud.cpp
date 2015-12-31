@@ -4,7 +4,6 @@
 
 #include <sstream>
 #include "Hud.h"
-
 Hud::Hud(PlanRenderer &r) : renderer(r) {
     this->Hud_font.loadFromFile("LinLibertine_DRah.ttf");
     this->Location.setCharacterSize(15);
@@ -54,8 +53,7 @@ bool Hud::handle_event(const sf::Event &event) {
 void Hud::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(Designation_type);
     target.draw(Location);
-    if (save_type != NO_ENTRY)
-        target.draw(Save);
+    target.draw(Save);
 }
 
 void Hud::update_text() {
@@ -71,6 +69,12 @@ void Hud::update_text() {
         old_cursor = renderer.cursorpos;
         old_floor = renderer.Floornum;
         f << "(" << old_cursor.x << "," << old_cursor.y << "," << old_floor << ")";
+        if(renderer.current_designation_type!=PlanRenderer::NONE){
+            f<<" "<<std::abs(renderer.m_start_desig.x-renderer.m_end_desig.x)<<"x"<<
+                    std::abs(renderer.m_start_desig.y-renderer.m_end_desig.y)<<"x"<<
+                    std::abs(renderer.m_start_desig.z-renderer.m_end_desig.z);
+
+        }
         Location.setString(f.str());
     }
     f.str("");
@@ -101,7 +105,7 @@ void Hud::finish_save() {
             renderer.export_csv(save_file);
             break;
         case LOAD_DESERIALIZE:
-            renderer.deseserialize(save_file);
+            renderer.deserialize(save_file);
             break;
     }
     save_type = NO_ENTRY;
