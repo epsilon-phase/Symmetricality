@@ -59,7 +59,7 @@ private:
     void insert(int x,int y,int z);
     void insert();
     void add_symmetry(Symmetry::Symmetry_Type type);
-    void do_designation();
+    void do_designation(designation_type e=RECTANGLE);
     void build_designation();
     void change_designation(bool up);
 

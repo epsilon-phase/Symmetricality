@@ -52,7 +52,7 @@ void PlanRenderer::build_vertex_array() {
             iter += 4;
         }
     }
-    if (current_designation_type!=NONE) {
+    if (current_designation_type != NONE) {
         current = &Rendering_plan[Rendering_plan.getVertexCount() - 8];
         MAK_SQUAR(m_start_desig.x, m_start_desig.y, sf::Color(255, 220, 220));
     }
@@ -128,7 +128,10 @@ void PlanRenderer::handle_event(sf::Event event) {
                 change_designation(false);
                 break;
             case sf::Keyboard::Return:
-                do_designation();
+                if (event.key.shift)
+                    do_designation(CIRCLE);
+                else
+                    do_designation();
                 break;
         }
     }
@@ -194,43 +197,45 @@ void PlanRenderer::add_symmetry(Symmetry::Symmetry_Type type) {
 
 }
 
-void PlanRenderer::do_designation() {
-    if (current_designation_type != NONE) {
-        m_end_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
-        if (m_start_desig.x > m_end_desig.x)
-            std::swap(m_start_desig.x, m_end_desig.x);
-        if (m_start_desig.y > m_end_desig.y)
-            std::swap(m_start_desig.y, m_end_desig.y);
-        if (m_start_desig.z > m_end_desig.z)
-            std::swap(m_start_desig.z, m_end_desig.z);
-        switch (current_designation_type) {
-            case RECTANGLE:
-                for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
-                    for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
-                        for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
-                            insert(x, y, z);
-                        }
+void PlanRenderer::do_designation(designation_type e) {
+    m_end_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
+
+    switch (current_designation_type) {
+        case RECTANGLE:
+            if (m_start_desig.x > m_end_desig.x)
+                std::swap(m_start_desig.x, m_end_desig.x);
+            if (m_start_desig.y > m_end_desig.y)
+                std::swap(m_start_desig.y, m_end_desig.y);
+            if (m_start_desig.z > m_end_desig.z)
+                std::swap(m_start_desig.z, m_end_desig.z);
+            for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
+                for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
+                    for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
+                        insert(x, y, z);
                     }
                 }
-                break;
-            case CIRCLE:
-                designate_circle();
-                break;
-            case LINE:
-                designate_line();
-                break;
-        }
-        current_designation_type = NONE;
-        build_vertex_array();
-    } else {
-        is_designating = true;
-        current_designation_type=RECTANGLE;
-        m_start_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
+            }
+            current_designation_type=NONE;
+            break;
+        case CIRCLE:
+            designate_circle();
+            current_designation_type=NONE;
+            break;
+        case LINE:
+            designate_line();
+            current_designation_type=NONE;
+            break;
+        case NONE:
+            is_designating = true;
+            current_designation_type = e;
+            m_start_desig = sf::Vector3i(cursorpos.x, cursorpos.y, Floornum);
+            break;
     }
+    build_vertex_array();
 }
 
 void PlanRenderer::build_designation() {
-    if (current_designation_type!=NONE) {
+    if (current_designation_type != NONE) {
         const sf::Vector3i &start = m_start_desig;
         const sf::Vector3i &end = m_end_desig;
         Designation_preview.resize(8);
@@ -246,7 +251,7 @@ void PlanRenderer::build_designation() {
         the_square[7].position = sf::Vector2f((0.5f + end.x) * m_square_size, (0.5f + end.y) * m_square_size);
         for (int i = 0; i < 8; i++)
             the_square[i].color = sf::Color(109, 93, 98);
-    }else{
+    } else {
         Designation_preview.resize(0);
     }
 
@@ -337,13 +342,13 @@ void PlanRenderer::designate_circle() {
     int dx = m_start_desig.x - m_end_desig.x,
             dy = m_start_desig.y - m_end_desig.y;
     int radius = std::sqrt(dx * dx + dy * dy);
-    for (int x = m_start_desig.x - radius; x < m_start_desig.x + radius; x++) {
+    for (int x = m_start_desig.x - radius; x <= m_start_desig.x + radius; x++) {
         for (int y = m_start_desig.y - radius; y <= m_start_desig.y + radius; y++) {
             dx = m_start_desig.x - x;
             dy = m_start_desig.y - y;
             if (std::sqrt(dx * dx + dy * dy) <= radius) {
                 for (int z = m_start_desig.z; z <= m_end_desig.z; z++)
-                    set_Designation(x, y, z);
+                    insert(x, y, z);
             }
         }
     }
