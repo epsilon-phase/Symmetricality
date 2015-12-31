@@ -202,19 +202,7 @@ void PlanRenderer::do_designation(designation_type e) {
 
     switch (current_designation_type) {
         case RECTANGLE:
-            if (m_start_desig.x > m_end_desig.x)
-                std::swap(m_start_desig.x, m_end_desig.x);
-            if (m_start_desig.y > m_end_desig.y)
-                std::swap(m_start_desig.y, m_end_desig.y);
-            if (m_start_desig.z > m_end_desig.z)
-                std::swap(m_start_desig.z, m_end_desig.z);
-            for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
-                for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
-                    for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
-                        insert(x, y, z);
-                    }
-                }
-            }
+            designate_rectangle();
             current_designation_type=NONE;
             break;
         case CIRCLE:
@@ -356,4 +344,20 @@ void PlanRenderer::designate_circle() {
 
 void PlanRenderer::designate_line() {
 //TODO write line function
+}
+
+void PlanRenderer::designate_rectangle() {
+    if (m_start_desig.x > m_end_desig.x)
+        std::swap(m_start_desig.x, m_end_desig.x);
+    if (m_start_desig.y > m_end_desig.y)
+        std::swap(m_start_desig.y, m_end_desig.y);
+    if (m_start_desig.z > m_end_desig.z)
+        std::swap(m_start_desig.z, m_end_desig.z);
+    for (int x = m_start_desig.x; x <= m_end_desig.x; x++) {
+        for (int y = m_start_desig.y; y <= m_end_desig.y; y++) {
+            for (int z = m_start_desig.z; z <= m_end_desig.z; z++) {
+                insert(x, y, z);
+            }
+        }
+    }
 }

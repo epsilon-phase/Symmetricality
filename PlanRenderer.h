@@ -67,6 +67,7 @@ private:
     void export_csv(const std::string &)const;
     void deserialize(const std::string &);
     void getBounds(int &minx,int &miny, int &maxx,int &maxy)const;
+    void designate_rectangle();
     void designate_circle();
     void designate_line();
 protected:
