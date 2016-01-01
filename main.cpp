@@ -23,6 +23,11 @@ int main() {
                 auto mcoord=target.mapPixelToCoords(coord,view);
                 plan.handle_mouse(e,mcoord);
             }
+            if(e.type==sf::Event::MouseMoved) {
+                auto coord=sf::Mouse::getPosition(target);
+                auto mcoord=target.mapPixelToCoords(coord,view);
+                plan.handleMouseOver(mcoord);
+            }
             if(e.type==sf::Event::Resized){
                 view.setSize(e.size.width,e.size.height);
             }

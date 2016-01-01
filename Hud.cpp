@@ -86,10 +86,10 @@ void Hud::update_text() {
         old_cursor = renderer.cursorpos;
         old_floor = renderer.Floornum;
         f << "(" << old_cursor.x << "," << old_cursor.y << "," << old_floor << ")";
-        if (renderer.current_designation_type != PlanRenderer::NONE) {
-            f << " " << std::abs(renderer.m_start_desig.x - renderer.m_end_desig.x) << "x" <<
-            std::abs(renderer.m_start_desig.y - renderer.m_end_desig.y) << "x" <<
-            std::abs(renderer.m_start_desig.z - renderer.m_end_desig.z);
+        if (renderer.blueprint.isDesignating()) {
+            f << " " << std::abs(renderer.blueprint.getDesignationStart().x - renderer.cursorpos.x) << "x" <<
+            std::abs(renderer.blueprint.getDesignationStart().y - renderer.cursorpos.y) << "x" <<
+            std::abs(renderer.blueprint.getDesignationStart().z - renderer.Floornum);
 
         }
         Location.setString(f.str());

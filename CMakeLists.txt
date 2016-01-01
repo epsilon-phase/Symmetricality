@@ -3,7 +3,7 @@ project(Symmetricality)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp Blueprint.cpp Blueprint.h)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 #set(CMAKE_BUILD_TYPE DEBUG)
 

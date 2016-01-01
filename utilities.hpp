@@ -4,6 +4,15 @@
 
 #ifndef SYMMETRICALITY_UTLITIES_HPP
 #define SYMMETRICALITY_UTLITIES_HPP
+
+#include <SFML/Graphics/Color.hpp>
+#include <map>
+const static std::map<char, sf::Color> designation_colors = {{'d', sf::Color(200, 200, 0)},
+                                                             {'j', sf::Color(255, 255, 0)},
+                                                             {'i', sf::Color(0, 255, 0)},
+                                                             {'u', sf::Color(255, 0, 0)},
+                                                             {'x', sf::Color(0, 0, 0)}};
+
 #include <SFML/Graphics.hpp>
 #include "city.h"
 class Vector2iComp{
