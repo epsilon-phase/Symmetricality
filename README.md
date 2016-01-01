@@ -17,8 +17,9 @@ designations.
 |F6|Load File (.ser)|
 |Arrow Keys|Move around|
 |Shift Arrow keys|Move around in increments of 10|
-|Return|Start Designating|
-|Shift-Return| Start Designating Circle|
+|Return|Start Designating.|
+|Shift-Return| Start Designating circle.|
+|Control-Return|Start Designating a line.|
 |r|Add Radial Symmetry at cursor|
 |9|Add Rotational(at 90 degree increments) symmetry|
 |x|Add X axis Symmetry|
@@ -43,7 +44,13 @@ As such, the Csv files that this program generates are not quite up to
 
 ## How does the Symmetry work?
 
-Okay, this is going to be simple.
+Symmetries in this are not merely toggled on and off,
+with this, multiple symmetries across each axis may be
+used at once. The Symmetries are applied one at a time,
+with the points produced cascading across each symmetry
+in the order applied.
+
+As a result, the number of inserts called is at least 2<sup>n</sup>, so use cautiously.
 
 Rotational Symmetry is the most complicated. It rotates the point around it's center 3 times.
 

@@ -389,7 +389,6 @@ void PlanRenderer::designate_circle() {
 }
 
 void PlanRenderer::designate_line() {
-//TODO write line function
     int step_x = 1, step_y = 1;
     const int startx = m_start_desig.x,
             starty = m_start_desig.y;
