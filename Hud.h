@@ -14,7 +14,9 @@ class Hud:public sf::Drawable {
     sf::Text Designation_type;
     sf::Text Location;
     sf::Text Save;
+    int screencap_no=0;
     std::string save_file;
+    bool draw_this=true;
     enum Entry_status{
     NO_ENTRY,
         SAVE_SERIALIZE,
@@ -27,6 +29,7 @@ public:
     Hud(PlanRenderer&);
     ~Hud();
     bool handle_event(const sf::Event &event);
+    void save_screenshot(const sf::Image& that);
 private:
     void update_text();
     void finish_save();

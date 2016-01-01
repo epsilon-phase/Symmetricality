@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include "Hud.h"
+#include "tinyfiledialogs.h"
 
 Hud::Hud(PlanRenderer &r) : renderer(r) {
     this->Hud_font.loadFromFile("LinLibertine_DRah.ttf");
@@ -25,25 +26,38 @@ Hud::~Hud() {
 
 bool Hud::handle_event(const sf::Event &event) {
     bool handle_it = true;
-    if (event.type == sf::Event::TextEntered && save_type != NO_ENTRY) {
-        if (event.text.unicode < 128) {
-            if (event.text.unicode == 8) {
-                save_file.pop_back();
-            } else
-                save_file.push_back(static_cast<char>(event.text.unicode));
-        }
-    } else if (event.type == sf::Event::KeyPressed) {
+    if (event.type == sf::Event::KeyPressed) {
         handle_it = save_type == NO_ENTRY;
         switch (event.key.code) {
-            case sf::Keyboard::F5:
-                if (save_type == NO_ENTRY) {
-                    save_type = event.key.shift ? SAVE_EXPORT : SAVE_SERIALIZE;
-                } else
-                    finish_save();
+            case sf::Keyboard::F1:
+                draw_this=!draw_this;
                 break;
-            case sf::Keyboard::Return:
-                if(save_type!=NO_ENTRY)
-                finish_save();
+            case sf::Keyboard::F5:
+                /*if (save_type == NO_ENTRY) {
+                    save_type = event.key.shift ? SAVE_EXPORT : SAVE_SERIALIZE;
+                } else*/
+            {
+                const char *filters = event.key.shift ? "*.csv" : "*.ser";
+                const char *filename = tinyfd_saveFileDialog("Save File",
+                                                             event.key.shift ? "blueprint.csv" : "blueprint.ser", 1,
+                                                             &filters,
+                                                             event.key.shift ? "Csv file" : "Serialized File");
+				if (filename != NULL){
+					this->save_file = std::string(filename);
+					save_type = event.key.shift ? SAVE_EXPORT : SAVE_SERIALIZE;
+					finish_save();
+				}
+            }   
+                break;
+            case sf::Keyboard::F6: {
+                const char *filters = "*.ser";
+                const char *filename = tinyfd_openFileDialog("Load blueprint", "blueprint.ser", 1, &filters, "None", 0);
+				if (filename){
+					this->save_file = std::string(filename);
+					save_type = LOAD_DESERIALIZE;
+					finish_save();
+				}
+            }
                 break;
         }
     }
@@ -52,10 +66,11 @@ bool Hud::handle_event(const sf::Event &event) {
 }
 
 void Hud::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    target.draw(Designation_type);
-    target.draw(Location);
-    if (save_type != NO_ENTRY)
+    if (draw_this) {
+        target.draw(Designation_type);
+        target.draw(Location);
         target.draw(Save);
+    }
 }
 
 void Hud::update_text() {
@@ -71,6 +86,12 @@ void Hud::update_text() {
         old_cursor = renderer.cursorpos;
         old_floor = renderer.Floornum;
         f << "(" << old_cursor.x << "," << old_cursor.y << "," << old_floor << ")";
+        if (renderer.current_designation_type != PlanRenderer::NONE) {
+            f << " " << std::abs(renderer.m_start_desig.x - renderer.m_end_desig.x) << "x" <<
+            std::abs(renderer.m_start_desig.y - renderer.m_end_desig.y) << "x" <<
+            std::abs(renderer.m_start_desig.z - renderer.m_end_desig.z);
+
+        }
         Location.setString(f.str());
     }
     f.str("");
@@ -101,8 +122,15 @@ void Hud::finish_save() {
             renderer.export_csv(save_file);
             break;
         case LOAD_DESERIALIZE:
-            renderer.deseserialize(save_file);
+            renderer.deserialize(save_file);
             break;
     }
     save_type = NO_ENTRY;
+}
+
+void Hud::save_screenshot(const sf::Image &that) {
+    std::stringstream a;
+    a << save_file.substr(0, save_file.size() - 4) << "-" << screencap_no << ".png";
+    screencap_no++;
+    that.saveToFile(a.str());
 }
