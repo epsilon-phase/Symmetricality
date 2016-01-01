@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 if [ ! -e cmake-3.4.1 ];then
     wget --no-check-certificate https://cmake.org/files/v3.4/cmake-3.4.1.tar.gz&&tar xf cmake-3.4.1.tar.gz
     cd cmake-3.4.1
@@ -8,6 +8,7 @@ if [ ! -e cmake-3.4.1 ];then
 fi;
 cd cmake-3.4.1
 sudo make install
+export CMAKE_ROOT=/usr/local/share/cmake-3.4/
 cd ..
 
 if [ ! -e SFML ];then
