@@ -99,15 +99,19 @@ void PlanRenderer::handle_event(sf::Event event) {
         int offset_size = event.key.shift ? 10 : 1;
         switch (event.key.code) {
             case sf::Keyboard::Left:
+			case sf::Keyboard::Numpad4:
                 move_cursor(-offset_size, 0);
                 break;
+			case sf::Keyboard::Numpad6:
             case sf::Keyboard::Right:
                 move_cursor(offset_size, 0);
                 break;
             case sf::Keyboard::Up:
+			case sf::Keyboard::Numpad8:
                 move_cursor(0, -offset_size);
                 break;
             case sf::Keyboard::Down:
+			case sf::Keyboard::Numpad2:
                 move_cursor(0, offset_size);
                 break;
             case sf::Keyboard::Space:
@@ -143,6 +147,18 @@ void PlanRenderer::handle_event(sf::Event event) {
                 else
                     do_designation();
                 break;
+			case sf::Keyboard::Numpad9:
+				move_cursor(-offset_size, -offset_size);
+				break;
+			case sf::Keyboard::Numpad1:
+				move_cursor(offset_size, offset_size);
+				break;
+			case sf::Keyboard::Numpad7:
+				move_cursor(offset_size, -offset_size);
+				break;
+			case sf::Keyboard::Numpad3:
+				move_cursor(-offset_size, offset_size);
+				break;
         }
     }
 
