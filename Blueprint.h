@@ -33,6 +33,7 @@ public:
     const std::vector<Symmetry>& getSymmetries()const;
     const sf::Vector2i getStartPoint()const;
     void addSymmetry(int,int,Symmetry::Symmetry_Type);
+    void setStart(int,int);
 private:
     void getBounds(int& minx,int& miny,int&maxx,int&maxy)const;
     void setDesignation(int x,int y,int z,char d);

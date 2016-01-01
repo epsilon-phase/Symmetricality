@@ -261,3 +261,8 @@ const std::vector<Symmetry> &Blueprint::getSymmetries() const {
 const sf::Vector2i Blueprint::getStartPoint() const {
     return blueprint_start_point;
 }
+
+void Blueprint::setStart(int i, int i1) {
+    blueprint_start_point.x=i;
+    blueprint_start_point.y=i1;
+}

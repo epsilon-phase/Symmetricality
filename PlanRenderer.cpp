@@ -35,7 +35,6 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
 void PlanRenderer::build_vertex_array() {
     sf::Vertex *current;
     auto current_floor = &blueprint.getLevelDesignation(Floornum);
-    auto is_designating = blueprint.isDesignating();
 
     Rendering_plan.resize(current_floor->size() * 4);
     Rendering_plan.setPrimitiveType(sf::PrimitiveType::Quads);
@@ -159,6 +158,9 @@ void PlanRenderer::handle_event(sf::Event event) {
                 break;
             case sf::Keyboard::Numpad3:
                 move_cursor(-offset_size, offset_size);
+                break;
+            case sf::Keyboard::S:
+                blueprint.setStart(cursorpos.x,cursorpos.y);
                 break;
         }
         if (event.key.code == sf::Keyboard::C) {
