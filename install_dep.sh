@@ -19,7 +19,7 @@ if [ ! -e SFML ];then
     cd ..
 fi
 cd SFML
-if [! -e Makefile ] then
+if [! -e Makefile ]; then
     cmake .
 fi
 sudo make install
