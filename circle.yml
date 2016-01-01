@@ -1,5 +1,8 @@
 
 dependencies:
+  cache_directories:
+    - SFML
+    - cmake-3.4.1
   pre:
     - sudo apt-get install cmake-guic
     - # SFML Dependencies
@@ -15,7 +18,7 @@ dependencies:
     - # Joystick
     - sudo apt-get install libudev-dev libxcb-image0-dev
     - ldconfig
-  cache_directories:
-    - SFML
-    - cmake-3.4.1
-  - ./install_dep.sh
+    - ./install_dep.sh
+  post:
+    cmake .
+    make
