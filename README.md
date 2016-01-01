@@ -50,13 +50,16 @@ Rotational Symmetry is the most complicated. It rotates the point around it's ce
 ![Rotational Symmetry](http://i.imgur.com/guuqSBR.png)
 
 Radial Symmetry is the next most complicated(but not by much).
+
 ![Radial Symmetry](http://i.imgur.com/ZwfO5zN.png)
 ![Radial Symmetry 2](http://i.imgur.com/6k1PaCd.png)
 
 Next up is X Symmetry.
+
 ![x Symmetry](http://i.imgur.com/7pN3ii2.png)
 
-And last is Y Symmetry
+And last is Y Symmetry.
+
 ![Y symmetry](http://i.imgur.com/u8SsO6G.png)
 
 Symmetry is applied in the order added.
