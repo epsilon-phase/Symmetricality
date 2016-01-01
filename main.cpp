@@ -28,6 +28,11 @@ int main() {
             }
             if(display.handle_event(e))
                 plan.handle_event(e);
+            if(e.type==sf::Event::KeyPressed){
+                if(e.key.code==sf::Keyboard::F2){
+                    display.save_screenshot(target.capture());
+                }
+            }
         }
         target.clear();
         target.setView(view);

@@ -41,6 +41,7 @@ friend class Hud;
     std::vector<Symmetry> symmetries;
     bool designations_updated=false;
     bool is_removing=false;
+
 public:
     PlanRenderer();
 

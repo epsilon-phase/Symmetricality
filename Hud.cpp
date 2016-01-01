@@ -29,6 +29,9 @@ bool Hud::handle_event(const sf::Event &event) {
     if (event.type == sf::Event::KeyPressed) {
         handle_it = save_type == NO_ENTRY;
         switch (event.key.code) {
+            case sf::Keyboard::F1:
+                draw_this=!draw_this;
+                break;
             case sf::Keyboard::F5:
                 /*if (save_type == NO_ENTRY) {
                     save_type = event.key.shift ? SAVE_EXPORT : SAVE_SERIALIZE;
@@ -40,19 +43,18 @@ bool Hud::handle_event(const sf::Event &event) {
                                                              &filters,
                                                              event.key.shift ? "Csv file" : "Serialized File");
                 this->save_file = std::string(filename);
-                delete[] filename;
+                save_type=event.key.shift?SAVE_EXPORT:SAVE_SERIALIZE;
             }
                 finish_save();
                 break;
-            case sf::Keyboard::F6:
-            {
-                const char *filters="*.ser";
-                const char *filename=tinyfd_openFileDialog("Load blueprint","blueprint.ser",1,&filters,"None",0);
-                this->save_file=std::string(filename);
-                save_type=LOAD_DESERIALIZE;
+            case sf::Keyboard::F6: {
+                const char *filters = "*.ser";
+                const char *filename = tinyfd_openFileDialog("Load blueprint", "blueprint.ser", 1, &filters, "None", 0);
+                this->save_file = std::string(filename);
+                save_type = LOAD_DESERIALIZE;
                 finish_save();
             }
-            break;
+                break;
         }
     }
     update_text();
@@ -60,9 +62,11 @@ bool Hud::handle_event(const sf::Event &event) {
 }
 
 void Hud::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    target.draw(Designation_type);
-    target.draw(Location);
-    target.draw(Save);
+    if (draw_this) {
+        target.draw(Designation_type);
+        target.draw(Location);
+        target.draw(Save);
+    }
 }
 
 void Hud::update_text() {
@@ -118,4 +122,11 @@ void Hud::finish_save() {
             break;
     }
     save_type = NO_ENTRY;
+}
+
+void Hud::save_screenshot(const sf::Image &that) {
+    std::stringstream a;
+    a << save_file.substr(0, save_file.size() - 4) << "-" << screencap_no << ".png";
+    screencap_no++;
+    that.saveToFile(a.str());
 }
