@@ -99,19 +99,19 @@ void PlanRenderer::handle_event(sf::Event event) {
         int offset_size = event.key.shift ? 10 : 1;
         switch (event.key.code) {
             case sf::Keyboard::Left:
-			case sf::Keyboard::Numpad4:
+            case sf::Keyboard::Numpad4:
                 move_cursor(-offset_size, 0);
                 break;
-			case sf::Keyboard::Numpad6:
+            case sf::Keyboard::Numpad6:
             case sf::Keyboard::Right:
                 move_cursor(offset_size, 0);
                 break;
             case sf::Keyboard::Up:
-			case sf::Keyboard::Numpad8:
+            case sf::Keyboard::Numpad8:
                 move_cursor(0, -offset_size);
                 break;
             case sf::Keyboard::Down:
-			case sf::Keyboard::Numpad2:
+            case sf::Keyboard::Numpad2:
                 move_cursor(0, offset_size);
                 break;
             case sf::Keyboard::Space:
@@ -144,21 +144,25 @@ void PlanRenderer::handle_event(sf::Event event) {
             case sf::Keyboard::Return:
                 if (event.key.shift)
                     do_designation(CIRCLE);
-                else
-                    do_designation();
+                else {
+                    if (event.key.control)
+                        do_designation(LINE);
+                    else
+                        do_designation(RECTANGLE);
+                }
                 break;
-			case sf::Keyboard::Numpad9:
-				move_cursor(-offset_size, -offset_size);
-				break;
-			case sf::Keyboard::Numpad1:
-				move_cursor(offset_size, offset_size);
-				break;
-			case sf::Keyboard::Numpad7:
-				move_cursor(offset_size, -offset_size);
-				break;
-			case sf::Keyboard::Numpad3:
-				move_cursor(-offset_size, offset_size);
-				break;
+            case sf::Keyboard::Numpad9:
+                move_cursor(-offset_size, -offset_size);
+                break;
+            case sf::Keyboard::Numpad1:
+                move_cursor(offset_size, offset_size);
+                break;
+            case sf::Keyboard::Numpad7:
+                move_cursor(offset_size, -offset_size);
+                break;
+            case sf::Keyboard::Numpad3:
+                move_cursor(-offset_size, offset_size);
+                break;
         }
     }
 
@@ -386,5 +390,48 @@ void PlanRenderer::designate_circle() {
 
 void PlanRenderer::designate_line() {
 //TODO write line function
+    int step_x = 1, step_y = 1;
+    const int startx = m_start_desig.x,
+            starty = m_start_desig.y;
+    const int endx = m_end_desig.x,
+            endy = m_end_desig.y;
+    if (startx > endx)
+        step_x = -1;
+    if (starty > endy)
+        step_y = -1;
+    const float dx = abs(endx - startx);
+    const float dy = abs(endy - starty);
+    float err;
+    if (dx > dy) {
+        err = dx / 2.0f;
+        int x = startx;
+        int y = starty;
+        while (x != endx) {
+            for (int i = std::min(m_start_desig.z, m_end_desig.z); i <= std::max(m_start_desig.z, m_end_desig.z); i++) {
+                insert(x, y, i);
+            }
+            err = err - dy;
+            if (err < 0) {
+                x = x + step_x;
+                err = err + dy;
+            }
+            y += step_y;
+        }
+    } else {
+        int x = startx;
+        int y = starty;
+        err = dy / 2.0f;
+        while (y != endy) {
+            for (int i = std::min(m_start_desig.z, m_end_desig.z); i <= std::max(m_start_desig.z, m_end_desig.z); i++) {
+                insert(x, y, i);
+            }
+            err = err - dx;
+            if (err < 0) {
+                x += step_x;
+                err += dy;
+            }
+            y += step_y;
+        }
+    }
 }
 
