@@ -46,6 +46,7 @@ public:
         a.cursor=z;
         return a;
     }
+    Symmetry_Type getType()const{return m_type;}
     void setCursor(sf::Vector2i);
     sf::Vector2i getCursor()const{return cursor;}
 private:
