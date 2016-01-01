@@ -19,5 +19,8 @@ if [ ! -e SFML ];then
     cd ..
 fi
 cd SFML
+if [! -e Makefile ] then
+    cmake .
+fi
 sudo make install
 cd ..
