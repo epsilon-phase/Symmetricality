@@ -77,10 +77,13 @@ void Blueprint::setDesignationToggle(int x, int y, int z,application_pattern e) 
 
 void Blueprint::serialize(const std::string &file) const {
     std::ofstream output(file);
+    output<< _symmetries.size()<<std::endl;
+    for(auto i : _symmetries)
+        output<<i.getCursor().x<<" "<<i.getCursor().y<<" "<<(int)i.getType()<<std::endl;
     for (auto i:_Designations) {
         for (auto z:i.second) {
             auto position = z.first;
-            output << i.first << " " << position.x << " " << position.y << " " << z.second << " " << "\n";
+            output << position.x << " " << position.y <<" "<<i.first<< " " << z.second << "\n";
         }
     }
     output.close();
@@ -117,6 +120,19 @@ void Blueprint::deserialize(const std::string &file) {
     char d;
     int x, y, z;
     std::ifstream input(file);
+    input>>z;
+    _symmetries.clear();
+    for(int i=0;i<z;i++)
+    {
+        int c;
+        Symmetry::Symmetry_Type f=Symmetry::Symmetry_Type::X ;
+        input>>x>>y>>c;
+        f=(Symmetry::Symmetry_Type)c;
+        Symmetry z(f);
+        z.setCursor(sf::Vector2i(x,y));
+        _symmetries.push_back(z);
+    }
+
     _Designations.clear();
     while (input >> x >> y >> z >> d) {
         _Designations[z][sf::Vector2i(x, y)] = d;

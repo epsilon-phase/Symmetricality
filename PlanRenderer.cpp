@@ -19,7 +19,7 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
     states.texture = NULL;
     target.draw(Rendering_plan, states);
     target.draw(Symmetries, states);
-    target.draw(Cursor,states);
+    target.draw(Cursor, states);
     if (blueprint.isDesignating())
         target.draw(Designation_preview, states);
 
@@ -54,11 +54,11 @@ void PlanRenderer::build_vertex_array() {
     Cursor.resize(4);
     Cursor.setPrimitiveType(sf::PrimitiveType::Quads);
     current = &Cursor[0];
-    current[0].position.x = (0.25f+cursorpos.x) * m_square_size;
-    current[0].position.y = (0.25f+cursorpos.y) * m_square_size;
-    current[1].position = sf::Vector2f(current[0].position.x + .5f*m_square_size, current[0].position.y);
-    current[2].position = sf::Vector2f(current[1].position.x, current[1].position.y + 0.5f*m_square_size);
-    current[3].position = sf::Vector2f(current[2].position.x - 0.5f*m_square_size, current[2].position.y);
+    current[0].position.x = (0.25f + cursorpos.x) * m_square_size;
+    current[0].position.y = (0.25f + cursorpos.y) * m_square_size;
+    current[1].position = sf::Vector2f(current[0].position.x + .5f * m_square_size, current[0].position.y);
+    current[2].position = sf::Vector2f(current[1].position.x, current[1].position.y + 0.5f * m_square_size);
+    current[3].position = sf::Vector2f(current[2].position.x - 0.5f * m_square_size, current[2].position.y);
 
     auto symmetries = blueprint.getSymmetries();
     for (int z = 0; z < 4; z++)
@@ -160,7 +160,7 @@ void PlanRenderer::handle_event(sf::Event event) {
                 move_cursor(-offset_size, offset_size);
                 break;
             case sf::Keyboard::S:
-                blueprint.setStart(cursorpos.x,cursorpos.y);
+                blueprint.setStart(cursorpos.x, cursorpos.y);
                 break;
         }
         if (event.key.code == sf::Keyboard::C) {
@@ -243,12 +243,16 @@ void PlanRenderer::deserialize(const std::string &string) {
 void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
     sf::Vector2i mouse_position = sf::Vector2i((int) floor(b.x / m_square_size), (int) floor(b.y / m_square_size));
     blueprint.setDesignationToggle(sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
-                                   event.mouseButton.button == 0 ? Blueprint::RECTANGLE : Blueprint::LINE);
+                                   event.mouseButton.button == 0 ? (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
+                                                                    ? Blueprint::CIRCLE : Blueprint::RECTANGLE)
+                                                                 : Blueprint::LINE);
     build_vertex_array();
 }
-void PlanRenderer::handleMouseOver(const sf::Vector2f& b){
+
+void PlanRenderer::handleMouseOver(const sf::Vector2f &b) {
     sf::Vector2i mouse_position = sf::Vector2i((int) floor(b.x / m_square_size), (int) floor(b.y / m_square_size));
-    cursorpos=mouse_position;
+    if (blueprint.isDesignating())
+        cursorpos = mouse_position;
     build_designation();
 
 }
