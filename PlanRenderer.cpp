@@ -164,6 +164,17 @@ void PlanRenderer::handle_event(sf::Event event) {
                 move_cursor(-offset_size, offset_size);
                 break;
         }
+        if(event.key.code==sf::Keyboard::C)
+        {
+            if(clear_primed){
+                Designations.clear();
+                Floornum=0;
+                Designations[0].size();//should initialize new thing
+                current_floor=&Designations[0];
+            }
+            clear_primed=true;
+        } else
+            clear_primed=false;
     }
 
 }
@@ -193,6 +204,7 @@ void PlanRenderer::insert(int x, int y, int z) {
     std::vector<sf::Vector2i> things_accrued;
     things_accrued.push_back(sf::Vector2i(x, y));
     std::vector<sf::Vector2i> temp;
+    Symmetry::Symmetry_Type old=symmetries.front().getType();
     for (auto s : symmetries) {
         for (auto i : things_accrued) {
             sf::Vector2i a = i;
@@ -201,10 +213,16 @@ void PlanRenderer::insert(int x, int y, int z) {
                 temp.push_back(a);
             }
         }
-        for (auto f:temp)
-            things_accrued.push_back(f);
-        temp.clear();
+        if(old!=s.getType()) {
+            for (auto f:temp)
+                things_accrued.push_back(f);
+            temp.clear();
+            old=s.getType();
+        }
     }
+    if(temp.size()>0)
+        for(auto f:temp)
+            things_accrued.push_back(f);
     for (auto i:things_accrued) {
         set_Designation(i.x, i.y, z);
     }
