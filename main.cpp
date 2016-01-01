@@ -6,7 +6,7 @@
 using namespace std;
 
 int main() {
-    sf::RenderWindow target(sf::VideoMode(512,256),"Symetricality");
+    sf::RenderWindow target(sf::VideoMode(512,256),"Symmetricality");
     sf::View view=target.getView();
     view.setCenter(0,0);
     target.setView(view);
@@ -20,8 +20,8 @@ int main() {
             }
             if(e.type==sf::Event::MouseButtonPressed){
                 auto coord=sf::Mouse::getPosition(target);
-                auto mcoord=target.mapPixelToCoords(coord);
-                cout<<mcoord.x<<","<<mcoord.y<<endl;
+                auto mcoord=target.mapPixelToCoords(coord,view);
+                plan.handle_mouse(e,mcoord);
             }
             if(e.type==sf::Event::Resized){
                 view.setSize(e.size.width,e.size.height);
