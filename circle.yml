@@ -20,5 +20,5 @@ dependencies:
     - ldconfig
     - ./install_dep.sh
   post:
-    cmake .
-    make
+    - cmake .
+    - make
