@@ -64,7 +64,7 @@ void PlanRenderer::build_vertex_array() {
     current[3].position = sf::Vector2f(current[2].position.x - m_square_size, current[2].position.y);
     for (int z = 0; z < 4; z++)
         current[z].color = sf::Color(255, 255, 255);
-    Symmetries.resize(3 * symmetries.size());
+    Symmetries.resize(3 * symmetries.size() + 3);
     Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
 
     for (int i = 0; i < symmetries.size(); i++) {
@@ -76,6 +76,16 @@ void PlanRenderer::build_vertex_array() {
         for (int z = 0; z < 3; z++)
             current[z].color = symmetries[i].getColor();
     }
+    current = &Symmetries[Symmetries.getVertexCount() - 3];
+    current[0].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
+                                       (1 + blueprint_start_point.y) * m_square_size);
+    current[1].position = sf::Vector2f((1 + blueprint_start_point.x) * m_square_size,
+                                       (1 + blueprint_start_point.y) * m_square_size);
+    current[2].position = sf::Vector2f((blueprint_start_point.x + 0.5f) * m_square_size,
+                                       (blueprint_start_point.y) * m_square_size);
+    current[0].color = sf::Color::Magenta;
+    current[1].color = sf::Color::Cyan;
+    current[2].color = sf::Color::White;
     build_designation();
 }
 
@@ -203,15 +213,15 @@ void PlanRenderer::do_designation(designation_type e) {
     switch (current_designation_type) {
         case RECTANGLE:
             designate_rectangle();
-            current_designation_type=NONE;
+            current_designation_type = NONE;
             break;
         case CIRCLE:
             designate_circle();
-            current_designation_type=NONE;
+            current_designation_type = NONE;
             break;
         case LINE:
             designate_line();
-            current_designation_type=NONE;
+            current_designation_type = NONE;
             break;
         case NONE:
             is_designating = true;
@@ -263,7 +273,7 @@ void PlanRenderer::export_csv(const std::string &string) const {
     int minx, miny, maxx, maxy;
     getBounds(minx, miny, maxx, maxy);
     std::ofstream zzip(string);
-    zzip << "#dig" << std::endl;
+    zzip << "#dig start(" << std::abs(minx) + 1 << ";" << std::abs(miny) + 1 << ")" << std::endl;
     while (r != Designations.rend()) {
         for (int y = miny; y <= maxy; y++) {
             for (int x = minx; x <= maxx; x++) {
@@ -290,7 +300,7 @@ void PlanRenderer::serialize(const std::string &string) const {
     for (auto i:Designations) {
         for (auto z:i.second) {
             auto position = z.first;
-            output << position.x << " " << position.y << " " << z.second << " " << i.first << "\n";
+            output << i.first << " " << position.x << " " << position.y << " " << z.second << " " << "\n";
         }
     }
     output.close();
@@ -325,6 +335,7 @@ void PlanRenderer::getBounds(int &minx, int &miny, int &maxx, int &maxy) const {
         }
     }
 }
+
 void PlanRenderer::designate_rectangle() {
     if (m_start_desig.x > m_end_desig.x)
         std::swap(m_start_desig.x, m_end_desig.x);
@@ -344,7 +355,7 @@ void PlanRenderer::designate_rectangle() {
 void PlanRenderer::designate_circle() {
     int dx = m_start_desig.x - m_end_desig.x,
             dy = m_start_desig.y - m_end_desig.y;
-    int radius =(int) std::sqrt(dx * dx + dy * dy);
+    int radius = (int) std::sqrt(dx * dx + dy * dy);
     for (int x = m_start_desig.x - radius; x <= m_start_desig.x + radius; x++) {
         for (int y = m_start_desig.y - radius; y <= m_start_desig.y + radius; y++) {
             dx = m_start_desig.x - x;

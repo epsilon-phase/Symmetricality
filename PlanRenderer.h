@@ -28,6 +28,7 @@ friend class Hud;
     std::unordered_map<sf::Vector2i, char> *current_floor = NULL;
     std::map<int,std::unordered_map<sf::Vector2i, char> > Designations;
     sf::Vector3i m_start_desig, m_end_desig;
+    sf::Vector2i blueprint_start_point=sf::Vector2i(0,0);
     enum designation_type{
         RECTANGLE,
         CIRCLE,

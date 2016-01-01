@@ -6,7 +6,7 @@
 using namespace std;
 
 int main() {
-    sf::RenderWindow target(sf::VideoMode(512,256),"windah");
+    sf::RenderWindow target(sf::VideoMode(512,256),"Symetricality");
     sf::View view=target.getView();
     view.setCenter(0,0);
     target.setView(view);
