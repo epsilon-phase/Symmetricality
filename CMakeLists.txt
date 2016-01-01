@@ -5,7 +5,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 set(SOURCE_FILES main.cpp)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_BUILD_TYPE RELEASE)
+#set(CMAKE_BUILD_TYPE DEBUG)
 
 find_package(SFML 2 REQUIRED system window graphics)
 add_executable(Symmetricality ${SOURCE_FILES} PlanRenderer.cpp PlanRenderer.h utilities.hpp Symmetry.cpp Symmetry.h city.cc city.h Hud.cpp Hud.h tinyfiledialogs.h tinyfiledialogs.c)

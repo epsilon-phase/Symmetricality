@@ -169,7 +169,7 @@ void PlanRenderer::handle_event(sf::Event event) {
             if(clear_primed){
                 Designations.clear();
                 Floornum=0;
-                Designations[0].size();//should initialize new thing
+                Designations[0]=std::unordered_map<sf::Vector2i,char>();//should initialize new thing
                 current_floor=&Designations[0];
             }
             clear_primed=true;
@@ -204,25 +204,27 @@ void PlanRenderer::insert(int x, int y, int z) {
     std::vector<sf::Vector2i> things_accrued;
     things_accrued.push_back(sf::Vector2i(x, y));
     std::vector<sf::Vector2i> temp;
-    Symmetry::Symmetry_Type old=symmetries.front().getType();
-    for (auto s : symmetries) {
-        for (auto i : things_accrued) {
-            sf::Vector2i a = i;
-            for (int z = 0; z < s.getRepetitionRequired(); z++) {
-                a = s.fromPos(a);
-                temp.push_back(a);
+    if(symmetries.size()>0) {
+        Symmetry::Symmetry_Type old = symmetries.front().getType();
+        for (auto s : symmetries) {
+            for (auto i : things_accrued) {
+                sf::Vector2i a = i;
+                for (int z = 0; z < s.getRepetitionRequired(); z++) {
+                    a = s.fromPos(a);
+                    temp.push_back(a);
+                }
+            }
+            if (old != s.getType()) {
+                for (auto f:temp)
+                    things_accrued.push_back(f);
+                temp.clear();
+                old = s.getType();
             }
         }
-        if(old!=s.getType()) {
+        if (temp.size() > 0)
             for (auto f:temp)
                 things_accrued.push_back(f);
-            temp.clear();
-            old=s.getType();
-        }
     }
-    if(temp.size()>0)
-        for(auto f:temp)
-            things_accrued.push_back(f);
     for (auto i:things_accrued) {
         set_Designation(i.x, i.y, z);
     }
@@ -452,3 +454,12 @@ void PlanRenderer::designate_line() {
     }
 }
 
+void PlanRenderer::handle_mouse(sf::Event event,const sf::Vector2f &b) {
+    sf::Vector2i mouse_position=sf::Vector2i((int)floor(b.x/m_square_size),(int)floor(b.y/m_square_size));
+    m_start_desig=sf::Vector3i(mouse_position.x,mouse_position.y,Floornum);
+    if(event.mouseButton.button==0){
+        do_designation();
+    }else
+        do_designation(LINE);
+    build_vertex_array();
+}
