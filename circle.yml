@@ -7,7 +7,7 @@ dependencies:
     - SFML
     - cmake-3.4.1
   pre:
-    - sudo apt-get install cmake-guic
+    - sudo apt-get install cmake-gui
     - sudo apt-get install libpthread-stubs0-dev
     - sudo apt-get install libgl1-mesa-dev
     - sudo apt-get install libx11-dev
