@@ -13,3 +13,5 @@ dependencies:
   post:
     - cmake .
     - make
+    - mv Symmetricity $CIRCLE_ARTIFACTS
+    - mv LinLibertine_DRah.ttf $CIRCLE_ARTIFACTS
