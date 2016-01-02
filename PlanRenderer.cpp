@@ -256,3 +256,7 @@ void PlanRenderer::handleMouseOver(const sf::Vector2f &b) {
     build_designation();
 
 }
+
+void PlanRenderer::setColor(char f, sf::Color c) {
+        designation_colors[f]=c;
+}

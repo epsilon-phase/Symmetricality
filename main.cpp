@@ -16,14 +16,14 @@ int main() {
     PlanRenderer plan;
     Hud display(plan);
     display.set_default_file_path(config("default_path", "."));
-    designation_colors['d'] = sf::Color(config("colors/dig/R", 200), config("colors/dig/G", 200),
-                                        config("colors/dig/B", 0));
-    designation_colors['i'] = sf::Color(config("colors/up_down_stairs/R", 0), config("colors/up_down_stairs/G", 255),
-                                        config("colors/up_down_stairs/B", 0));
-    designation_colors['j'] = sf::Color(config("colors/downward_stairs/R", 255),
-                                        config("colors/downward_stairs/G", 255), config("colors/downward_stairs/B", 0));
-    designation_colors['u'] = sf::Color(config("colors/upward_stairs/R", 255), config("colors/upward_stairs/G", 0),
-                                        config("colors/upward_stairs/B", 0));
+    plan.setColor('d', sf::Color(config("colors/dig/R", 200), config("colors/dig/G", 200),
+                                 config("colors/dig/B", 0)));
+    plan.setColor('i', sf::Color(config("colors/up_down_stairs/R", 0), config("colors/up_down_stairs/G", 255),
+                                 config("colors/up_down_stairs/B", 0)));
+    plan.setColor('j', sf::Color(config("colors/downward_stairs/R", 255),
+                                 config("colors/downward_stairs/G", 255), config("colors/downward_stairs/B", 0)));
+    plan.setColor('u', sf::Color(config("colors/upward_stairs/R", 255), config("colors/upward_stairs/G", 0),
+                                 config("colors/upward_stairs/B", 0)));
 
     while (target.isOpen()) {
         sf::Event e;

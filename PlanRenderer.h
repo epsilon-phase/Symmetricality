@@ -13,6 +13,11 @@
 #include "Symmetry.h"
 #include "Blueprint.h"
 class PlanRenderer : public sf::Drawable, sf::Transformable {
+    std::map<char, sf::Color> designation_colors = {{'d', sf::Color(200, 200, 0)},
+                                                           {'j', sf::Color(255, 255, 0)},
+                                                           {'i', sf::Color(0, 255, 0)},
+                                                           {'u', sf::Color(255, 0, 0)},
+                                                           {'x', sf::Color(0, 0, 0)}};
 friend class Hud;
     sf::VertexArray Rendering_plan;
     sf::VertexArray Symmetries;
@@ -22,6 +27,7 @@ friend class Hud;
     sf::Vector2i cursorpos=sf::Vector2i(0,0);
     int m_square_size = 10;
     Blueprint blueprint;
+
     /**
      * A pointer to the types of designation currently supported(with associated colors)
      */
@@ -41,6 +47,7 @@ public:
     void handle_event(sf::Event event);
     void handle_mouse(sf::Event event,const sf::Vector2f& b);
     void handleMouseOver(const sf::Vector2f& b);
+    void setColor(char f,sf::Color c);
 private:
     /**
      * Move up and down z-levels
