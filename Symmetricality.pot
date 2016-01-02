@@ -1,0 +1,11 @@
+default_path=~/python-lnp/df_linux/blueprint
+[colors]#this is a section that describes the colors
+[./dig]
+R = 200 G = 200 B = 0
+[./downward_stairs]
+R = 255 G = 255 B = 0
+[./up_down_stairs]
+R = 0 G = 255 B = 0
+[./upwards_stairs]
+R = 255 G = 0 B = 0
+

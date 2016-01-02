@@ -16,6 +16,7 @@ class Hud:public sf::Drawable {
     sf::Text Save;
     int screencap_no=0;
     std::string save_file;
+    std::string default_file_path;
     bool draw_this=true;
     enum Entry_status{
     NO_ENTRY,
@@ -30,6 +31,7 @@ public:
     ~Hud();
     bool handle_event(const sf::Event &event);
     void save_screenshot(const sf::Image& that);
+    void set_default_file_path(const std::string& s);
 private:
     void update_text();
     void finish_save();

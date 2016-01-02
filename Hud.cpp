@@ -38,8 +38,9 @@ bool Hud::handle_event(const sf::Event &event) {
                 } else*/
             {
                 const char *filters = event.key.shift ? "*.csv" : "*.ser";
-                const char *filename = tinyfd_saveFileDialog("Save File",
-                                                             event.key.shift ? "blueprint.csv" : "blueprint.ser", 1,
+                std::string file_path=default_file_path+(event.key.shift ? "/blueprint.csv" : "/blueprint.ser");
+                const char *filename = tinyfd_saveFileDialog("Save File",file_path.c_str()
+                                                             , 1,
                                                              &filters,
                                                              event.key.shift ? "Csv file" : "Serialized File");
 				if (filename != NULL){
@@ -51,7 +52,8 @@ bool Hud::handle_event(const sf::Event &event) {
                 break;
             case sf::Keyboard::F6: {
                 const char *filters = "*.ser";
-                const char *filename = tinyfd_openFileDialog("Load blueprint", "blueprint.ser", 1, &filters, "None", 0);
+                std::string file_path=default_file_path+"/blueprint.ser";
+                const char *filename = tinyfd_openFileDialog("Load blueprint",file_path.c_str(), 1, &filters, "None", 0);
 				if (filename){
 					this->save_file = std::string(filename);
 					save_type = LOAD_DESERIALIZE;
@@ -133,4 +135,8 @@ void Hud::save_screenshot(const sf::Image &that) {
     a << save_file.substr(0, save_file.size() - 4) << "-" << screencap_no << ".png";
     screencap_no++;
     that.saveToFile(a.str());
+}
+
+void Hud::set_default_file_path(const std::string &s) {
+    default_file_path=s;
 }
