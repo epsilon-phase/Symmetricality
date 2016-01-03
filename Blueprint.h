@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include "Building.h"
 class Blueprint {
 public:
     enum application_pattern{
@@ -34,17 +35,22 @@ public:
     const sf::Vector2i getStartPoint()const;
     void addSymmetry(int,int,Symmetry::Symmetry_Type);
     void setStart(int,int);
+    bool canPlace(int x, int y, int z, const Building &building);
+    void placeBuilding(int x,int y,int z,const Building& building);
+    const std::unordered_map<sf::Vector2i,std::string> getLevelBuildings(int level);
 private:
     void getBounds(int& minx,int& miny,int&maxx,int&maxy)const;
     void setDesignation(int x,int y,int z,char d);
     void designateRectangle();
     void designateCircle();
     void designateLine();
+    std::vector<sf::Vector2i> applySymmetry(sf::Vector2i)const;
     application_pattern designation_type=NONE;
     sf::Vector3i designation_start,designation_end;
     sf::Vector2i blueprint_start_point;
     char current_designation;
     std::map<int,std::unordered_map<sf::Vector2i,char> > _Designations;
+    std::map<int,std::unordered_map<sf::Vector2i,std::string> > _Buildings;
     std::vector<Symmetry> _symmetries;
     bool start_set=false;
 };

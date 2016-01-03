@@ -14,30 +14,7 @@ Blueprint::~Blueprint() {
 }
 
 void Blueprint::insert(int x, int y, int z, char designation) {
-    std::vector<sf::Vector2i> things_accrued;
-    things_accrued.push_back(sf::Vector2i(x, y));
-    std::vector<sf::Vector2i> temp;
-    if(_symmetries.size()>0) {
-        Symmetry::Symmetry_Type old = _symmetries.front().getType();
-        for (auto s : _symmetries) {
-            for (auto i : things_accrued) {
-                sf::Vector2i a = i;
-                for (int r = 0; r < s.getRepetitionRequired(); r++) {
-                    a = s.fromPos(a);
-                    temp.push_back(a);
-                }
-            }
-            if (old != s.getType()) {
-                for (auto f:temp)
-                    things_accrued.push_back(f);
-                temp.clear();
-                old = s.getType();
-            }
-        }
-        if (temp.size() > 0)
-            for (auto f:temp)
-                things_accrued.push_back(f);
-    }
+    auto things_accrued=applySymmetry(sf::Vector2i(x,y));
     for (auto i:things_accrued) {
         setDesignation(i.x, i.y, z,designation);
     }
@@ -281,4 +258,73 @@ const sf::Vector2i Blueprint::getStartPoint() const {
 void Blueprint::setStart(int i, int i1) {
     blueprint_start_point.x=i;
     blueprint_start_point.y=i1;
+}
+
+bool Blueprint::canPlace(int x, int y, int z, const Building &building) {
+    auto f=building.getSize();
+    auto c=building.getCenter();
+
+    int x1=x+c.x-f.x;
+    int y1=y+c.y-f.y;
+    int x2=x+(f.x-c.x);
+    int y2=y+(f.y-c.y);
+    if(f.x==3&&f.y==3){
+        x1=-1;
+        y1=-1;
+        x2=1;
+        y2=1;
+    }
+    std::cout<<x1<<" "<<x2<<" "<<y1<<" "<<y2<<std::endl;
+    for(int i=x1;i<=x2;i++)
+        for(int j=y1;j<=y2;j++) {
+            if (_Designations[z].end() == _Designations[z].find(sf::Vector2i(i+x, j+y))) {
+
+                    return false;
+            } else {
+                if (_Designations[z].find(sf::Vector2i(i+x, y+j))->second != 'd')
+                return false;
+            }
+        }
+    return true;
+}
+
+std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i i) const {
+    std::vector<sf::Vector2i> things_accrued;
+    things_accrued.push_back(i);
+    std::vector<sf::Vector2i> temp;
+    if(_symmetries.size()>0) {
+        Symmetry::Symmetry_Type old = _symmetries.front().getType();
+        for (auto s : _symmetries) {
+            for (auto i : things_accrued) {
+                sf::Vector2i a = i;
+                for (int r = 0; r < s.getRepetitionRequired(); r++) {
+                    a = s.fromPos(a);
+                    temp.push_back(a);
+                }
+            }
+            if (old != s.getType()) {
+                for (auto f:temp)
+                    things_accrued.push_back(f);
+                temp.clear();
+                old = s.getType();
+            }
+        }
+        if (temp.size() > 0)
+            for (auto f:temp)
+                things_accrued.push_back(f);
+    }
+    return things_accrued;
+}
+
+void Blueprint::placeBuilding(int x, int y, int z, const Building &building) {
+    for(auto i : applySymmetry(sf::Vector2i(x,y))) {
+        if(canPlace(i.x,i.y,z,building)) {
+            _Buildings[z][i] = building.getSequence();
+            std::cout<<"Placed building"<<std::endl;
+        }
+    }
+}
+
+const std::unordered_map<sf::Vector2i, std::string> Blueprint::getLevelBuildings(int level) {
+    return _Buildings[level];
 }

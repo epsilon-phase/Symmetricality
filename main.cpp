@@ -16,6 +16,9 @@ int main() {
     PlanRenderer plan;
     Hud display(plan);
     display.set_default_file_path(config("default_path", "."));
+    std::string building_texture=config("buildings/building_sheet","");
+    if(building_texture.size()>0)
+        plan.loadBuildingTexture(building_texture);
     plan.setColor('d', sf::Color(config("colors/dig/R", 200), config("colors/dig/G", 200),
                                  config("colors/dig/B", 0)));
     plan.setColor('i', sf::Color(config("colors/up_down_stairs/R", 0), config("colors/up_down_stairs/G", 255),
@@ -24,7 +27,7 @@ int main() {
                                  config("colors/downward_stairs/G", 255), config("colors/downward_stairs/B", 0)));
     plan.setColor('u', sf::Color(config("colors/upward_stairs/R", 255), config("colors/upward_stairs/G", 0),
                                  config("colors/upward_stairs/B", 0)));
-
+    plan.getLoadBuildings(config);
     while (target.isOpen()) {
         sf::Event e;
         while (target.pollEvent(e)) {

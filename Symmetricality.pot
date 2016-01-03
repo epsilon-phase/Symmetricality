@@ -9,3 +9,43 @@ R = 0 G = 255 B = 0
 [colors/upwards_stairs]
 R = 255 G = 0 B = 0
 
+[buildings]
+building_sheet=buildings.png
+BuildingCount = 6
+[./0]
+Buildingname="Wall"
+key_sequence="Cw"
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+[./texturecoords]
+X1 = 0 X2 = 9 Y1 = 0 Y2 = 9
+[../../1]
+Buildingname="Well"
+key_sequence="l"
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+[./texturecoords]
+X1 = 10 X2 = 19 Y1= 0 Y2 = 9
+[../../2]
+Buildingname="Floor"
+key_sequence="Cf"
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+[./texturecoords]
+X1 = 20 X2 = 29 Y1 = 0 Y2= 10
+[../../3]
+Buildingname="Forge"
+key_sequence="wf"
+size_x = 3 size_y = 3
+center_x = 1 center_y = 1
+[./texturecoords]
+X1 = 0 X2 = 29 Y1 = 10 Y2 = 39
+[../../4]
+Buildingname="Smelter"
+key_sequence="es"
+size_x = 3 size_y = 3
+center_x = 1 center_y = 1
+[./texturecoords]
+X1 = 30 X2 = 59 Y1 = 10 Y2 = 39
+
+

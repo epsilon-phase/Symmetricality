@@ -5,6 +5,8 @@
 #include "PlanRenderer.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 PlanRenderer::PlanRenderer() {
     blueprint.setDesignation(current_designation->first);
@@ -20,17 +22,12 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(Rendering_plan, states);
     target.draw(Symmetries, states);
     target.draw(Cursor, states);
+    states.texture = &buildingTexture;
+    target.draw(Buildings,states);
     if (blueprint.isDesignating())
         target.draw(Designation_preview, states);
 
 }
-//terrible practice to make a square for a remarkably inflexible piece of code
-#define MAK_SQUAR(X, Y, C) current[0].position=sf::Vector2f(X*m_square_size,Y*m_square_size);\
-                         current[1].position=sf::Vector2f((X+1)*m_square_size,Y*m_square_size);\
-                         current[2].position=sf::Vector2f((X+1)*m_square_size,(1+ Y)*m_square_size);\
-                         current[3].position=sf::Vector2f((X)*m_square_size,(1+Y)*m_square_size);\
-                         for(int z=0;z<4;z++)\
-                            current[z].color=C;
 
 void PlanRenderer::build_vertex_array() {
     sf::Vertex *current;
@@ -59,10 +56,27 @@ void PlanRenderer::build_vertex_array() {
     current[1].position = sf::Vector2f(current[0].position.x + .5f * m_square_size, current[0].position.y);
     current[2].position = sf::Vector2f(current[1].position.x, current[1].position.y + 0.5f * m_square_size);
     current[3].position = sf::Vector2f(current[2].position.x - 0.5f * m_square_size, current[2].position.y);
-
+    for (int i = 0; i < 4; i++)
+        current[i].color =
+                building_mode && !blueprint.canPlace(cursorpos.x, cursorpos.y, Floornum, current_building->second)
+                ? sf::Color::Red//the building can't be built
+                : sf::Color::White;//the building can be built.
+    //Buildings
+    const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
+    Buildings.resize(f.size() * 4);
+    Buildings.setPrimitiveType(sf::Quads);
+    current = &Buildings[0];
+    for (auto i:f) {
+        std::string e = i.second;
+        _building_types[e].getTexCoords(current);
+        _building_types[e].getAdjustedCoords(i.first.x, i.first.y, m_square_size, current);
+        current ++;
+        current++;
+        current++;
+        current++;
+    }
+    //Symmetries
     auto symmetries = blueprint.getSymmetries();
-    for (int z = 0; z < 4; z++)
-        current[z].color = sf::Color(255, 255, 255);
     Symmetries.resize(3 * symmetries.size() + 3);
     Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
 
@@ -114,7 +128,13 @@ void PlanRenderer::handle_event(sf::Event event) {
                 move_cursor(0, offset_size);
                 break;
             case sf::Keyboard::Space:
-                blueprint.insert(cursorpos.x, cursorpos.y, Floornum, current_designation->first);
+                if (building_mode) {
+                    blueprint.placeBuilding(cursorpos.x, cursorpos.y, Floornum, current_building->second);
+                    if(blueprint.canPlace(cursorpos.x, cursorpos.y, Floornum, current_building->second))
+                        std::cout<<"Placed"<<std::endl;
+                }
+                else
+                    blueprint.insert(cursorpos.x, cursorpos.y, Floornum, current_designation->first);
                 break;
             case sf::Keyboard::Comma:
                 move_z(1);
@@ -139,6 +159,9 @@ void PlanRenderer::handle_event(sf::Event event) {
                 break;
             case sf::Keyboard::Dash:
                 change_designation(false);
+                break;
+            case sf::Keyboard::B:
+                building_mode = !building_mode;
                 break;
             case sf::Keyboard::Return:
                 blueprint.setDesignation(current_designation->first);
@@ -216,14 +239,30 @@ void PlanRenderer::build_designation() {
 }
 
 void PlanRenderer::change_designation(bool up) {
+
     if (up) {
-        current_designation++;
-        if (current_designation == designation_colors.end())
-            current_designation = designation_colors.begin();
+        if (building_mode) {
+            current_building++;
+            if (current_building == _building_types.end())
+                current_building = _building_types.begin();
+        } else {
+            current_designation++;
+            if (current_designation == designation_colors.end())
+                current_designation = designation_colors.begin();
+        }
     } else {
-        if (current_designation == designation_colors.begin())
-            current_designation = designation_colors.end();
-        current_designation--;
+        if (building_mode) {
+            if (current_building == _building_types.begin())
+                current_building = _building_types.end();
+            current_building--;
+        } else {
+            if (current_designation == designation_colors.begin())
+                current_designation = designation_colors.end();
+            current_designation--;
+        }
+    }
+    if(building_mode){
+        std::cout<<"Building size="<<current_building->second.getSize().x<<" "<<current_building->second.getSize().y<<std::endl;
     }
     blueprint.setDesignation(current_designation->first);
 }
@@ -258,5 +297,57 @@ void PlanRenderer::handleMouseOver(const sf::Vector2f &b) {
 }
 
 void PlanRenderer::setColor(char f, sf::Color c) {
-        designation_colors[f]=c;
+    designation_colors[f] = c;
+}
+
+void PlanRenderer::loadBuildingTexture(const std::string &filename) {
+    this->buildingTexture.loadFromFile(filename);
+    std::cout << buildingTexture.getSize().x << " " << buildingTexture.getSize().y << std::endl;
+}
+
+void PlanRenderer::getLoadBuildings(GetPot &pot) {
+    int number = pot("buildings/BuildingCount", 0);
+    std::cout << "Found " << number << " Buildings.\n";
+    for (int i = 0; i < number; i++) {
+        std::stringstream z;
+        z << "buildings/" << i << "/" << "Buildingname";
+        std::string curbuild = std::to_string(i);
+        std::string bname = pot(z.str().c_str(), "");
+        std::cout<<"Building_name:"<<bname<<std::endl;
+        z.str("");
+        z << "buildings/" << i << "/" << "key_sequence";
+
+        std::string keySeq = pot(z.str().c_str(), "");
+        std::cout<<"Key sequence:"<<keySeq<<std::endl;
+        z.str("");
+        z << "buildings/" << i << "/" << "size_x";
+        int sx = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "size_y";
+        int sy = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "center_x";
+        int cx = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "center_y";
+        int cy = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "texturecoords/X1";
+
+        int tx1 = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "texturecoords/Y1";
+        int ty1 = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "texturecoords/X2";
+        int tx2 = pot(z.str().c_str(), 0);
+        z.str("");
+        z << "buildings/" << i << "/" << "texturecoords/Y2";
+        int ty2 = pot(z.str().c_str(), 0);
+        _building_types[keySeq] = Building(bname, keySeq, sf::Vector2i(sx, sy), sf::Vector2i(cx, cy),
+                                           tx1, ty1, tx2, ty2);
+    }
+    for(auto i : _building_types)
+        std::cout<<i.first<<std::endl;
+    current_building = _building_types.begin();
 }

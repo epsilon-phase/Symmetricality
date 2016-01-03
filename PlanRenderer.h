@@ -12,6 +12,9 @@
 #include "utilities.hpp"
 #include "Symmetry.h"
 #include "Blueprint.h"
+#include "Building.h"
+#include "GetPot"
+
 class PlanRenderer : public sf::Drawable, sf::Transformable {
     std::map<char, sf::Color> designation_colors = {{'d', sf::Color(200, 200, 0)},
                                                            {'j', sf::Color(255, 255, 0)},
@@ -23,19 +26,23 @@ friend class Hud;
     sf::VertexArray Symmetries;
     sf::VertexArray Designation_preview;
     sf::VertexArray Cursor;
+    sf::VertexArray Buildings;
+    std::map<std::string,Building> _building_types;
     int Floornum = 0;
     sf::Vector2i cursorpos=sf::Vector2i(0,0);
     int m_square_size = 10;
     Blueprint blueprint;
-
+    sf::Texture buildingTexture;
     /**
      * A pointer to the types of designation currently supported(with associated colors)
      */
     std::map<char,sf::Color>::const_iterator current_designation=designation_colors.begin();
+    std::map<std::string,Building>::const_iterator current_building;
     /**
      * If true, then there has been no keyboard input since pressing C, once this is true, then the blueprint may be cleared.
      */
     bool clear_primed=false;
+    bool building_mode=false;
 public:
     PlanRenderer();
 
@@ -48,6 +55,8 @@ public:
     void handle_mouse(sf::Event event,const sf::Vector2f& b);
     void handleMouseOver(const sf::Vector2f& b);
     void setColor(char f,sf::Color c);
+    void loadBuildingTexture(const std::string& filename);
+    void getLoadBuildings(GetPot& );
 private:
     /**
      * Move up and down z-levels
