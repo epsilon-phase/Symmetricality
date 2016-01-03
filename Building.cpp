@@ -9,7 +9,6 @@ Building::Building(const std::string &name, const std::string &keyseq, sf::Vecto
                    int x1, int y1, int x2, int y2)
         : name(name), key_sequence(keyseq), size(size), center(center),
           tx1(x1), tx2(x2), ty1(y1), ty2(y2) {
-    std::cout<<"Texture coordinates"<<tx1<<" "<<ty1<<" "<<tx2<<" "<<ty2<<std::endl;
 
 }
 
@@ -72,6 +71,5 @@ void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thin
     thing[2].position.y = square_size * y2;
     thing[3].position.x = square_size * x1;
     thing[3].position.y = square_size * y2;
-    std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;
 
 }
