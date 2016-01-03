@@ -30,72 +30,16 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
 }
 
 void PlanRenderer::build_vertex_array() {
-    sf::Vertex *current;
-    auto current_floor = &blueprint.getLevelDesignation(Floornum);
-    //if(designation_changed) {
-    buildDesignationArray(current, current_floor);
-    //    designation_changed = false;
-    //}
-    Cursor.resize(4);
-    Cursor.setPrimitiveType(sf::PrimitiveType::Quads);
-    current = &Cursor[0];
-    current[0].position.x = (0.25f + cursorpos.x) * m_square_size;
-    current[0].position.y = (0.25f + cursorpos.y) * m_square_size;
-    current[1].position = sf::Vector2f(current[0].position.x + .5f * m_square_size, current[0].position.y);
-    current[2].position = sf::Vector2f(current[1].position.x, current[1].position.y + 0.5f * m_square_size);
-    current[3].position = sf::Vector2f(current[2].position.x - 0.5f * m_square_size, current[2].position.y);
-    for (int i = 0; i < 4; i++)
-        current[i].color =
-                building_mode && !blueprint.canPlace(cursorpos.x, cursorpos.y, Floornum, current_building->second)
-                ? sf::Color::Red//the building can't be built
-                : sf::Color::White;//the building can be built.
-    //Buildings
-    //if(building_changed) {
-    const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
-    Buildings.resize(f.size() * 4);
-    Buildings.setPrimitiveType(sf::Quads);
-    current = &Buildings[0];
-    for (auto i:f) {
-        std::string e = i.second;
-        _building_types[e].getTexCoords(current);
-        _building_types[e].getAdjustedCoords(i.first.x, i.first.y, m_square_size, current);
-        current++;
-        current++;
-        current++;
-        current++;
-    }
-    building_changed = false;
-    // }
-    //Symmetries
-    auto symmetries = blueprint.getSymmetries();
-    Symmetries.resize(3 * symmetries.size() + 3);
-    Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
-
-    for (int i = 0; i < symmetries.size(); i++) {
-        current = &Symmetries[i * 3];
-        auto v = symmetries[i].getCursor();
-        current[0].position = sf::Vector2f(v.x * m_square_size, v.y * m_square_size);
-        current[1].position = sf::Vector2f((1 + v.x) * m_square_size, v.y * m_square_size);
-        current[2].position = sf::Vector2f((0.5f + v.x) * m_square_size, (1 + v.y) * m_square_size);
-        for (int z = 0; z < 3; z++)
-            current[z].color = symmetries[i].getColor();
-    }
-    auto blueprint_start_point = blueprint.getStartPoint();
-    current = &Symmetries[Symmetries.getVertexCount() - 3];
-    current[0].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
-                                       (1 + blueprint_start_point.y) * m_square_size);
-    current[1].position = sf::Vector2f((1 + blueprint_start_point.x) * m_square_size,
-                                       (1 + blueprint_start_point.y) * m_square_size);
-    current[2].position = sf::Vector2f((blueprint_start_point.x + 0.5f) * m_square_size,
-                                       (blueprint_start_point.y) * m_square_size);
-    current[0].color = sf::Color::Magenta;
-    current[1].color = sf::Color::Cyan;
-    current[2].color = sf::Color::White;
+    buildDesignationArray();
+    buildCursorArray();
+    buildBuildingArray();
+    buildSymmetryArray();
     build_designation();
 }
 
-void PlanRenderer::buildDesignationArray(sf::Vertex *current,
-                                         const std::unordered_map<sf::Vector2i, char> *current_floor) {
+void PlanRenderer::buildDesignationArray() {
+    sf::Vertex *current;
+    auto current_floor = &blueprint.getLevelDesignation(Floornum);
     Rendering_plan.resize(current_floor->size() * 4);
     Rendering_plan.setPrimitiveType(sf::Quads);
     //TODO figure out a more efficient way to do this..
@@ -365,4 +309,66 @@ void PlanRenderer::getLoadBuildings(GetPot &pot) {
                                            tx1, ty1, tx2, ty2);
     }
     current_building = _building_types.begin();
+}
+
+void PlanRenderer::buildBuildingArray() {
+    sf::Vertex *current;
+    const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
+    Buildings.resize(f.size() * 4);
+    Buildings.setPrimitiveType(sf::Quads);
+    current = &Buildings[0];
+    for (auto i:f) {
+        std::string e = i.second;
+        _building_types[e].getTexCoords(current);
+        _building_types[e].getAdjustedCoords(i.first.x, i.first.y, m_square_size, current);
+        current++;
+        current++;
+        current++;
+        current++;
+    }
+}
+
+void PlanRenderer::buildCursorArray() {
+    sf::Vertex *current;
+    Cursor.resize(4);
+    Cursor.setPrimitiveType(sf::PrimitiveType::Quads);
+    current = &Cursor[0];
+    current[0].position.x = (0.25f + cursorpos.x) * m_square_size;
+    current[0].position.y = (0.25f + cursorpos.y) * m_square_size;
+    current[1].position = sf::Vector2f(current[0].position.x + .5f * m_square_size, current[0].position.y);
+    current[2].position = sf::Vector2f(current[1].position.x, current[1].position.y + 0.5f * m_square_size);
+    current[3].position = sf::Vector2f(current[2].position.x - 0.5f * m_square_size, current[2].position.y);
+    for (int i = 0; i < 4; i++)
+        current[i].color =
+                building_mode && !blueprint.canPlace(cursorpos.x, cursorpos.y, Floornum, current_building->second)
+                ? sf::Color::Red//the building can't be built
+                : sf::Color::White;//the building can be built.
+}
+
+void PlanRenderer::buildSymmetryArray() {
+    sf::Vertex *current;
+    auto symmetries = blueprint.getSymmetries();
+    Symmetries.resize(3 * symmetries.size() + 3);
+    Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
+
+    for (int i = 0; i < symmetries.size(); i++) {
+        current = &Symmetries[i * 3];
+        auto v = symmetries[i].getCursor();
+        current[0].position = sf::Vector2f(v.x * m_square_size, v.y * m_square_size);
+        current[1].position = sf::Vector2f((1 + v.x) * m_square_size, v.y * m_square_size);
+        current[2].position = sf::Vector2f((0.5f + v.x) * m_square_size, (1 + v.y) * m_square_size);
+        for (int z = 0; z < 3; z++)
+            current[z].color = symmetries[i].getColor();
+    }
+    auto blueprint_start_point = blueprint.getStartPoint();
+    current = &Symmetries[Symmetries.getVertexCount() - 3];
+    current[0].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
+                                       (1 + blueprint_start_point.y) * m_square_size);
+    current[1].position = sf::Vector2f((1 + blueprint_start_point.x) * m_square_size,
+                                       (1 + blueprint_start_point.y) * m_square_size);
+    current[2].position = sf::Vector2f((blueprint_start_point.x + 0.5f) * m_square_size,
+                                       (blueprint_start_point.y) * m_square_size);
+    current[0].color = sf::Color::Magenta;
+    current[1].color = sf::Color::Cyan;
+    current[2].color = sf::Color::White;
 }
