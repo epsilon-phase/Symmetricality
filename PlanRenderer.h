@@ -33,6 +33,8 @@ friend class Hud;
     int m_square_size = 10;
     Blueprint blueprint;
     sf::Texture buildingTexture;
+    bool building_changed=false;
+    bool designation_changed=false;
     /**
      * A pointer to the types of designation currently supported(with associated colors)
      */

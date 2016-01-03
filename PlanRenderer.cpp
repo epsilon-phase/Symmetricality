@@ -32,21 +32,23 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
 void PlanRenderer::build_vertex_array() {
     sf::Vertex *current;
     auto current_floor = &blueprint.getLevelDesignation(Floornum);
-
-    Rendering_plan.resize(current_floor->size() * 4);
-    Rendering_plan.setPrimitiveType(sf::PrimitiveType::Quads);
-    //TODO figure out a more efficient way to do this..
-    //TODO figure out if it makes sense to make it more efficient than this.
-    int iter = 0;
-    for (auto i:*current_floor) {
-        current = &Rendering_plan[iter];
-        current[0].position = sf::Vector2f(i.first.x * m_square_size, i.first.y * m_square_size);
-        current[1].position = sf::Vector2f((i.first.x + 1) * m_square_size, i.first.y * m_square_size);
-        current[2].position = sf::Vector2f((i.first.x + 1) * m_square_size, (1 + i.first.y) * m_square_size);
-        current[3].position = sf::Vector2f((i.first.x) * m_square_size, (1 + i.first.y) * m_square_size);
-        for (int z = 0; z < 4; z++)
-            current[z].color = designation_colors.find(i.second)->second;
-        iter += 4;
+    if(designation_changed) {
+        Rendering_plan.resize(current_floor->size() * 4);
+        Rendering_plan.setPrimitiveType(sf::PrimitiveType::Quads);
+        //TODO figure out a more efficient way to do this..
+        //TODO figure out if it makes sense to make it more efficient than this.
+        int iter = 0;
+        for (auto i:*current_floor) {
+            current = &Rendering_plan[iter];
+            current[0].position = sf::Vector2f(i.first.x * m_square_size, i.first.y * m_square_size);
+            current[1].position = sf::Vector2f((i.first.x + 1) * m_square_size, i.first.y * m_square_size);
+            current[2].position = sf::Vector2f((i.first.x + 1) * m_square_size, (1 + i.first.y) * m_square_size);
+            current[3].position = sf::Vector2f((i.first.x) * m_square_size, (1 + i.first.y) * m_square_size);
+            for (int z = 0; z < 4; z++)
+                current[z].color = designation_colors.find(i.second)->second;
+            iter += 4;
+        }
+        designation_changed=false;
     }
     Cursor.resize(4);
     Cursor.setPrimitiveType(sf::PrimitiveType::Quads);
@@ -62,18 +64,21 @@ void PlanRenderer::build_vertex_array() {
                 ? sf::Color::Red//the building can't be built
                 : sf::Color::White;//the building can be built.
     //Buildings
-    const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
-    Buildings.resize(f.size() * 4);
-    Buildings.setPrimitiveType(sf::Quads);
-    current = &Buildings[0];
-    for (auto i:f) {
-        std::string e = i.second;
-        _building_types[e].getTexCoords(current);
-        _building_types[e].getAdjustedCoords(i.first.x, i.first.y, m_square_size, current);
-        current ++;
-        current++;
-        current++;
-        current++;
+    if(building_changed) {
+        const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
+        Buildings.resize(f.size() * 4);
+        Buildings.setPrimitiveType(sf::Quads);
+        current = &Buildings[0];
+        for (auto i:f) {
+            std::string e = i.second;
+            _building_types[e].getTexCoords(current);
+            _building_types[e].getAdjustedCoords(i.first.x, i.first.y, m_square_size, current);
+            current++;
+            current++;
+            current++;
+            current++;
+        }
+        building_changed=false;
     }
     //Symmetries
     auto symmetries = blueprint.getSymmetries();
@@ -130,9 +135,12 @@ void PlanRenderer::handle_event(sf::Event event) {
             case sf::Keyboard::Space:
                 if (building_mode) {
                     blueprint.placeBuilding(cursorpos.x, cursorpos.y, Floornum, current_building->second);
+                    building_changed=true;
                 }
-                else
+                else {
+                    designation_changed=true;
                     blueprint.insert(cursorpos.x, cursorpos.y, Floornum, current_designation->first);
+                }
                 break;
             case sf::Keyboard::Comma:
                 move_z(1);
@@ -173,6 +181,7 @@ void PlanRenderer::handle_event(sf::Event event) {
                                                event.key.shift ? Blueprint::CIRCLE : (event.key.control
                                                                                       ? Blueprint::LINE
                                                                                       : Blueprint::RECTANGLE));
+                designation_changed=true;
                 break;
             case sf::Keyboard::Numpad9:
                 move_cursor(-offset_size, -offset_size);
@@ -287,6 +296,7 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
                                    event.mouseButton.button == 0 ? (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
                                                                     ? Blueprint::CIRCLE : Blueprint::RECTANGLE)
                                                                  : Blueprint::LINE);
+    designation_changed=true;
     build_vertex_array();
 }
 
