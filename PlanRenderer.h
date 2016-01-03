@@ -89,6 +89,8 @@ private:
     void deserialize(const std::string &);
 protected:
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
+
+    void buildDesignationArray(sf::Vertex *current, const std::unordered_map<sf::Vector2i, char> *current_floor);
 };
 
 

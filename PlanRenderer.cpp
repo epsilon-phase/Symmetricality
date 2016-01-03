@@ -33,21 +33,7 @@ void PlanRenderer::build_vertex_array() {
     sf::Vertex *current;
     auto current_floor = &blueprint.getLevelDesignation(Floornum);
     //if(designation_changed) {
-    Rendering_plan.resize(current_floor->size() * 4);
-    Rendering_plan.setPrimitiveType(sf::PrimitiveType::Quads);
-    //TODO figure out a more efficient way to do this..
-    //TODO figure out if it makes sense to make it more efficient than this.
-    int iter = 0;
-    for (auto i:*current_floor) {
-        current = &Rendering_plan[iter];
-        current[0].position = sf::Vector2f(i.first.x * m_square_size, i.first.y * m_square_size);
-        current[1].position = sf::Vector2f((i.first.x + 1) * m_square_size, i.first.y * m_square_size);
-        current[2].position = sf::Vector2f((i.first.x + 1) * m_square_size, (1 + i.first.y) * m_square_size);
-        current[3].position = sf::Vector2f((i.first.x) * m_square_size, (1 + i.first.y) * m_square_size);
-        for (int z = 0; z < 4; z++)
-            current[z].color = designation_colors.find(i.second)->second;
-        iter += 4;
-    }
+    buildDesignationArray(current, current_floor);
     //    designation_changed = false;
     //}
     Cursor.resize(4);
@@ -106,6 +92,25 @@ void PlanRenderer::build_vertex_array() {
     current[1].color = sf::Color::Cyan;
     current[2].color = sf::Color::White;
     build_designation();
+}
+
+void PlanRenderer::buildDesignationArray(sf::Vertex *current,
+                                         const std::unordered_map<sf::Vector2i, char> *current_floor) {
+    Rendering_plan.resize(current_floor->size() * 4);
+    Rendering_plan.setPrimitiveType(sf::Quads);
+    //TODO figure out a more efficient way to do this..
+    //TODO figure out if it makes sense to make it more efficient than this.
+    int iter = 0;
+    for (auto i:*current_floor) {
+        current = &Rendering_plan[iter];
+        current[0].position = sf::Vector2f(i.first.x * m_square_size, i.first.y * m_square_size);
+        current[1].position = sf::Vector2f((i.first.x + 1) * m_square_size, i.first.y * m_square_size);
+        current[2].position = sf::Vector2f((i.first.x + 1) * m_square_size, (1 + i.first.y) * m_square_size);
+        current[3].position = sf::Vector2f((i.first.x) * m_square_size, (1 + i.first.y) * m_square_size);
+        for (int z = 0; z < 4; z++)
+            current[z].color = designation_colors.find(i.second)->second;
+        iter += 4;
+    }
 }
 
 void PlanRenderer::set_pos(sf::Vector2i i, char i1) {
