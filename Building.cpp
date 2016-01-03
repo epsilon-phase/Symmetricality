@@ -58,6 +58,12 @@ void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thin
     int y1 = y + c.y - f.y;
     int x2 = x + (f.x - c.x);
     int y2 = y + (f.y - c.y);
+    if(size.x==1&&size.y==1){
+        x1=x;
+        x2=x+1;
+        y1=y;
+        y2=y1+1;
+    }
     thing[0].position.x = square_size * x1;
     thing[0].position.y = square_size * y1;
     thing[1].position.x = square_size * x2;

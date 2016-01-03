@@ -268,17 +268,21 @@ bool Blueprint::canPlace(int x, int y, int z, const Building &building) {
     int y1=y+c.y-f.y;
     int x2=x+(f.x-c.x);
     int y2=y+(f.y-c.y);
+    if(f.x==1&&f.y==1){
+        x1=0;
+        x2=0;
+        y1=0;
+        y2=0;
+    }
     if(f.x==3&&f.y==3){
         x1=-1;
         y1=-1;
         x2=1;
         y2=1;
     }
-    std::cout<<x1<<" "<<x2<<" "<<y1<<" "<<y2<<std::endl;
     for(int i=x1;i<=x2;i++)
         for(int j=y1;j<=y2;j++) {
             if (_Designations[z].end() == _Designations[z].find(sf::Vector2i(i+x, j+y))) {
-
                     return false;
             } else {
                 if (_Designations[z].find(sf::Vector2i(i+x, y+j))->second != 'd')
@@ -288,9 +292,9 @@ bool Blueprint::canPlace(int x, int y, int z, const Building &building) {
     return true;
 }
 
-std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i i) const {
+std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i start) const {
     std::vector<sf::Vector2i> things_accrued;
-    things_accrued.push_back(i);
+    things_accrued.push_back(start);
     std::vector<sf::Vector2i> temp;
     if(_symmetries.size()>0) {
         Symmetry::Symmetry_Type old = _symmetries.front().getType();
@@ -320,7 +324,6 @@ void Blueprint::placeBuilding(int x, int y, int z, const Building &building) {
     for(auto i : applySymmetry(sf::Vector2i(x,y))) {
         if(canPlace(i.x,i.y,z,building)) {
             _Buildings[z][i] = building.getSequence();
-            std::cout<<"Placed building"<<std::endl;
         }
     }
 }

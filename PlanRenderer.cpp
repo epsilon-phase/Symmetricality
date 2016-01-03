@@ -130,8 +130,6 @@ void PlanRenderer::handle_event(sf::Event event) {
             case sf::Keyboard::Space:
                 if (building_mode) {
                     blueprint.placeBuilding(cursorpos.x, cursorpos.y, Floornum, current_building->second);
-                    if(blueprint.canPlace(cursorpos.x, cursorpos.y, Floornum, current_building->second))
-                        std::cout<<"Placed"<<std::endl;
                 }
                 else
                     blueprint.insert(cursorpos.x, cursorpos.y, Floornum, current_designation->first);
@@ -155,9 +153,15 @@ void PlanRenderer::handle_event(sf::Event event) {
                 add_symmetry(Symmetry::Rotational);
                 break;
             case sf::Keyboard::Equal:
+                if(event.key.control){
+                    m_square_size++;
+                }else
                 change_designation(true);
                 break;
             case sf::Keyboard::Dash:
+                if(event.key.control){
+                    m_square_size--;
+                }else
                 change_designation(false);
                 break;
             case sf::Keyboard::B:
@@ -261,9 +265,7 @@ void PlanRenderer::change_designation(bool up) {
             current_designation--;
         }
     }
-    if(building_mode){
-        std::cout<<"Building size="<<current_building->second.getSize().x<<" "<<current_building->second.getSize().y<<std::endl;
-    }
+
     blueprint.setDesignation(current_designation->first);
 }
 
@@ -302,7 +304,7 @@ void PlanRenderer::setColor(char f, sf::Color c) {
 
 void PlanRenderer::loadBuildingTexture(const std::string &filename) {
     this->buildingTexture.loadFromFile(filename);
-    std::cout << buildingTexture.getSize().x << " " << buildingTexture.getSize().y << std::endl;
+
 }
 
 void PlanRenderer::getLoadBuildings(GetPot &pot) {
@@ -347,7 +349,5 @@ void PlanRenderer::getLoadBuildings(GetPot &pot) {
         _building_types[keySeq] = Building(bname, keySeq, sf::Vector2i(sx, sy), sf::Vector2i(cx, cy),
                                            tx1, ty1, tx2, ty2);
     }
-    for(auto i : _building_types)
-        std::cout<<i.first<<std::endl;
     current_building = _building_types.begin();
 }
