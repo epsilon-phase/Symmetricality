@@ -16,11 +16,8 @@
 #include "GetPot"
 
 class PlanRenderer : public sf::Drawable, sf::Transformable {
-    std::map<char, sf::Color> designation_colors = {{'d', sf::Color(200, 200, 0)},
-                                                           {'j', sf::Color(255, 255, 0)},
-                                                           {'i', sf::Color(0, 255, 0)},
-                                                           {'u', sf::Color(255, 0, 0)},
-                                                           {'x', sf::Color(0, 0, 0)}};
+#
+	std::map<char, sf::Color> designation_colors;
 friend class Hud;
     sf::VertexArray Rendering_plan;
     sf::VertexArray Symmetries;

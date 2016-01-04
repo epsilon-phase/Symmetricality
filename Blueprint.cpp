@@ -322,7 +322,9 @@ std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i start) const {
 
 void Blueprint::placeBuilding(int x, int y, int z, const Building &building) {
     for(auto i : applySymmetry(sf::Vector2i(x,y))) {
-        if(canPlace(i.x,i.y,z,building)) {
+		if (building.getSequence().size() == 0){
+			_Buildings[z].erase(i);
+		}else if(canPlace(i.x,i.y,z,building)) {
             _Buildings[z][i] = building.getSequence();
         }
     }

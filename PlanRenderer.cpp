@@ -9,6 +9,12 @@
 #include <string>
 
 PlanRenderer::PlanRenderer() {
+	designation_colors['d'] = sf::Color(200, 200, 0);
+	designation_colors['j'] = sf::Color(255, 255, 0);
+	designation_colors['i'] = sf::Color(0, 255, 0);
+	designation_colors['u'] = sf::Color(255, 0, 0);
+	designation_colors['x'] = sf::Color(0, 0, 0);
+	current_designation = designation_colors.begin();
     blueprint.setDesignation(current_designation->first);
 }
 
@@ -316,6 +322,8 @@ void PlanRenderer::buildBuildingArray() {
     const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
     Buildings.resize(f.size() * 4);
     Buildings.setPrimitiveType(sf::Quads);
+	if (f.size() == 0)
+		return;
     current = &Buildings[0];
     for (auto i:f) {
         std::string e = i.second;

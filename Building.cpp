@@ -63,6 +63,12 @@ void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thin
         y1=y;
         y2=y1+1;
     }
+	if (size.x == 3 && size.y == 3){
+		x1 = x - 1;
+		x2 = x + 2;//No idea why this produces a reasonably sized sprite.
+		y1 = y - 1;// Probably because it's already x+1 for the normal tile, so it needs another addition to bump it into the right range.
+		y2 = y + 2;
+	}
     thing[0].position.x = square_size * x1;
     thing[0].position.y = square_size * y1;
     thing[1].position.x = square_size * x2;
