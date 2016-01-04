@@ -3,7 +3,7 @@
 //
 
 #include "Building.h"
-#include <iostream>
+#include <sstream>
 
 Building::Building(const std::string &name, const std::string &keyseq, sf::Vector2i size, sf::Vector2i center,
                    int x1, int y1, int x2, int y2)
@@ -16,7 +16,7 @@ Building::~Building() {
 
 }
 
-bool Building::canPlace(int i, int i1, char open) const {
+bool Building::canPlace(int x, int y, char open) const {
     //TODO use this to verify that the building can be placed on the tile
     return false;
 }
@@ -78,4 +78,43 @@ void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thin
     thing[3].position.x = square_size * x1;
     thing[3].position.y = square_size * y2;
 
+}
+
+Building Building::fromPot(int number, GetPot &conf) {
+    std::stringstream z;
+    z << "buildings/" << number << "/" << "Buildingname";
+    std::string curbuild = std::to_string(number);
+    std::string bname = conf(z.str().c_str(), "");
+    std::cout << "Building_name:" << bname << std::endl;
+    z.str("");
+    z << "buildings/" << number << "/" << "key_sequence";
+
+    std::string keySeq = conf(z.str().c_str(), "");
+    std::cout << "Key sequence:" << keySeq << std::endl;
+    z.str("");
+    z << "buildings/" << number << "/" << "size_x";
+    int sx = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "size_y";
+    int sy = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "center_x";
+    int cx = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "center_y";
+    int cy = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "texturecoords/X1";
+
+    int tx1 = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "texturecoords/Y1";
+    int ty1 = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "texturecoords/X2";
+    int tx2 = conf(z.str().c_str(), 0);
+    z.str("");
+    z << "buildings/" << number << "/" << "texturecoords/Y2";
+    int ty2 = conf(z.str().c_str(), 0);
+    return Building(bname,keySeq,sf::Vector2i(sx,sy),sf::Vector2i(cx,cy),tx1,ty1,tx2,ty2);
 }

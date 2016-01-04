@@ -3,18 +3,16 @@
 //
 
 #include "PlanRenderer.h"
-#include <iostream>
-#include <fstream>
 #include <sstream>
-#include <string>
 
 PlanRenderer::PlanRenderer() {
-	designation_colors['d'] = sf::Color(200, 200, 0);
-	designation_colors['j'] = sf::Color(255, 255, 0);
-	designation_colors['i'] = sf::Color(0, 255, 0);
-	designation_colors['u'] = sf::Color(255, 0, 0);
-	designation_colors['x'] = sf::Color(0, 0, 0);
-	current_designation = designation_colors.begin();
+    //This was done to allow visual studio to compile. The vile thing doesn't allow non static initializers.
+    designation_colors['d'] = sf::Color(200, 200, 0);
+    designation_colors['j'] = sf::Color(255, 255, 0);
+    designation_colors['i'] = sf::Color(0, 255, 0);
+    designation_colors['u'] = sf::Color(255, 0, 0);
+    designation_colors['x'] = sf::Color(0, 0, 0);
+    current_designation = designation_colors.begin();
     blueprint.setDesignation(current_designation->first);
 }
 
@@ -276,43 +274,8 @@ void PlanRenderer::getLoadBuildings(GetPot &pot) {
     int number = pot("buildings/BuildingCount", 0);
     std::cout << "Found " << number << " Buildings.\n";
     for (int i = 0; i < number; i++) {
-        std::stringstream z;
-        z << "buildings/" << i << "/" << "Buildingname";
-        std::string curbuild = std::to_string(i);
-        std::string bname = pot(z.str().c_str(), "");
-        std::cout << "Building_name:" << bname << std::endl;
-        z.str("");
-        z << "buildings/" << i << "/" << "key_sequence";
-
-        std::string keySeq = pot(z.str().c_str(), "");
-        std::cout << "Key sequence:" << keySeq << std::endl;
-        z.str("");
-        z << "buildings/" << i << "/" << "size_x";
-        int sx = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "size_y";
-        int sy = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "center_x";
-        int cx = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "center_y";
-        int cy = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "texturecoords/X1";
-
-        int tx1 = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "texturecoords/Y1";
-        int ty1 = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "texturecoords/X2";
-        int tx2 = pot(z.str().c_str(), 0);
-        z.str("");
-        z << "buildings/" << i << "/" << "texturecoords/Y2";
-        int ty2 = pot(z.str().c_str(), 0);
-        _building_types[keySeq] = Building(bname, keySeq, sf::Vector2i(sx, sy), sf::Vector2i(cx, cy),
-                                           tx1, ty1, tx2, ty2);
+        Building a = Building::fromPot(i, pot);
+        _building_types[a.getSequence()] = a;
     }
     current_building = _building_types.begin();
 }
@@ -322,8 +285,8 @@ void PlanRenderer::buildBuildingArray() {
     const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
     Buildings.resize(f.size() * 4);
     Buildings.setPrimitiveType(sf::Quads);
-	if (f.size() == 0)
-		return;
+    if (f.size() == 0)
+        return;
     current = &Buildings[0];
     for (auto i:f) {
         std::string e = i.second;
