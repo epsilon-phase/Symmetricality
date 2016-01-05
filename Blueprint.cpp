@@ -58,12 +58,18 @@ void Blueprint::serialize(const std::string &file) const {
 	output << _symmetries.size() << std::endl;
 	for (auto i : _symmetries)
 		output << i.getCursor().x << " " << i.getCursor().y << " " << (int)i.getType() << std::endl;
+	
 	for (auto i : _Designations) {
 		for (auto z : i.second) {
 			auto position = z.first;
 			output << position.x << " " << position.y << " " << i.first << " " << z.second << "\n";
 		}
 	}
+	for (auto i : _Buildings)
+		for (auto z : i.second){
+			auto position = z.first;
+			output << position.x << " " << position.y << " " << i.first() << " b " << z.second << "\n";
+		}
 	output.close();
 }
 
@@ -74,11 +80,27 @@ void Blueprint::export_csv(const std::string &file) const {
 	int minx, miny, maxx, maxy;
 	getBounds(minx, miny, maxx, maxy);
 	std::ofstream zzip(file);
+	auto build_name = file;
+	build_name.insert(file.size() - 4, "-build");
+	std::ofstream build_output(build_name);
 	zzip << "#dig start(" << std::abs(minx) + 1 << ";" << std::abs(miny) + 1 << ")" << std::endl;
+	build_output << "#build start(" << std::abs(minx) + 1 << ";" << std::abs(miny) + 1 << ")" << std::endl;
 	while (r != _Designations.rend()) {
+		bool building_for_this_level = _Buildings.find(r->first) != _Buildings.end();
 		for (int y = miny; y <= maxy; y++) {
 			for (int x = minx; x <= maxx; x++) {
 				auto f = r->second.find(sf::Vector2i(x, y));
+				if (building_for_this_level){
+					auto b = _Buildings.find(r->first)->second;;
+					if (b.find(sf::Vector2i(x, y)) != b.end()){
+						build_output << b.find(sf::Vector2i(x, y))->second;
+					}
+					else{
+						build_output << " ";
+					}
+				}
+				else
+					build_output << " ";
 				if (f != r->second.end()) {
 					zzip << f->second;
 				}
@@ -86,15 +108,19 @@ void Blueprint::export_csv(const std::string &file) const {
 					zzip << " ";
 				}
 				zzip << ",";
+				build_output << ",";
 			}
-			zzip << "#" << std::endl;
+			zzip << "#\r\n";
+			build_output << "#\r\n";
 		}
 
 		r++;
 		if (r != _Designations.rend()) {
 			zzip << "#>\r\n";
+			build_output << "#>\r\n";
 		}
 	}
+	build_output.close();
 	zzip.close();
 }
 
@@ -114,9 +140,17 @@ void Blueprint::deserialize(const std::string &file) {
 		z.setCursor(sf::Vector2i(x, y));
 		_symmetries.push_back(z);
 	}
-
+	//Clear out the old stuff
+	_Buildings.clear();
 	_Designations.clear();
+	//Load the new stuff
 	while (input >> x >> y >> z >> d) {
+		if (d == 'b'){//Then it is a building.
+			std::string keys;
+			input >> keys;
+			_Buildings[z][sf::Vector2i(x, y)] = keys;
+			continue;
+		}
 		_Designations[z][sf::Vector2i(x, y)] = d;
 	}
 }
@@ -307,18 +341,18 @@ std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i start) const {
 	if (_symmetries.size() > 0) {
 		Symmetry::Symmetry_Type old = _symmetries.front().getType();
 		for (auto s : _symmetries) {
+			if (old != s.getType()) {
+				for (auto f : temp)
+					things_accrued.push_back(f);
+				temp.clear();
+				old = s.getType();
+			}
 			for (auto i : things_accrued) {
 				sf::Vector2i a = i;
 				for (int r = 0; r < s.getRepetitionRequired(); r++) {
 					a = s.fromPos(a);
 					temp.push_back(a);
 				}
-			}
-			if (old != s.getType()) {
-				for (auto f : temp)
-					things_accrued.push_back(f);
-				temp.clear();
-				old = s.getType();
 			}
 		}
 		if (temp.size() > 0)
