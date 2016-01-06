@@ -343,3 +343,7 @@ void PlanRenderer::buildSymmetryArray() {
     current[1].color = sf::Color::Cyan;
     current[2].color = sf::Color::White;
 }
+
+bool PlanRenderer::canPlace()const{
+	return Cursor[0].color != sf::Color::Red;
+}

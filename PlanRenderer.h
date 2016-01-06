@@ -84,6 +84,7 @@ private:
      * Deserialize a file from the serialize function
      */
     void deserialize(const std::string &);
+	bool canPlace()const;
 protected:
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 private:

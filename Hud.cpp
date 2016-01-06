@@ -79,7 +79,7 @@ void Hud::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 void Hud::update_text() {
     std::stringstream f;
     if (renderer.building_mode) {
-        f << "Building:" << renderer.current_building->second.getName();
+        f << "Building:" << renderer.current_building->second.getName()<<renderer.canPlace()?"":" can't build";
         Designation_type.setString(f.str());
     } else if (old_desig != renderer.current_designation->first) {
 
