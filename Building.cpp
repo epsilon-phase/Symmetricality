@@ -85,6 +85,7 @@ Building Building::fromPot(int number, GetPot &conf) {
     z << "buildings/" << number << "/" << "Buildingname";
     std::string curbuild = std::to_string(number);
     std::string bname = conf(z.str().c_str(), "");
+	std::string blocking;
     std::cout << "Building_name:" << bname << std::endl;
     z.str("");
     z << "buildings/" << number << "/" << "key_sequence";
@@ -116,5 +117,13 @@ Building Building::fromPot(int number, GetPot &conf) {
     z.str("");
     z << "buildings/" << number << "/" << "texturecoords/Y2";
     int ty2 = conf(z.str().c_str(), 0);
-    return Building(bname,keySeq,sf::Vector2i(sx,sy),sf::Vector2i(cx,cy),tx1,ty1,tx2,ty2);
+	z.str();
+	z << "buildings/" << number << "/blocking";
+	blocking = conf(z.str().c_str(),"0");
+
+    Building f(bname,keySeq,sf::Vector2i(sx,sy),sf::Vector2i(cx,cy),tx1,ty1,tx2,ty2);
+	f.passable.resize(sx*sy);
+	for (int i = 0; i < blocking.size(); i++)
+		f.passable.push_back(blocking[i] == '1' ? true : false);
+	return f;
 }

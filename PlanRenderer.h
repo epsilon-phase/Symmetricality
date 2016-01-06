@@ -16,7 +16,7 @@
 #include "GetPot"
 
 class PlanRenderer : public sf::Drawable, sf::Transformable {
-#
+	static PlanRenderer* main_instance;
 	std::map<char, sf::Color> designation_colors;
 friend class Hud;
     sf::VertexArray Rendering_plan;

@@ -68,7 +68,7 @@ void Blueprint::serialize(const std::string &file) const {
 	for (auto i : _Buildings)
 		for (auto z : i.second){
 			auto position = z.first;
-			output << position.x << " " << position.y << " " << i.first() << " b " << z.second << "\n";
+			output << position.x << " " << position.y << " " << i.first << " b " << z.second << "\n";
 		}
 	output.close();
 }
@@ -321,6 +321,9 @@ bool Blueprint::canPlace(int x, int y, int z, const Building &building) {
 		x2 = 1;
 		y2 = 1;
 	}
+	for (auto i : getInRadius(x, y, building.getSize()))
+		if (_occupation[z].find(i) != _occupation[z].end())
+			return false;
 	for (int i = x1; i <= x2; i++)
 		for (int j = y1; j <= y2; j++) {
 			if (_Designations[z].end() == _Designations[z].find(sf::Vector2i(i + x, j + y))) {
@@ -365,14 +368,58 @@ std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i start) const {
 void Blueprint::placeBuilding(int x, int y, int z, const Building &building) {
 	for (auto i : applySymmetry(sf::Vector2i(x, y))) {
 		if (building.getSequence().size() == 0){
+			if (_Buildings[z].find(i) != _Buildings[z].end()){
+				remove_occupation(x, y, z, _Buildings_size[z].find(i)->second);
+			}
 			_Buildings[z].erase(i);
+			_Buildings_size[z].erase(i);
 		}
 		else if (canPlace(i.x, i.y, z, building)) {
 			_Buildings[z][i] = building.getSequence();
+			remove_occupation(i.x, i.y, z, _Buildings_size[z][i]);//remove old occupation
+			_Buildings_size[z][i] = building.getSize();
+			for (auto curpos : getInRadius(i.x, i.y, building.getSize()))
+				_occupation[z].insert(curpos);
 		}
 	}
 }
 
 const std::unordered_map<sf::Vector2i, std::string> Blueprint::getLevelBuildings(int level) {
 	return _Buildings[level];
+}
+
+void Blueprint::remove_occupation(int x, int y, int z, sf::Vector2i size){
+	int sx=0, sy=0, ex=0, ey=0;
+	if (size.x == 3 && size.y == 3){
+		sx = -1;
+		sy = -1;
+		ex = 1;
+		ey = 1;
+	}
+	else if (size.x == 1 && size.y == 1)
+	{
+		sx = 0;
+		sy = 0;
+		ex = 0;
+		ey = 0;
+	}
+	for (int ix = sx; ix <= ex; ix++){
+		for (int iy = sy;iy <= ey; iy++){
+			_occupation[z].erase(sf::Vector2i(x + ix, y + iy));
+		}
+	}
+}
+
+std::vector<sf::Vector2i> Blueprint::getInRadius(int x, int y, sf::Vector2i rad){
+	int sx=0, sy=0, ex=0, ey=0;
+	std::vector<sf::Vector2i> result;
+	if (rad.x == 3 && rad.y == 3){
+		sx = -1; sy = -1; ex = 1; ey = 1;
+	}
+	for (int ix = sx; ix <= ex; ix++){
+		for (int iy = sy; iy <= ey; iy++){
+			result.push_back(sf::Vector2i(x + ix, y + iy));
+		}
+	}
+	return result;
 }

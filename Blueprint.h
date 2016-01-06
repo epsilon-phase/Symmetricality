@@ -8,6 +8,7 @@
 #include "Symmetry.h"
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <map>
 #include "Building.h"
 class Blueprint {
@@ -35,7 +36,7 @@ public:
     const sf::Vector2i getStartPoint()const;
     void addSymmetry(int,int,Symmetry::Symmetry_Type);
     void setStart(int,int);
-    bool canPlace(int x, int y, int z, const Building &building);
+	bool canPlace(int x, int y, int z, const Building &building);
     void placeBuilding(int x,int y,int z,const Building& building);
     const std::unordered_map<sf::Vector2i,std::string> getLevelBuildings(int level);
 private:
@@ -44,6 +45,7 @@ private:
     void designateRectangle();
     void designateCircle();
     void designateLine();
+	void remove_occupation(int x,int y,int z,sf::Vector2i size);
     std::vector<sf::Vector2i> applySymmetry(sf::Vector2i)const;
     application_pattern designation_type=NONE;
     sf::Vector3i designation_start,designation_end;
@@ -51,6 +53,9 @@ private:
     char current_designation;
     std::map<int,std::unordered_map<sf::Vector2i,char> > _Designations;
     std::map<int,std::unordered_map<sf::Vector2i,std::string> > _Buildings;
+	std::map<int, std::unordered_map<sf::Vector2i, sf::Vector2i> > _Buildings_size;
+	std::vector<sf::Vector2i> getInRadius(int x, int y, sf::Vector2i rad);
+	std::map<int, std::unordered_set<sf::Vector2i> > _occupation;
     std::vector<Symmetry> _symmetries;
     bool start_set=false;
 };

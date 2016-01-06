@@ -11,7 +11,7 @@ R = 255 G = 0 B = 0
 
 [buildings]
 building_sheet = buildings.png
-BuildingCount = 7
+BuildingCount = 9
 [./0]
 Buildingname = 'Wall'
 key_sequence = 'Cw'
@@ -56,7 +56,22 @@ center_x = 0 center_y = 0
 X1 = 30 X2 = 39 Y1 = 0 Y2 = 9
 [../../6]
 Buildingname = 'Remove'
-key_sequence = ''
+#Having an empty string like key_sequence = '' causes an error
 size_x = 0 size_y = 0
 [./texturecoords]
 X1 = 30 X2 = 39 Y1 = 0 Y2 = 9
+[../../7]
+Buildingname = 'Bed'
+key_sequence = 'b'
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+[./texturecoords]
+X1 = 40 X2 = 49 Y1 = 0 Y2 = 9
+
+[../../8]
+Buildingname = 'Door'
+key_sequence = 'd'
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+[./texturecoords]
+X1=50 X2 = 59 Y1 = 0 Y2 = 9
