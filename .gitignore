@@ -26,3 +26,10 @@
 *.exe
 *.out
 *.app
+#visual studio generated files
+
+*.vcxproj
+*.vcxproj.*
+*.sdf
+*.sln
+*.v12.suo
