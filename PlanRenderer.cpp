@@ -25,12 +25,13 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
     states.texture = NULL;
     target.draw(Rendering_plan, states);
     target.draw(Symmetries, states);
-    target.draw(Cursor, states);
+    
     states.texture = &buildingTexture;
     target.draw(Buildings, states);
     if (blueprint.isDesignating())
         target.draw(Designation_preview, states);
-
+	states.texture = NULL;
+	target.draw(Cursor, states);
 }
 
 void PlanRenderer::build_vertex_array() {
@@ -321,7 +322,6 @@ void PlanRenderer::buildSymmetryArray() {
     auto symmetries = blueprint.getSymmetries();
     Symmetries.resize(3 * symmetries.size() + 3);
     Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
-
     for (int i = 0; i < symmetries.size(); i++) {
         current = &Symmetries[i * 3];
         auto v = symmetries[i].getCursor();
