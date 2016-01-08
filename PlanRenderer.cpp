@@ -361,4 +361,11 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
                                  pot("colors/downward_stairs/G", 255), pot("colors/downward_stairs/B", 0)));
     setColor('u', sf::Color(pot("colors/upward_stairs/R", 255), pot("colors/upward_stairs/G", 0),
                                  pot("colors/upward_stairs/B", 0)));
+	if (designationsUseTextures){
+		std::string designation_tex_file = pot("designation/designation_tex", "");
+		if (designation_tex_file == ""){//If there is no designation sheet, then it must not be possible to modify it to fit the required parameters
+			designationsUseTextures = false;
+		}
+
+	}
 }

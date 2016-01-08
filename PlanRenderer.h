@@ -16,7 +16,6 @@
 #include "GetPot"
 
 class PlanRenderer : public sf::Drawable, sf::Transformable {
-	static PlanRenderer* main_instance;
 	std::map<char, sf::Color> designation_colors;
 friend class Hud;
     sf::VertexArray Rendering_plan;
@@ -30,6 +29,9 @@ friend class Hud;
     int m_square_size = 10;
     Blueprint blueprint;
     sf::Texture buildingTexture;
+	sf::Image designation_src;
+	sf::Texture designationTexture;
+	bool designationsUseTextures = false;
     bool building_changed=false;
     bool designation_changed=false;
     /**
