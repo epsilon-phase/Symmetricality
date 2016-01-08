@@ -7,6 +7,8 @@
 #include <iostream>
 Blueprint::Blueprint() {
 	_Designations[0] = std::unordered_map<sf::Vector2i, char>();
+	_Designations[0].reserve(0);
+	_occupation[0].reserve(0);
 }
 
 Blueprint::~Blueprint() {
@@ -156,6 +158,7 @@ void Blueprint::deserialize(const std::string &file) {
 }
 
 void Blueprint::setDesignation(int x, int y, int z, char d) {
+	_occupation[z].reserve(0);
 	if (d != 'x'&&_occupation.find(z)->second.find(sf::Vector2i(x, y)) == _occupation.find(z)->second.end())
 		this->_Designations[z][sf::Vector2i(x, y)] = d;
 	else

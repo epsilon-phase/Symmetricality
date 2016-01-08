@@ -1,4 +1,4 @@
-default_path = '~/python-lnp/df_linux/blueprint'#Set this to the location of wherever you'd like to save and load from
+default_path = '~/python-lnp/df_linux/blueprint'
 
 [colors/dig]
 R = 200 G = 200 B = 255
