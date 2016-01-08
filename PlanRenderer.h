@@ -56,6 +56,7 @@ public:
     void setColor(char f,sf::Color c);
     void loadBuildingTexture(const std::string& filename);
     void getLoadBuildings(GetPot& );
+    void loadDesignationConfiguration(GetPot &);
 private:
     /**
      * Move up and down z-levels
@@ -85,6 +86,10 @@ private:
      */
     void deserialize(const std::string &);
 	bool canPlace()const;
+    /**
+     * Creates the designation square
+     */
+    void generate_designation_tile(int x, int y, char designation, sf::Vertex *c);
 protected:
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 private:

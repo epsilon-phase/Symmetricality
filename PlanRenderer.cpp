@@ -52,12 +52,7 @@ void PlanRenderer::buildDesignationArray() {
     int iter = 0;
     for (auto i:*current_floor) {
         current = &Rendering_plan[iter];
-        current[0].position = sf::Vector2f(i.first.x * m_square_size, i.first.y * m_square_size);
-        current[1].position = sf::Vector2f((i.first.x + 1) * m_square_size, i.first.y * m_square_size);
-        current[2].position = sf::Vector2f((i.first.x + 1) * m_square_size, (1 + i.first.y) * m_square_size);
-        current[3].position = sf::Vector2f((i.first.x) * m_square_size, (1 + i.first.y) * m_square_size);
-        for (int z = 0; z < 4; z++)
-            current[z].color = designation_colors.find(i.second)->second;
+        generate_designation_tile(i.first.x,i.first.y,i.second,current);
         iter += 4;
     }
 }
@@ -346,4 +341,24 @@ void PlanRenderer::buildSymmetryArray() {
 
 bool PlanRenderer::canPlace()const{
 	return Cursor[0].color != sf::Color::Red;
+}
+
+void PlanRenderer::generate_designation_tile(int x, int y, char designation, sf::Vertex *c) {
+    c[0].position = sf::Vector2f(x * m_square_size, y * m_square_size);
+    c[1].position = sf::Vector2f((x + 1) * m_square_size, y * m_square_size);
+    c[2].position = sf::Vector2f((x + 1) * m_square_size, (1 + y) * m_square_size);
+    c[3].position = sf::Vector2f((x) * m_square_size, (1 + y) * m_square_size);
+    for (int z = 0; z < 4; z++)
+        c[z].color = designation_colors.find(designation)->second;
+}
+
+void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
+    setColor('d', sf::Color(pot("colors/dig/R", 200), pot("colors/dig/G", 200),
+                                 pot("colors/dig/B", 0)));
+    setColor('i', sf::Color(pot("colors/up_down_stairs/R", 0), pot("colors/up_down_stairs/G", 255),
+                                 pot("colors/up_down_stairs/B", 0)));
+    setColor('j', sf::Color(pot("colors/downward_stairs/R", 255),
+                                 pot("colors/downward_stairs/G", 255), pot("colors/downward_stairs/B", 0)));
+    setColor('u', sf::Color(pot("colors/upward_stairs/R", 255), pot("colors/upward_stairs/G", 0),
+                                 pot("colors/upward_stairs/B", 0)));
 }
