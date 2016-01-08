@@ -29,16 +29,24 @@ friend class Hud;
     int m_square_size = 10;
     Blueprint blueprint;
     sf::Texture buildingTexture;
+
+	/**
+	* Designation stuff
+	*/
+	std::map<char, sf::IntRect> designation_texcoords;
 	sf::Image designation_src;
 	sf::Texture designationTexture;
 	bool designationsUseTextures = false;
-    bool building_changed=false;
+	/**
+	* A pointer to the types of designation currently supported(with associated colors)
+	*/
+	std::map<char, sf::Color>::const_iterator current_designation = designation_colors.begin();
+    
+	bool building_changed=false;
     bool designation_changed=false;
-    /**
-     * A pointer to the types of designation currently supported(with associated colors)
-     */
-    std::map<char,sf::Color>::const_iterator current_designation=designation_colors.begin();
+
     std::map<std::string,Building>::const_iterator current_building;
+	
     /**
      * If true, then there has been no keyboard input since pressing C, once this is true, then the blueprint may be cleared.
      */

@@ -8,6 +8,16 @@ R = 255 G = 255 B = 0
 R = 0 G = 255 B = 0
 [colors/upwards_stairs]
 R = 255 G = 0 B = 0
+[colors/ramp]
+R = 132 G = 32 B = 132
+[colors/channel]
+R = 132 G = 128 B = 132
+
+[designation]
+designation_tex = 'designation.png'
+designation_use_textures = 0
+width = 10
+height = 10
 
 [buildings]
 building_sheet = buildings.png
