@@ -15,7 +15,7 @@ R = 132 G = 128 B = 132
 
 [designation]
 designation_tex = 'designation.png'
-designation_use_textures = 0
+use_textures = 0
 width = 10
 height = 10
 
