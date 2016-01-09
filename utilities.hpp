@@ -21,4 +21,10 @@ namespace std {
         }
     };
 }
+inline void textureRectangleToVertex(sf::IntRect a, sf::Vertex* vert){
+	vert[0].texCoords = sf::Vector2f(a.left, a.top);
+	vert[1].texCoords = sf::Vector2f(a.left + a.width, a.top);
+	vert[2].texCoords = sf::Vector2f(a.left + a.width, a.top + a.height);
+	vert[3].texCoords = sf::Vector2f(a.left, a.top + a.height);
+}
 #endif //SYMMETRICALITY_UTLITIES_HPP

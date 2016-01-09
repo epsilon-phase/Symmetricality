@@ -55,6 +55,5 @@ int main() {
         target.draw(display);
         target.display();
     }
-    cout << "Hello, World!" << endl;
     return 0;
 }

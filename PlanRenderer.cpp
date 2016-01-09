@@ -22,9 +22,13 @@ PlanRenderer::~PlanRenderer() {
 
 void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     states.transform *= getTransform();
-    states.texture = NULL;
+    
+	if (designationsUseTextures){
+		states.texture = &designationTexture;
+	}
     target.draw(Rendering_plan, states);
-    target.draw(Symmetries, states);
+	states.texture = NULL;
+	target.draw(Symmetries, states);
     
     states.texture = &buildingTexture;
     target.draw(Buildings, states);
@@ -348,24 +352,59 @@ void PlanRenderer::generate_designation_tile(int x, int y, char designation, sf:
     c[1].position = sf::Vector2f((x + 1) * m_square_size, y * m_square_size);
     c[2].position = sf::Vector2f((x + 1) * m_square_size, (1 + y) * m_square_size);
     c[3].position = sf::Vector2f((x) * m_square_size, (1 + y) * m_square_size);
-    for (int z = 0; z < 4; z++)
-        c[z].color = designation_colors.find(designation)->second;
+
+	if (designationsUseTextures){
+		textureRectangleToVertex(designation_texcoords[designation], c);
+	}else
+		for (int z = 0; z < 4; z++)
+			c[z].color = designation_colors.find(designation)->second;
 }
 
 void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
+	designationsUseTextures = (bool)pot("designation/use_textures",0);
     setColor('d', sf::Color(pot("colors/dig/R", 200), pot("colors/dig/G", 200),
                                  pot("colors/dig/B", 0)));
     setColor('i', sf::Color(pot("colors/up_down_stairs/R", 0), pot("colors/up_down_stairs/G", 255),
                                  pot("colors/up_down_stairs/B", 0)));
     setColor('j', sf::Color(pot("colors/downward_stairs/R", 255),
                                  pot("colors/downward_stairs/G", 255), pot("colors/downward_stairs/B", 0)));
-    setColor('u', sf::Color(pot("colors/upward_stairs/R", 255), pot("colors/upward_stairs/G", 0),
-                                 pot("colors/upward_stairs/B", 0)));
+	pot.set_prefix("colors/upward_stairs/");
+    setColor('u', sf::Color(pot("R", 255), pot("G", 0),pot("B", 0)));
+	pot.set_prefix("colors/channel/");
+	setColor('h', sf::Color(pot("R", 132),pot("G",128),pot("B",132)));
+	pot.set_prefix("colors/ramp/");
+	setColor('r', sf::Color(pot("R", 132), pot("G", 32), pot("B", 132)));
+	pot.set_prefix("designation/");
 	if (designationsUseTextures){
-		std::string designation_tex_file = pot("designation/designation_tex", "");
+		std::string designation_tex_file = pot("designation_tex", "");
 		if (designation_tex_file == ""){//If there is no designation sheet, then it must not be possible to modify it to fit the required parameters
 			designationsUseTextures = false;
+			return;
 		}
-
+		this->designation_src.loadFromFile(designation_tex_file); 
+		int designation_width = pot("width", 10);
+		int designation_height = pot("height", 10);
+		//The order of the designations in the image must be dig,downwards stairs, upwards stairs, up/down stairs, ramp, channel
+		designation_texcoords['d'] = sf::IntRect(0, 0, designation_width, designation_height);
+		designation_texcoords['j'] = sf::IntRect(designation_width, 0, designation_width, designation_height);
+		designation_texcoords['u'] = sf::IntRect(designation_width*2,0, designation_width, designation_height);
+		designation_texcoords['i'] = sf::IntRect(designation_width * 3, 0, designation_width, designation_height);
+		designation_texcoords['r'] = sf::IntRect(designation_width * 4, 0, designation_width, designation_height);
+		designation_texcoords['h'] = sf::IntRect(designation_width * 5, 0, designation_width, designation_height);
+		for (auto f : designation_texcoords){
+			sf::Color nc = designation_colors[f.first];
+			for (int ix = 0; ix < f.second.width;ix++){
+				for (int iy = 0; iy < f.second.height; iy++){
+					auto pp=designation_src.getPixel(f.second.left + ix, f.second.top + iy);
+					if (sf::Color::White.toInteger() == pp.toInteger()){
+						designation_src.setPixel(f.second.left + ix, f.second.top + iy, nc);
+					}
+				}
+			}
+		}
+		designationTexture.loadFromImage(designation_src);
+		std::cout << "Image of size:" << designation_src.getSize().x << "x" << designation_src.getSize().y << std::endl;
 	}
+	//Reset prefix so that it does not interfere with other things
+	pot.set_prefix("");
 }
