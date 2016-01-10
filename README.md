@@ -24,6 +24,8 @@ Symmetricality supports some very basic mouse input at the moment. Basically you
 | y                | Add Y Axis Symmetry                              |
 | =                | Change Designation type                          |
 | \-               | Change Designation type                          |
+|Control-=         | Zoom in(sort of)|
+|Control-\-        | Zoom out(sort of)|
 | Period(.)        | Move down a Z-level                              |
 | Comma(,)         | Move up a Z-level                                |
 | F2               | Take a screenshot.                               |
@@ -81,17 +83,17 @@ This can produce effects like this
 
 ### Telling Symmetries apart
 
-In this program, due to a very rapid development period in the beginning, the wonderfully expressive symmetries that existed in symmetricity are shown instead by featureless rectangles. These triangles are not configurable at the moment, nor are they textured.
+Symmetries are now denoted by different symbols.
 
 Here's a table explaining what each color means:
 
-|Color|Type|
+|Symbol|Type|
 |-----|----|
-|Pink | 90 degree rotational (counter clockwise) increments|
-|Blue| Radial|
-|Green|X axis|
-|Red|Y axis|
-
+|![Rotational](http://i.imgur.com/KmCXy9t.png)| 90 degree rotational (counter clockwise) increments|
+|![Radial](http://i.imgur.com/oWRxJaA.png)| Radial|
+|![X axis](http://i.imgur.com/B6gxOqw.png)|X axis|
+|![Y axis](http://i.imgur.com/hHd014N.png)|Y axis|
+|![Start point](http://i.imgur.com/xqWElbw.png)|The starting point for the quickfort file generated|
 #### What's this dumb white triangle?
 
 That's the point in the blueprint which the exported CSV starts designating or building from.
