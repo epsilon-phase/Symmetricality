@@ -49,6 +49,8 @@ public:
     Symmetry_Type getType()const{return m_type;}
     void setCursor(sf::Vector2i);
     sf::Vector2i getCursor()const{return cursor;}
+    void buildSymmetryArray(sf::Vertex*,int)const;
+    int getVertexCount()const;
 private:
     Symmetry_Type m_type;
 };
