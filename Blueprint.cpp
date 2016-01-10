@@ -28,24 +28,24 @@ const std::unordered_map<sf::Vector2i, char> &Blueprint::getLevelDesignation(int
 	return _Designations.find(level)->second;
 }
 
-void Blueprint::designate(Blueprint::application_pattern e) {
+void Blueprint::designate(Blueprint::application_pattern e,bool building) {
 	switch (e){
 	case RECTANGLE:
-		designateRectangle();
+		designateRectangle(building);
 		break;
 	case CIRCLE:
-		designateCircle();
+		designateCircle(building);
 		break;
 	case LINE:
-		designateLine();
+		designateLine(building);
 		break;
 	}
 }
 
-void Blueprint::setDesignationToggle(int x, int y, int z, application_pattern e) {
+void Blueprint::setDesignationToggle(int x, int y, int z, application_pattern e,bool building_mode) {
 	if (start_set){
 		designation_end = sf::Vector3i(x, y, z);
-		designate(designation_type);
+		designate(designation_type,building_mode);
 		start_set = false;
 	}
 	else {
@@ -184,7 +184,7 @@ void Blueprint::getBounds(int &minx, int &miny, int &maxx, int &maxy)const {
 	}
 }
 
-void Blueprint::designateRectangle() {
+void Blueprint::designateRectangle(bool building) {
 	if (designation_start.x > designation_end.x)
 		std::swap(designation_start.x, designation_end.x);
 	if (designation_start.y > designation_end.y)
@@ -194,13 +194,18 @@ void Blueprint::designateRectangle() {
 	for (int x = designation_start.x; x <= designation_end.x; x++) {
 		for (int y = designation_start.y; y <= designation_end.y; y++) {
 			for (int z = designation_start.z; z <= designation_end.z; z++) {
-				insert(x, y, z, current_designation);
+				if (building){
+					placeBuilding(x, y, z, *current_building);
+				}
+				else{
+					insert(x, y, z, current_designation);
+				}
 			}
 		}
 	}
 }
 
-void Blueprint::designateCircle() {
+void Blueprint::designateCircle(bool building) {
 	int dx = designation_start.x - designation_end.x,
 		dy = designation_start.y - designation_end.y;
 	int radius = (int)std::sqrt(dx * dx + dy * dy);
@@ -210,13 +215,18 @@ void Blueprint::designateCircle() {
 			dy = designation_start.y - y;
 			if (std::sqrt(dx * dx + dy * dy) <= radius) {
 				for (int z = designation_start.z; z <= designation_end.z; z++)
-					insert(x, y, z, current_designation);
+					if (building){
+						placeBuilding(x, y, z, *current_building);
+					}
+					else{
+						insert(x, y, z, current_designation);
+					}
 			}
 		}
 	}
 }
 
-void Blueprint::designateLine() {
+void Blueprint::designateLine(bool building) {
 	int step_x = 1, step_y = 1;
 	const int startx = designation_start.x,
 		starty = designation_start.y;
@@ -235,7 +245,12 @@ void Blueprint::designateLine() {
 		int y = starty;
 		while (x != endx) {
 			for (int i = std::min(designation_start.z, designation_end.z); i <= std::max(designation_start.z, designation_end.z); i++) {
-				insert(x, y, i, current_designation);
+				if (building){
+					placeBuilding(x, y, i, *current_building);
+				}
+				else{
+					insert(x, y, i, current_designation);
+				}
 			}
 			err = err - dy;
 			if (err < 0) {
@@ -251,7 +266,12 @@ void Blueprint::designateLine() {
 		err = dy / 2.0f;
 		while (y != endy) {
 			for (int i = std::min(designation_start.z, designation_end.z); i <= std::max(designation_start.z, designation_end.z); i++) {
-				insert(x, y, i, current_designation);
+				if (building){
+					placeBuilding(x, y, i, *current_building);
+				}
+				else{
+					insert(x, y, i, current_designation);
+				}
 			}
 			err = err - dx;
 			if (err < 0) {
@@ -266,7 +286,9 @@ void Blueprint::designateLine() {
 void Blueprint::setDesignation(char i) {
 	this->current_designation = i;
 }
-
+void Blueprint::setBuilding(const Building* the_thing){
+	current_building = the_thing;
+}
 bool Blueprint::isDesignating() const {
 	return start_set;
 }
@@ -283,8 +305,8 @@ void Blueprint::addSymmetry(int x, int y, Symmetry::Symmetry_Type type) {
 	}
 }
 
-void Blueprint::setDesignationToggle(sf::Vector3i i, Blueprint::application_pattern e) {
-	setDesignationToggle(i.x, i.y, i.z, e);
+void Blueprint::setDesignationToggle(sf::Vector3i i, Blueprint::application_pattern e,bool building) {
+	setDesignationToggle(i.x, i.y, i.z, e,building);
 }
 
 sf::Vector3i Blueprint::getDesignationStart() const {

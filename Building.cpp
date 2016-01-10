@@ -46,8 +46,6 @@ void Building::getTexCoords(sf::Vertex *thing) {
     thing[2].texCoords.x = tx2;
     thing[3].texCoords.y = ty2;
     thing[3].texCoords.x = tx1;
-
-
 }
 
 void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thing) {
