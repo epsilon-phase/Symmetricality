@@ -321,28 +321,30 @@ void PlanRenderer::buildCursorArray() {
 void PlanRenderer::buildSymmetryArray() {
     sf::Vertex *current;
     auto symmetries = blueprint.getSymmetries();
-    Symmetries.resize(3 * symmetries.size() + 3);
-    Symmetries.setPrimitiveType(sf::PrimitiveType::Triangles);
+    size_t s=0;
+    for(auto z : symmetries)
+        s+=z.getVertexCount();
+    Symmetries.resize(s+4);
+    Symmetries.setPrimitiveType(sf::PrimitiveType::Lines);
+    int index=0;
     for (int i = 0; i < symmetries.size(); i++) {
-        current = &Symmetries[i * 3];
-        auto v = symmetries[i].getCursor();
-        current[0].position = sf::Vector2f(v.x * m_square_size, v.y * m_square_size);
-        current[1].position = sf::Vector2f((1 + v.x) * m_square_size, v.y * m_square_size);
-        current[2].position = sf::Vector2f((0.5f + v.x) * m_square_size, (1 + v.y) * m_square_size);
-        for (int z = 0; z < 3; z++)
-            current[z].color = symmetries[i].getColor();
+        symmetries[i].buildSymmetryArray(&Symmetries[index],m_square_size);
+        index+=symmetries[i].getVertexCount();
     }
     auto blueprint_start_point = blueprint.getStartPoint();
-    current = &Symmetries[Symmetries.getVertexCount() - 3];
+    current = &Symmetries[Symmetries.getVertexCount() - 4];
     current[0].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
-                                       (1 + blueprint_start_point.y) * m_square_size);
+                                       ( blueprint_start_point.y) * m_square_size);
     current[1].position = sf::Vector2f((1 + blueprint_start_point.x) * m_square_size,
                                        (1 + blueprint_start_point.y) * m_square_size);
-    current[2].position = sf::Vector2f((blueprint_start_point.x + 0.5f) * m_square_size,
-                                       (blueprint_start_point.y) * m_square_size);
+    current[2].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
+                                       (blueprint_start_point.y+1) * m_square_size);
+    current[3].position=sf::Vector2f((blueprint_start_point.x + 1) * m_square_size,
+                                    (blueprint_start_point.y) * m_square_size);
     current[0].color = sf::Color::Magenta;
     current[1].color = sf::Color::Cyan;
     current[2].color = sf::Color::White;
+    current[3].color=current[0].color;
 }
 
 bool PlanRenderer::canPlace()const{
