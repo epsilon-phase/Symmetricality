@@ -138,16 +138,16 @@ void PlanRenderer::handle_event(sf::Event event) {
                 designation_changed = true;
                 break;
             case sf::Keyboard::Numpad9:
-                move_cursor(-offset_size, -offset_size);
-                break;
-            case sf::Keyboard::Numpad1:
-                move_cursor(offset_size, offset_size);
-                break;
-            case sf::Keyboard::Numpad7:
                 move_cursor(offset_size, -offset_size);
                 break;
-            case sf::Keyboard::Numpad3:
+            case sf::Keyboard::Numpad1:
                 move_cursor(-offset_size, offset_size);
+                break;
+            case sf::Keyboard::Numpad7:
+                move_cursor(-offset_size, -offset_size);
+                break;
+            case sf::Keyboard::Numpad3:
+                move_cursor(offset_size, offset_size);
                 break;
             case sf::Keyboard::S:
                 blueprint.setStart(cursorpos.x, cursorpos.y);
