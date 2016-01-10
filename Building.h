@@ -11,6 +11,8 @@ class Building {
 	std::string key_sequence;
 	std::string name;
 	sf::Vector2i size;
+	sf::Vector2i render_end;
+	sf::Vector2i render_start;
 	//the center on the size
 	sf::Vector2i center;
 	int tx1, tx2, ty1, ty2;

@@ -19,6 +19,8 @@ int main() {
     std::string building_texture=config("buildings/building_sheet","");
     if(building_texture.size()>0)
         plan.loadBuildingTexture(building_texture);
+	for (auto i : config.get_variable_names())
+		cout << i << endl;
     plan.loadDesignationConfiguration(config);
     plan.getLoadBuildings(config);
     while (target.isOpen()) {
