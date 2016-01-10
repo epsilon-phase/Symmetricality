@@ -133,7 +133,8 @@ void PlanRenderer::handle_event(sf::Event event) {
                 blueprint.setDesignationToggle(cursorpos.x, cursorpos.y, Floornum,
                                                event.key.shift ? Blueprint::CIRCLE : (event.key.control
                                                                                       ? Blueprint::LINE
-                                                                                      : Blueprint::RECTANGLE));
+                                                                                      : Blueprint::RECTANGLE),
+																					  building_mode);
                 designation_changed = true;
                 break;
             case sf::Keyboard::Numpad9:
@@ -229,6 +230,7 @@ void PlanRenderer::change_designation(bool up) {
     }
 
     blueprint.setDesignation(current_designation->first);
+	blueprint.setBuilding(&current_building->second);
 }
 
 void PlanRenderer::export_csv(const std::string &string) const {
@@ -248,7 +250,7 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
     blueprint.setDesignationToggle(sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
                                    event.mouseButton.button == 0 ? (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
                                                                     ? Blueprint::CIRCLE : Blueprint::RECTANGLE)
-                                                                 : Blueprint::LINE);
+                                                                 : Blueprint::LINE,building_mode);
     designation_changed = true;
     build_vertex_array();
 }

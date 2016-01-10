@@ -46,29 +46,16 @@ void Building::getTexCoords(sf::Vertex *thing) {
     thing[2].texCoords.x = tx2;
     thing[3].texCoords.y = ty2;
     thing[3].texCoords.x = tx1;
-
-
 }
 
 void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thing) {
     auto f = getSize();
     auto c = getCenter();
-    int x1 = x + c.x - f.x;
-    int y1 = y + c.y - f.y;
-    int x2 = x + (f.x - c.x);
-    int y2 = y + (f.y - c.y);
-    if(size.x==1&&size.y==1){
-        x1=x;
-        x2=x+1;
-        y1=y;
-        y2=y1+1;
-    }
-	if (size.x == 3 && size.y == 3){
-		x1 = x - 1;
-		x2 = x + 2;//No idea why this produces a reasonably sized sprite.
-		y1 = y - 1;// Probably because it's already x+1 for the normal tile, so it needs another addition to bump it into the right range.
-		y2 = y + 3;
-	}
+	int x1, x2, y1, y2;
+	x1 = x + render_start.x;
+	y1 = y + render_start.y;
+	x2 = x + render_end.x;
+	y2 = y + render_end.y;
     thing[0].position.x = square_size * x1;
     thing[0].position.y = square_size * y1;
     thing[1].position.x = square_size * x2;
@@ -105,6 +92,18 @@ Building Building::fromPot(int number, GetPot &conf) {
     z << "buildings/" << number << "/" << "center_y";
     int cy = conf(z.str().c_str(), 0);
     z.str("");
+	z << "buildings/" << number << "/" << "render_start_x";
+	int rx1 = conf(z.str().c_str(), sx);
+	z.str("");
+	z << "buildings/" << number << "/" << "render_start_y";
+	int ry1 = conf(z.str().c_str(), sy);
+	z.str("");
+	z << "buildings/" << number << "/" << "render_end_x";
+	int rx2 = conf(z.str().c_str(), sx);
+	z.str("");
+	z << "buildings/" << number << "/" << "render_end_y";
+	int ry2 = conf(z.str().c_str(), sy);
+	z.str("");
     z << "buildings/" << number << "/" << "texturecoords/X1";
 
     int tx1 = conf(z.str().c_str(), 0);
@@ -125,5 +124,7 @@ Building Building::fromPot(int number, GetPot &conf) {
 	f.passable.resize(sx*sy);
 	for (int i = 0; i < blocking.size(); i++)
 		f.passable.push_back(blocking[i] == '1' ? true : false);
+	f.render_start = sf::Vector2i(rx1, ry1);
+	f.render_end = sf::Vector2i(rx2, ry2);
 	return f;
 }
