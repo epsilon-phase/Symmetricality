@@ -6,10 +6,7 @@ More symmetry for everyone :)
 Basic Usage
 -----------
 
-As of this point Symmetricality is primarily a Keyboard based program, with no
-mouse interactivity. This will change at some point and then mouse usage will
-once again become the preferred method for quick and dirty application of
-designations.
+Symmetricality supports some very basic mouse input at the moment. Basically you can mark areas for designation quickly using a mouse, at the moment, it does not support building, switching designations, or anything of that sort. This too will change with future updates.
 
 | Key              | Effect                                           |
 |------------------|--------------------------------------------------|
@@ -56,11 +53,11 @@ As a result, the number of inserts called is at least 2n, so use cautiously.
 Rotational Symmetry is the most complicated. It rotates the point around it's
 center 3 times.
 
-![Rotational Symmetry](<http://i.imgur.com/guuqSBR.png>)
+![Rotational Symmetry](http://i.imgur.com/guuqSBR.png)
 
 Radial Symmetry is the next most complicated(but not by much).
 
-![Radial Symmetry](<http://i.imgur.com/ZwfO5zN.png>)
+![Radial Symmetry](http://i.imgur.com/ZwfO5zN.png)
 
 ![Radial Symmetry 2](<http://i.imgur.com/6k1PaCd.png>)
 
@@ -78,22 +75,45 @@ across the point on the x axis.
 
 This can produce effects like this
 
-![Combinations](<http://i.imgur.com/FdDpbov.png>)
+![Combinations](http://i.imgur.com/FdDpbov.png)
 
-![Combinations 2](<http://i.imgur.com/1CN9EY9.png>)
+![Combinations 2](http://i.imgur.com/1CN9EY9.png)
 
-If Swastikas offend you, then you may find yourself offended quite a lot while
-using the 90 degree symmetry, but as that is a feature of the geometry itself, I
-see no means of correcting it other than fixing its users.
+### Telling Symmetries apart
+
+In this program, due to a very rapid development period in the beginning, the wonderfully expressive symmetries that existed in symmetricity are shown instead by featureless rectangles. These triangles are not configurable at the moment, nor are they textured.
+
+Here's a table explaining what each color means:
+
+|Color|Type|
+|-----|----|
+|Pink | 90 degree rotational (counter clockwise) increments|
+|Blue| Radial|
+|Green|X axis|
+|Red|Y axis|
+
+#### What's this dumb white triangle?
+
+That's the point in the blueprint which the exported CSV starts designating or building from.
+
+### Turning the damned things off
+
+Radial symmetries must have the cursor over them to toggle.
+
+X axis symmetry may have the cursor anywhere so long as the x-coordinate is the same.
+
+Y axis symmetry is the same as the x axis symmetry excepting that it cares about the Y coordinate.
+
+Rotational symmetries must also have the cursor over the same spot as the symmetry.
+
 
 Configuration
 -------------
 
 Configuration support is provided by [GetPot](http://getpot.sourceforge.net/),
 and therefore the issues that come up in configuration may prove to be best
-answered in its own docs. Other than that, it’s not terribly complicated.
-
- 
+answered in its own docs. Other than that, it's not terribly complicated.
+ 
 
 The configuration file is `Symmetricality.pot`. It *must* be in the working directory of Symmetricality(As will the assets such as the linked libraries(for windows only), the font, the texture files, etc).
 
@@ -115,7 +135,7 @@ The `[designation]` section contains information specific to the configuration o
 The item `use_textures` toggles this functionality.
 The `width` and `height` directives are the width and height of each designation "glyph".
 
-If you are creating a different texture for the designations, they must appear on a horizontal arrangement across a single image in the order 
+If you are creating a different texture for the designations, they must appear on a horizontal arrangement across a single image in the order(left to right)
 
 1) dig
 2) down stairs
@@ -124,7 +144,7 @@ If you are creating a different texture for the designations, they must appear o
 5) ramp
 6) channel
 
-These glyphs are colorizes by replacing the color white in the texture during runtime, so multiple colors are allowed.
+These glyphs are colorized by replacing the color white in the texture during runtime, so the interface retains the custom colors when using the designation texture.
 
 Buildings are significantly more complex
 
@@ -148,8 +168,16 @@ Each building is defined by six variables at the top level.
 6) `center_y` specifies the y center of the building(not used right now)
 
 After that, there is another section called `texturecoords` that is inside the `[building/<id>/]` section.
-This defines the area of the spritesheet that are shown when the building is drawn. `X1` is the starting point on the left hand side of the sprite(starting at 0)
-`X2` is the right side of the sprite. 
-`Y1` is the top of the sprite. `Y2` is the bottom of the sprite.
+This defines the area of the spritesheet that are shown when the building is drawn.
+
+1) `X1` is the starting point on the left hand side of the sprite(starting at 0)
+
+2) `X2` is the right side of the sprite.
+
+3) `Y1` is the top of the sprite.
+
+4) `Y2` is the bottom of the sprite.
 
 Strange things happen if any of these are not defined, so check these values if the building is not displayed properly.
+
+Error reporting on the configuration is extremely sparse, and often the only sign that a single syntax error has been made is the absence of buildings or unusual or inaccurate designation colors.
