@@ -289,6 +289,12 @@ void Blueprint::setDesignation(char i) {
 void Blueprint::setBuilding(const Building* the_thing){
 	current_building = the_thing;
 }
+bool Blueprint::isBuilding(int x, int y, int z)const{
+	auto f = _occupation.find(z);
+	if (f != _occupation.end())
+		return f->second.find(sf::Vector2i(x,y))!=f->second.end();
+	return false;
+}
 bool Blueprint::isDesignating() const {
 	return start_set;
 }
@@ -391,10 +397,11 @@ std::vector<sf::Vector2i> Blueprint::applySymmetry(sf::Vector2i start) const {
 }
 
 void Blueprint::placeBuilding(int x, int y, int z, const Building &building) {
-	for (auto i : applySymmetry(sf::Vector2i(x, y))) {
-		if (building.getSequence().size() == 0){
+	auto symmetry_results = applySymmetry(sf::Vector2i(x, y));
+	for (auto i : symmetry_results) {
+		if (building.getSequence()==""){
 			if (_Buildings[z].find(i) != _Buildings[z].end()){
-				remove_occupation(x, y, z, _Buildings_size[z].find(i)->second);
+				remove_occupation(i.x, i.y, z, _Buildings_size[z].find(i)->second);
 			}
 			_Buildings[z].erase(i);
 			_Buildings_size[z].erase(i);
@@ -414,24 +421,8 @@ const std::unordered_map<sf::Vector2i, std::string> Blueprint::getLevelBuildings
 }
 
 void Blueprint::remove_occupation(int x, int y, int z, sf::Vector2i size){
-	int sx=0, sy=0, ex=0, ey=0;
-	if (size.x == 3 && size.y == 3){
-		sx = -1;
-		sy = -1;
-		ex = 1;
-		ey = 1;
-	}
-	else if (size.x == 1 && size.y == 1)
-	{
-		sx = 0;
-		sy = 0;
-		ex = 0;
-		ey = 0;
-	}
-	for (int ix = sx; ix <= ex; ix++){
-		for (int iy = sy;iy <= ey; iy++){
-			_occupation[z].erase(sf::Vector2i(x + ix, y + iy));
-		}
+	for (auto i : getInRadius(x, y, size)){
+		_occupation[z].erase(i);
 	}
 }
 
@@ -444,6 +435,7 @@ std::vector<sf::Vector2i> Blueprint::getInRadius(int x, int y, sf::Vector2i rad)
 	for (int ix = sx; ix <= ex; ix++){
 		for (int iy = sy; iy <= ey; iy++){
 			result.push_back(sf::Vector2i(x + ix, y + iy));
+			
 		}
 	}
 	return result;
