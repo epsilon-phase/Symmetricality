@@ -29,6 +29,7 @@ size_x = 1 size_y = 1
 center_x = 0 center_y = 0
 render_start_x = 0 render_start_y = 0
 render_end_x = 1 render_end_y = 1
+blocking = '1'
 [./texturecoords]
 X1 = 0 X2 = 9 Y1 = 0 Y2 = 9
 [../../1]
@@ -47,6 +48,7 @@ size_x = 1 size_y = 1
 center_x = 0 center_y = 0
 render_start_x = 0 render_start_y = 0
 render_end_x = 1 render_end_y = 1
+blocking = '0'
 [./texturecoords]
 X1 = 20 X2 = 29 Y1 = 0 Y2 = 9
 [../../3]
@@ -56,6 +58,7 @@ size_x = 3 size_y = 3
 render_start_x = -1 render_start_y = -1 
 render_end_x = 2 render_end_y = 2
 center_x = 1 center_y = 1
+blocking = '000101000'
 [./texturecoords]
 X1 = 0 X2 = 29 Y1 = 10 Y2 = 39
 [../../4]
@@ -65,6 +68,7 @@ size_x = 3 size_y = 3
 render_start_x = -1 render_start_y = -1 
 render_end_x = 2 render_end_y = 3
 center_x = 1 center_y = 1
+blocking = '000101000'
 [./texturecoords]
 X1 = 30 Y1 = 10 X2 = 59 Y2 = 49
 [../../5]
@@ -74,6 +78,7 @@ size_x = 1 size_y = 1
 center_x = 0 center_y = 0
 render_start_x = 0 render_start_y = 0
 render_end_x = 1 render_end_y = 1
+blocking = '1'
 [./texturecoords]
 X1 = 30 X2 = 39 Y1 = 0 Y2 = 9
 [../../6]
@@ -89,6 +94,7 @@ size_x = 1 size_y = 1
 render_start_x = 0 render_start_y = 0
 render_end_x = 1 render_end_y = 1
 center_x = 0 center_y = 0
+blocking = '0'
 [./texturecoords]
 X1 = 40 X2 = 49 Y1 = 0 Y2 = 9
 
@@ -97,6 +103,7 @@ Buildingname = 'Door'
 key_sequence = 'd'
 size_x = 1 size_y = 1
 center_x = 0 center_y = 0
+blocking = '1'
 render_start_x = 0 render_start_y = 0
 render_end_x = 1 render_end_y = 1
 [./texturecoords]
