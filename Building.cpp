@@ -70,7 +70,6 @@ void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thin
 Building Building::fromPot(int number, GetPot &conf) {
     std::stringstream z;
     z << "buildings/" << number << "/" << "Buildingname";
-    std::string curbuild = std::to_string(number);
     std::string bname = conf(z.str().c_str(), "");
 	std::string blocking;
     std::cout << "Building_name:" << bname << std::endl;
