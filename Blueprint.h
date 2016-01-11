@@ -23,7 +23,7 @@ public:
     ~Blueprint();
     void insert(int x,int y,int z,char designation);
     const std::unordered_map<sf::Vector2i,char>& getLevelDesignation(int level);
-    
+    const std::unordered_set<sf::Vector2i> & getImpliedDesignation(int level);
     void setDesignationToggle(int x,int y,int z,application_pattern e=RECTANGLE,bool build=false);
     void setDesignationToggle(sf::Vector3i,application_pattern e=RECTANGLE,bool build=false);
     void serialize(const std::string& file)const;
@@ -59,6 +59,7 @@ private:
 	std::map<int, std::unordered_map<sf::Vector2i, sf::Vector2i> > _Buildings_size;
 	std::vector<sf::Vector2i> getInRadius(int x, int y, sf::Vector2i rad);
 	std::map<int, std::unordered_set<sf::Vector2i> > _occupation;
+	std::map<int,std::unordered_set<sf::Vector2i> > _implied;
     std::vector<Symmetry> _symmetries;
     bool start_set=false;
 };
