@@ -256,9 +256,19 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
                                                                      : Blueprint::LINE, building_mode);
     if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == 1) {
         right_button_down = true;
+        since_last_click=sf::Clock();
+        this->old_mouse_pos=b;
     }
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == 1) {
         right_button_down = false;
+        auto f=since_last_click.restart().asMilliseconds();
+        if(f<=500){
+            click_count++;
+            if(click_count>2)
+                setPosition(0,0);
+        }else
+            click_count=0;
+
     }
 
     designation_changed = true;
@@ -266,11 +276,12 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
 }
 
 void PlanRenderer::handleMouseOver(const sf::Vector2f &relative_to_view) {
+
+    sf::Vector2f transformed_point = getInverseTransform().transformPoint(relative_to_view);
     if (right_button_down) {
         this->move(relative_to_view.x - old_mouse_pos.x, relative_to_view.y - old_mouse_pos.y);
         old_mouse_pos = relative_to_view;
     }
-    sf::Vector2f transformed_point = getInverseTransform().transformPoint(relative_to_view);
     sf::Vector2i mouse_position = sf::Vector2i((int) floor(transformed_point.x / m_square_size),
                                                (int) floor(transformed_point.y / m_square_size));
     if (blueprint.isDesignating())
