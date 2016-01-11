@@ -52,6 +52,13 @@ friend class Hud;
      */
     bool clear_primed=false;
     bool building_mode=false;
+    /**
+     * Mouse stuff, for panning and zooming.
+     */
+    bool right_button_down=false;
+    sf::Vector2f old_mouse_pos=sf::Vector2f(0,0);
+    sf::Clock since_last_click;
+    int click_count=0;
 public:
     PlanRenderer();
 

@@ -29,7 +29,7 @@ int main() {
             if (e.type == sf::Event::Closed) {
                 target.close();
             }
-            if (e.type == sf::Event::MouseButtonPressed) {
+            if (e.type == sf::Event::MouseButtonPressed||e.type==sf::Event::MouseButtonReleased) {
                 auto coord = sf::Mouse::getPosition(target);
                 auto mcoord = target.mapPixelToCoords(coord, view);
                 plan.handle_mouse(e, mcoord);
