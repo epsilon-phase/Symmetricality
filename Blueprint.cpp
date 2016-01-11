@@ -160,10 +160,23 @@ void Blueprint::deserialize(const std::string &file) {
 void Blueprint::setDesignation(int x, int y, int z, char d) {
     _occupation[z].reserve(0);
     if (_occupation.find(z)->second.find(sf::Vector2i(x, y)) == _occupation.find(z)->second.end()) {
-        if (d != 'x')
+        if (d != 'x') {
             this->_Designations[z][sf::Vector2i(x, y)] = d;
-        else
+            if (d == 'r')
+                this->_implied[z + 1].insert(sf::Vector2i(x, y));
+            if (d == 'h')
+                this->_implied[z - 1].insert(sf::Vector2i(x, y));
+        } else {
+            auto c = this->_Designations[z].find(sf::Vector2i(x, y);
+            if (c != this->_Designations[z].end()) {
+                if (c->second == 'r')
+                    this->_implied[z + 1].erase(sf::Vector2i(x, y));
+                if (c->second == 'h')
+                    this->_implied[z - 1].erase(sf::Vector2i(x, y));
+
+            }
             this->_Designations[z].erase(sf::Vector2i(x, y));
+        }
     }
 }
 
