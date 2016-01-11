@@ -59,6 +59,7 @@ friend class Hud;
     sf::Vector2f old_mouse_pos=sf::Vector2f(0,0);
     sf::Clock since_last_click;
     int click_count=0;
+    mutable sf::View viewable_area;
 public:
     PlanRenderer();
 

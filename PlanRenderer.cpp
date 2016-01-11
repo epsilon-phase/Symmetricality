@@ -36,6 +36,7 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
         target.draw(Designation_preview, states);
     states.texture = NULL;
     target.draw(Cursor, states);
+    viewable_area=target.getView();
 }
 
 void PlanRenderer::build_vertex_array() {
@@ -168,6 +169,20 @@ void PlanRenderer::handle_event(sf::Event event) {
 void PlanRenderer::move_cursor(int x, int y) {
     cursorpos.x += x;
     cursorpos.y += y;
+    sf::Vector2f raw(cursorpos.x*m_square_size,cursorpos.y*m_square_size);
+    sf::Vector2f transformed=getTransform().transformPoint(raw);
+    if(transformed.x>viewable_area.getSize().x/2){
+        move(-m_square_size*std::abs(x),0);
+    }else{
+        if(transformed.x<viewable_area.getCenter().x-viewable_area.getSize().x/2)
+            move(m_square_size*std::abs(x),0);
+    }
+    if(transformed.y>viewable_area.getSize().y/2){
+        move(0,-m_square_size*std::abs(y));
+    }else{
+        if(transformed.y<viewable_area.getCenter().y-viewable_area.getSize().y/2)
+            move(0,m_square_size*std::abs(y));
+    }
     build_vertex_array();
 }
 
