@@ -286,6 +286,9 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
         since_last_click=sf::Clock();
         this->old_mouse_pos=b;
     }
+    if(event.type==sf::Event::MouseWheelMoved){
+        m_square_size+=event.mouseWheel.delta;
+    }
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == 1) {
         right_button_down = false;
         auto f=since_last_click.restart().asMilliseconds();
