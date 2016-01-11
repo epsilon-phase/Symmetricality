@@ -40,7 +40,6 @@ public:
     void placeBuilding(int x,int y,int z,const Building& building);
     const std::unordered_map<sf::Vector2i,std::string> getLevelBuildings(int level);
 	void setBuilding(const Building* the_thing);
-	bool isBuilding(int x, int y, int z)const;
 private:
     void getBounds(int& minx,int& miny,int&maxx,int&maxy)const;
     void setDesignation(int x,int y,int z,char d);

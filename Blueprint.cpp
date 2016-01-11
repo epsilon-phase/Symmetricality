@@ -289,12 +289,6 @@ void Blueprint::setDesignation(char i) {
 void Blueprint::setBuilding(const Building* the_thing){
 	current_building = the_thing;
 }
-bool Blueprint::isBuilding(int x, int y, int z)const{
-	auto f = _occupation.find(z);
-	if (f != _occupation.end())
-		return f->second.find(sf::Vector2i(x,y))!=f->second.end();
-	return false;
-}
 bool Blueprint::isDesignating() const {
 	return start_set;
 }
