@@ -32,6 +32,16 @@ Symmetricality supports some very basic mouse input at the moment. Basically you
 | F1               | Toggle the text overlay.                         |
 |b				   | Toggle build mode								  |
 
+The following mouse based actions are also included.
+
+| Mouse action     | Result |
+|------------------|--------|
+|Right click drag  | Pan around the blueprint|
+|Left click drag   | Designate from one point to another|
+|Right double click|Move back to the center of the blueprint|
+
+
+
 The primary cause for the lack of Csv import support comes from the difficulty
 of adapting a 3d representation of a blueprint into a 2 dimensional file
 format(Yes, quickfort does have support for 3d plans), however supporting that
