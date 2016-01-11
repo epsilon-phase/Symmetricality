@@ -48,6 +48,7 @@ private:
 	void designateLine(bool building);
 	void designate(application_pattern e = RECTANGLE,bool building=false);
 	void remove_occupation(int x,int y,int z,sf::Vector2i size);
+	void build_implied();
     std::vector<sf::Vector2i> applySymmetry(sf::Vector2i)const;
     application_pattern designation_type=NONE;
     sf::Vector3i designation_start,designation_end;

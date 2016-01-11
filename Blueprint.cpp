@@ -155,6 +155,8 @@ void Blueprint::deserialize(const std::string &file) {
         }
         _Designations[z][sf::Vector2i(x, y)] = d;
     }
+    _implied.clear();
+    build_implied();
 }
 
 void Blueprint::setDesignation(int x, int y, int z, char d) {
@@ -469,4 +471,29 @@ std::vector<sf::Vector2i> Blueprint::getInRadius(int x, int y, sf::Vector2i rad)
 
 const std::unordered_set<sf::Vector2i> &Blueprint::getImpliedDesignation(int level) {
     return _implied[level];
+}
+
+void Blueprint::build_implied() {
+    for(auto cfloor : _Designations){
+        for(auto desig: cfloor.second){
+            switch(desig.second){
+                case 'h':
+                case 'j':
+                    _implied[cfloor.first-1].reserve(0);
+                    _implied[cfloor.first-1].insert(desig.first);
+                    break;
+                case 'r':
+                case 'u':
+                    _implied[cfloor.first+1].reserve(0);
+                    _implied[cfloor.first+1].insert(desig.first);
+                    break;
+                case 'i':
+                    _implied[cfloor.first-1].reserve(0);
+                    _implied[cfloor.first+1].reserve(0);
+                    _implied[cfloor.first-1].insert(desig.first);
+                    _implied[cfloor.first+1].insert(desig.first);
+                    break;
+            }
+        }
+    }
 }
