@@ -159,15 +159,25 @@ void Blueprint::deserialize(const std::string &file) {
 
 void Blueprint::setDesignation(int x, int y, int z, char d) {
     _occupation[z].reserve(0);
+    _implied[z+1].reserve(0);
+    _implied[z-1].reserve(0);
     if (_occupation.find(z)->second.find(sf::Vector2i(x, y)) == _occupation.find(z)->second.end()) {
         if (d != 'x') {
+            auto c = this->_Designations[z].find(sf::Vector2i(x, y));
+            if (c != this->_Designations[z].end()) {
+                if (c->second == 'r')
+                    this->_implied[z + 1].erase(sf::Vector2i(x, y));
+                if (c->second == 'h')
+                    this->_implied[z - 1].erase(sf::Vector2i(x, y));
+
+            }
             this->_Designations[z][sf::Vector2i(x, y)] = d;
             if (d == 'r')
                 this->_implied[z + 1].insert(sf::Vector2i(x, y));
             if (d == 'h')
                 this->_implied[z - 1].insert(sf::Vector2i(x, y));
         } else {
-            auto c = this->_Designations[z].find(sf::Vector2i(x, y);
+            auto c = this->_Designations[z].find(sf::Vector2i(x, y));
             if (c != this->_Designations[z].end()) {
                 if (c->second == 'r')
                     this->_implied[z + 1].erase(sf::Vector2i(x, y));
@@ -455,4 +465,8 @@ std::vector<sf::Vector2i> Blueprint::getInRadius(int x, int y, sf::Vector2i rad)
         }
     }
     return result;
+}
+
+const std::unordered_set<sf::Vector2i> &Blueprint::getImpliedDesignation(int level) {
+    return _implied[level];
 }

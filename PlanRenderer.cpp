@@ -55,10 +55,22 @@ void PlanRenderer::buildDesignationArray() {
     //TODO figure out a more efficient way to do this..
     //TODO figure out if it makes sense to make it more efficient than this.
     int iter = 0;
+    sf::Vertex *current;
     for (auto i:*current_floor) {
-        sf::Vertex *current = &Rendering_plan[iter];
+        current = &Rendering_plan[iter];
         generate_designation_tile(i.first.x, i.first.y, i.second, current);
         iter += 4;
+    }
+    auto current_implications=blueprint.getImpliedDesignation(Floornum);
+    if(!current_implications.empty()){
+        for(auto i : current_implications){
+            if(current_floor->find(i)!=current_floor->end())
+                continue;//This has already been drawn
+            Rendering_plan.resize(4+Rendering_plan.getVertexCount());
+            current=&Rendering_plan[Rendering_plan.getVertexCount()-4];
+            generate_designation_tile(i.x,i.y,'I',current);
+
+        }
     }
 }
 
@@ -236,11 +248,11 @@ void PlanRenderer::change_designation(bool up) {
         if (building_mode) {
             if (current_building == _building_types.begin())
                 current_building = _building_types.end();
-            ++current_building;
+            --current_building;
         } else {
             if (current_designation == designation_colors.begin())
                 current_designation = designation_colors.end();
-            ++current_designation;
+            --current_designation;
         }
     }
 
@@ -438,6 +450,8 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_texcoords['i'] = sf::IntRect(designation_width * 3, 0, designation_width, designation_height);
         designation_texcoords['r'] = sf::IntRect(designation_width * 4, 0, designation_width, designation_height);
         designation_texcoords['h'] = sf::IntRect(designation_width * 5, 0, designation_width, designation_height);
+        designation_texcoords['I'] = sf::IntRect(designation_width*6,0,designation_width,designation_height);
+        setColor('I',sf::Color(255,160,0));
         for (auto f : designation_texcoords) {
             sf::Color nc = designation_colors[f.first];
             for (int ix = 0; ix < f.second.width; ix++) {
@@ -449,6 +463,8 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
                 }
             }
         }
+        designation_colors.erase('I');
+        current_designation=designation_colors.begin();
         designationTexture.loadFromImage(designation_src);
         std::cout << "Image of size:" << designation_src.getSize().x << "x" << designation_src.getSize().y << std::endl;
     }
