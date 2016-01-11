@@ -47,7 +47,7 @@ void PlanRenderer::build_vertex_array() {
 }
 
 void PlanRenderer::buildDesignationArray() {
-    sf::Vertex *current;
+
     auto current_floor = &blueprint.getLevelDesignation(Floornum);
     Rendering_plan.resize(current_floor->size() * 4);
     Rendering_plan.setPrimitiveType(sf::Quads);
@@ -55,7 +55,7 @@ void PlanRenderer::buildDesignationArray() {
     //TODO figure out if it makes sense to make it more efficient than this.
     int iter = 0;
     for (auto i:*current_floor) {
-        current = &Rendering_plan[iter];
+        sf::Vertex *current = &Rendering_plan[iter];
         generate_designation_tile(i.first.x,i.first.y,i.second,current);
         iter += 4;
     }
@@ -221,11 +221,11 @@ void PlanRenderer::change_designation(bool up) {
         if (building_mode) {
             if (current_building == _building_types.begin())
                 current_building = _building_types.end();
-            current_building--;
+            ++current_building;
         } else {
             if (current_designation == designation_colors.begin())
                 current_designation = designation_colors.end();
-            current_designation--;
+            ++current_designation;
         }
     }
 
