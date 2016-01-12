@@ -174,7 +174,7 @@ void Blueprint::setDesignation(int x, int y, int z, char d) {
 
             }
             this->_Designations[z][sf::Vector2i(x, y)] = d;
-            if (d == 'r' || d == 'i' || c == 'j')
+            if (d == 'r' || d == 'i' || d == 'j')
                 this->_implied[z + 1].insert(sf::Vector2i(x, y));
             if (d == 'h' || d == 'i' || d == 'j')
                 this->_implied[z - 1].insert(sf::Vector2i(x, y));
