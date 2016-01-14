@@ -21,7 +21,7 @@ height = 10
 
 [buildings]
 building_sheet = buildings.png
-BuildingCount = 9
+BuildingCount = 12
 [./0]
 Buildingname = 'Wall'
 key_sequence = 'Cw'
@@ -108,3 +108,36 @@ render_start_x = 0 render_start_y = 0
 render_end_x = 1 render_end_y = 1
 [./texturecoords]
 X1=50 X2 = 59 Y1 = 0 Y2 = 9
+
+[../../9]
+Buildingname = 'statue'
+key_sequence = 's'
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+blocking = '1'
+render_start_x = 0 render_start_y = 0
+render_end_x = 1 render_end_y = 1
+[./texturecoords]
+X1=60 X2 = 69 Y1 = 0 Y2 = 9
+
+[../../10]
+Buildingname = 'glass window'
+key_sequence = 'y'
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+blocking = '1'
+render_start_x = 0 render_start_y = 0
+render_end_x = 1 render_end_y = 1
+[./texturecoords]
+X1=70 X2 = 79 Y1 = 0 Y2 = 9
+
+[../../11]
+Buildingname = 'gem window'
+key_sequence = 'Y'
+size_x = 1 size_y = 1
+center_x = 0 center_y = 0
+blocking = '1'
+render_start_x = 0 render_start_y = 0
+render_end_x = 1 render_end_y = 1
+[./texturecoords]
+X1=80 X2 = 89 Y1 = 0 Y2 = 9
