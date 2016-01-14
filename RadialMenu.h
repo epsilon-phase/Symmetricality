@@ -24,6 +24,7 @@ class RadialMenu :
 	sf::Vector2f pos;
 	int selected = -1;
 	const int rect_size=20;
+	const int open_rate = 30;
 public:
 	RadialMenu();
 	~RadialMenu();

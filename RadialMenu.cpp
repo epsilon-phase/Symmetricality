@@ -20,7 +20,7 @@ void RadialMenu::addItem(const sf::Texture&t, sf::IntRect texrect, std::function
 void RadialMenu::draw(sf::RenderTarget& target, sf::RenderStates)const{
 	if (closed)
 		return;
-	int c_offset = opening ? rect_size - (rect_size - since_opened/10) : rect_size;
+	int c_offset = opening ? rect_size - (rect_size - since_opened/open_rate) : rect_size;
 	since_opened++;
 	sf::Vector2f start_pos(pos.x+c_offset, pos.y+c_offset);
 	int divisor = std::min((int)displayables.size(),max);
@@ -41,7 +41,7 @@ void RadialMenu::draw(sf::RenderTarget& target, sf::RenderStates)const{
 		displayables[i].setPosition(t.transformPoint(start_pos));
 		target.draw(displayables[i]);
 	}
-	if (since_opened/10 >= rect_size)
+	if (since_opened/open_rate >= rect_size)
 		opening = false;
 }
 void RadialMenu::open(sf::Vector2f pos){
