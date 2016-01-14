@@ -36,6 +36,7 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
         target.draw(Designation_preview, states);
     states.texture = NULL;
     target.draw(Cursor, states);
+	target.draw(menu);
     viewable_area=target.getView();
 }
 
@@ -273,18 +274,24 @@ void PlanRenderer::deserialize(const std::string &string) {
 }
 
 void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
+	if(menu.handle_event(event,b))return ;
     auto transformed = getInverseTransform().transformPoint(b);
     sf::Vector2i mouse_position = sf::Vector2i((int) floor(transformed.x / m_square_size),
                                                (int) floor(transformed.y / m_square_size));
-    if (event.mouseButton.button == 0)
-        blueprint.setDesignationToggle(sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
-                                       event.mouseButton.button == 0 ? (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
-                                                                        ? Blueprint::CIRCLE : Blueprint::RECTANGLE)
-                                                                     : Blueprint::LINE, building_mode);
-    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == 1) {
-        right_button_down = true;
-        since_last_click=sf::Clock();
-        this->old_mouse_pos=b;
+
+    if (event.type == sf::Event::MouseButtonPressed) {
+		if (event.mouseButton.button == 0)
+			blueprint.setDesignationToggle(
+				sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
+				sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)? 
+					(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)?
+						Blueprint::CIRCLE : Blueprint::RECTANGLE)
+					: Blueprint::LINE, building_mode);
+		else if (event.mouseButton.button == 1){
+			right_button_down = true;
+			since_last_click = sf::Clock();
+			this->old_mouse_pos = b;
+		}
     }
     if(event.type==sf::Event::MouseWheelMoved){
         m_square_size+=event.mouseWheel.delta;
@@ -292,7 +299,9 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == 1) {
         right_button_down = false;
         auto f=since_last_click.restart().asMilliseconds();
-        if(f<=500){
+		if (f < 150){
+			menu.open(b);
+		}else if (f <= 500){
             click_count++;
             if(click_count>2)
                 setPosition(0,0);
@@ -306,7 +315,6 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
 }
 
 void PlanRenderer::handleMouseOver(const sf::Vector2f &relative_to_view) {
-
     sf::Vector2f transformed_point = getInverseTransform().transformPoint(relative_to_view);
     if (right_button_down) {
         this->move(relative_to_view.x - old_mouse_pos.x, relative_to_view.y - old_mouse_pos.y);
@@ -470,7 +478,19 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         current_designation=designation_colors.begin();
         designationTexture.loadFromImage(designation_src);
         std::cout << "Image of size:" << designation_src.getSize().x << "x" << designation_src.getSize().y << std::endl;
+		initializeMenu();
     }
     //Reset prefix so that it does not interfere with other things
     pot.set_prefix("");
+}
+
+void PlanRenderer::initializeMenu(){
+	for (auto i : designation_texcoords){
+		if (i.first != 'I')//no implied tile
+			menu.addItem(designationTexture, i.second, [=](){this->setDesignation(i.first); });
+	}
+	menu.open(sf::Vector2f(0, 0));
+}
+void PlanRenderer::setDesignation(char e){
+	this->current_designation = designation_colors.find(e);
 }

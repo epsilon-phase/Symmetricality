@@ -14,6 +14,7 @@
 #include "Blueprint.h"
 #include "Building.h"
 #include "GetPot"
+#include "RadialMenu.h"
 
 class PlanRenderer : public sf::Drawable, sf::Transformable {
 	std::map<char, sf::Color> designation_colors;
@@ -79,6 +80,7 @@ public:
     void loadBuildingTexture(const std::string& filename);
     void getLoadBuildings(GetPot& );
     void loadDesignationConfiguration(GetPot &);
+	void setDesignation(char e);
 private:
     /**
      * Move up and down z-levels
@@ -119,6 +121,8 @@ private:
     void buildBuildingArray();
     void buildCursorArray();
     void buildSymmetryArray();
+	void initializeMenu();
+	RadialMenu menu;
 };
 
 

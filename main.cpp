@@ -30,7 +30,7 @@ int main() {
                 target.close();
             }
             if (e.type == sf::Event::MouseButtonPressed||e.type==sf::Event::MouseButtonReleased
-				||e.type==sf::Event::MouseWheelMoved) {
+				|| e.type == sf::Event::MouseWheelMoved || e.type == sf::Event::MouseMoved) {
                 auto coord = sf::Mouse::getPosition(target);
                 auto mcoord = target.mapPixelToCoords(coord, view);
                 plan.handle_mouse(e, mcoord);
