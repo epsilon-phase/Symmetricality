@@ -462,6 +462,7 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_texcoords['r'] = sf::IntRect(designation_width * 4, 0, designation_width, designation_height);
         designation_texcoords['h'] = sf::IntRect(designation_width * 5, 0, designation_width, designation_height);
         designation_texcoords['I'] = sf::IntRect(designation_width*6,0,designation_width,designation_height);
+		designation_texcoords['x'] = sf::IntRect(designation_width * 7, 0, designation_width, designation_height);
         setColor('I',sf::Color(255,160,0));
         for (auto f : designation_texcoords) {
             sf::Color nc = designation_colors[f.first];
@@ -477,7 +478,6 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_colors.erase('I');
         current_designation=designation_colors.begin();
         designationTexture.loadFromImage(designation_src);
-        std::cout << "Image of size:" << designation_src.getSize().x << "x" << designation_src.getSize().y << std::endl;
 		initializeMenu();
     }
     //Reset prefix so that it does not interfere with other things
@@ -489,7 +489,6 @@ void PlanRenderer::initializeMenu(){
 		if (i.first != 'I')//no implied tile
 			menu.addItem(designationTexture, i.second, [=](){this->setDesignation(i.first); });
 	}
-	menu.open(sf::Vector2f(0, 0));
 }
 void PlanRenderer::setDesignation(char e){
 	this->current_designation = designation_colors.find(e);
