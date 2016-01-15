@@ -66,7 +66,14 @@ void Building::getAdjustedCoords(int x, int y, int square_size, sf::Vertex *thin
     thing[3].position.y = square_size * y2;
 
 }
-
+sf::IntRect Building::getTextureRect()const{
+	sf::IntRect f;
+	f.top = ty1;
+	f.left = tx1;
+	f.width = tx2 - tx1;
+	f.height = ty2 - ty1;
+	return f;
+}
 Building Building::fromPot(int number, GetPot &conf) {
     std::stringstream z;
 
