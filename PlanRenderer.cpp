@@ -285,9 +285,10 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
 			blueprint.setDesignationToggle(
 				sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
 				sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)? 
-					(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)?
+					Blueprint::LINE
+					:(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)?
 						Blueprint::CIRCLE : Blueprint::RECTANGLE)
-					: Blueprint::LINE, building_mode);
+					, building_mode);
 		else if (event.mouseButton.button == 1){
 			right_button_down = true;
 			since_last_click = sf::Clock();
