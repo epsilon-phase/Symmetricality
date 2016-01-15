@@ -36,6 +36,7 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
         target.draw(Designation_preview, states);
     states.texture = NULL;
     target.draw(Cursor, states);
+	target.draw(building_mode?build_menu:menu);
     viewable_area=target.getView();
 }
 
@@ -273,18 +274,26 @@ void PlanRenderer::deserialize(const std::string &string) {
 }
 
 void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
+	if(!building_mode&&menu.handle_event(event,b))return ;
+	if (building_mode&&build_menu.handle_event(event, b))return;
     auto transformed = getInverseTransform().transformPoint(b);
     sf::Vector2i mouse_position = sf::Vector2i((int) floor(transformed.x / m_square_size),
                                                (int) floor(transformed.y / m_square_size));
-    if (event.mouseButton.button == 0)
-        blueprint.setDesignationToggle(sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
-                                       event.mouseButton.button == 0 ? (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
-                                                                        ? Blueprint::CIRCLE : Blueprint::RECTANGLE)
-                                                                     : Blueprint::LINE, building_mode);
-    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == 1) {
-        right_button_down = true;
-        since_last_click=sf::Clock();
-        this->old_mouse_pos=b;
+
+    if (event.type == sf::Event::MouseButtonPressed) {
+		if (event.mouseButton.button == 0)
+			blueprint.setDesignationToggle(
+				sf::Vector3i(mouse_position.x, mouse_position.y, Floornum),
+				sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)? 
+					Blueprint::LINE
+					:(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)?
+						Blueprint::CIRCLE : Blueprint::RECTANGLE)
+					, building_mode);
+		else if (event.mouseButton.button == 1){
+			right_button_down = true;
+			since_last_click = sf::Clock();
+			this->old_mouse_pos = b;
+		}
     }
     if(event.type==sf::Event::MouseWheelMoved){
         m_square_size+=event.mouseWheel.delta;
@@ -292,7 +301,14 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == 1) {
         right_button_down = false;
         auto f=since_last_click.restart().asMilliseconds();
-        if(f<=500){
+		if (f < 150){
+			if (building_mode){
+				build_menu.open(b);
+			}
+			else{
+				menu.open(b);
+			}
+		}else if (f <= 500){
             click_count++;
             if(click_count>2)
                 setPosition(0,0);
@@ -306,7 +322,6 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
 }
 
 void PlanRenderer::handleMouseOver(const sf::Vector2f &relative_to_view) {
-
     sf::Vector2f transformed_point = getInverseTransform().transformPoint(relative_to_view);
     if (right_button_down) {
         this->move(relative_to_view.x - old_mouse_pos.x, relative_to_view.y - old_mouse_pos.y);
@@ -337,6 +352,10 @@ void PlanRenderer::getLoadBuildings(GetPot &pot) {
         _building_types[a.getSequence()] = a;
     }
     current_building = _building_types.begin();
+	for (auto i : _building_types){
+		build_menu.addItem(buildingTexture, i.second.getTextureRect(), [=](){setBuilding(i.first); });
+	}
+	std::cout << "Build menu contains " << build_menu.getSize() << " items" << std::endl;
 }
 
 void PlanRenderer::buildBuildingArray() {
@@ -454,6 +473,7 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_texcoords['r'] = sf::IntRect(designation_width * 4, 0, designation_width, designation_height);
         designation_texcoords['h'] = sf::IntRect(designation_width * 5, 0, designation_width, designation_height);
         designation_texcoords['I'] = sf::IntRect(designation_width*6,0,designation_width,designation_height);
+		designation_texcoords['x'] = sf::IntRect(designation_width * 7, 0, designation_width, designation_height);
         setColor('I',sf::Color(255,160,0));
         for (auto f : designation_texcoords) {
             sf::Color nc = designation_colors[f.first];
@@ -469,8 +489,24 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_colors.erase('I');
         current_designation=designation_colors.begin();
         designationTexture.loadFromImage(designation_src);
-        std::cout << "Image of size:" << designation_src.getSize().x << "x" << designation_src.getSize().y << std::endl;
+		initializeMenu();
     }
     //Reset prefix so that it does not interfere with other things
     pot.set_prefix("");
+}
+
+void PlanRenderer::initializeMenu(){
+	for (auto i : designation_texcoords){
+		if (i.first != 'I')//no implied tile
+			menu.addItem(designationTexture, i.second, [=](){this->setDesignation(i.first); });
+	}
+
+}
+void PlanRenderer::setDesignation(char e){
+	this->current_designation = designation_colors.find(e);
+	blueprint.setDesignation(e);
+}
+void PlanRenderer::setBuilding(const std::string& r){
+	this->current_building = _building_types.find(r);
+	this->blueprint.setBuilding(&_building_types.find(r)->second);
 }

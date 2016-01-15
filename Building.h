@@ -37,6 +37,7 @@ public:
 	 */
 	void getTexCoords(sf::Vertex* thing);
 	void getAdjustedCoords(int x, int y, int square_size, sf::Vertex* thing);
+	sf::IntRect getTextureRect()const;
 private:
 	std::vector<overhang_flag> flags;
 	std::vector <signed char> passable;
