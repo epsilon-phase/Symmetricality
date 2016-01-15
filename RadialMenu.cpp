@@ -3,6 +3,7 @@
 #include <iostream>
 RadialMenu::RadialMenu()
 {
+	continuation.loadFromFile("menu_continuance.png");
 }
 
 
@@ -12,6 +13,7 @@ RadialMenu::~RadialMenu()
 void RadialMenu::addItem(const sf::Texture&t, sf::IntRect texrect, std::function<void()> act){
 	if (displayables.size() >= max*menu_added_artificially){
 		sf::RectangleShape z;
+		z.setTexture(&continuation);
 		z.setSize(sf::Vector2f(rect_size, rect_size));
 		z.setFillColor(sf::Color(255, 255, 255)); 
 		displayables.push_back(z);
