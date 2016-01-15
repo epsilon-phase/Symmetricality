@@ -17,6 +17,7 @@ class RadialMenu :
 	std::vector<std::function<void()> > actions;
 	mutable bool opening = false;
 	mutable int since_opened = 0;
+	int menu_added_artificially = 0;
 	/**
 	* Is the menu closed?
 	*/
@@ -32,6 +33,8 @@ public:
 	void open(sf::Vector2f);
 	bool handle_event(sf::Event evt, sf::Vector2f coord);
 	void close();
+	void increaseStart();
+	int getSize()const{ return displayables.size(); }
 protected:
 	virtual void draw(sf::RenderTarget&, sf::RenderStates)const;
 private:

@@ -81,6 +81,7 @@ public:
     void getLoadBuildings(GetPot& );
     void loadDesignationConfiguration(GetPot &);
 	void setDesignation(char e);
+	void setBuilding(const std::string& r);
 private:
     /**
      * Move up and down z-levels
@@ -123,6 +124,7 @@ private:
     void buildSymmetryArray();
 	void initializeMenu();
 	RadialMenu menu;
+	RadialMenu build_menu;
 };
 
 

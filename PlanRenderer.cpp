@@ -36,7 +36,7 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
         target.draw(Designation_preview, states);
     states.texture = NULL;
     target.draw(Cursor, states);
-	target.draw(menu);
+	target.draw(building_mode?build_menu:menu);
     viewable_area=target.getView();
 }
 
@@ -274,7 +274,8 @@ void PlanRenderer::deserialize(const std::string &string) {
 }
 
 void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
-	if(menu.handle_event(event,b))return ;
+	if(!building_mode&&menu.handle_event(event,b))return ;
+	if (building_mode&&build_menu.handle_event(event, b))return;
     auto transformed = getInverseTransform().transformPoint(b);
     sf::Vector2i mouse_position = sf::Vector2i((int) floor(transformed.x / m_square_size),
                                                (int) floor(transformed.y / m_square_size));
@@ -300,7 +301,12 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
         right_button_down = false;
         auto f=since_last_click.restart().asMilliseconds();
 		if (f < 150){
-			menu.open(b);
+			if (building_mode){
+				build_menu.open(b);
+			}
+			else{
+				menu.open(b);
+			}
 		}else if (f <= 500){
             click_count++;
             if(click_count>2)
@@ -345,6 +351,10 @@ void PlanRenderer::getLoadBuildings(GetPot &pot) {
         _building_types[a.getSequence()] = a;
     }
     current_building = _building_types.begin();
+	for (auto i : _building_types){
+		build_menu.addItem(buildingTexture, i.second.getTextureRect(), [=](){setBuilding(i.first); });
+	}
+	std::cout << "Build menu contains " << build_menu.getSize() << " items" << std::endl;
 }
 
 void PlanRenderer::buildBuildingArray() {
@@ -489,7 +499,13 @@ void PlanRenderer::initializeMenu(){
 		if (i.first != 'I')//no implied tile
 			menu.addItem(designationTexture, i.second, [=](){this->setDesignation(i.first); });
 	}
+
 }
 void PlanRenderer::setDesignation(char e){
 	this->current_designation = designation_colors.find(e);
+	blueprint.setDesignation(e);
+}
+void PlanRenderer::setBuilding(const std::string& r){
+	this->current_building = _building_types.find(r);
+	this->blueprint.setBuilding(&_building_types.find(r)->second);
 }

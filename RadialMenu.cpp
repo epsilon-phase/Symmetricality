@@ -10,6 +10,16 @@ RadialMenu::~RadialMenu()
 {
 }
 void RadialMenu::addItem(const sf::Texture&t, sf::IntRect texrect, std::function<void()> act){
+	if (displayables.size() >= max*menu_added_artificially){
+		sf::RectangleShape z;
+		z.setSize(sf::Vector2f(rect_size, rect_size));
+		z.setFillColor(sf::Color(255, 255, 255)); 
+		displayables.push_back(z);
+		actions.push_back([=](){
+			this->increaseStart();
+		});
+		menu_added_artificially++;
+	}
 	sf::RectangleShape e;
 	e.setSize(sf::Vector2f(rect_size, rect_size));
 	e.setTexture(&t);
@@ -23,7 +33,7 @@ void RadialMenu::draw(sf::RenderTarget& target, sf::RenderStates)const{
 	int c_offset = opening ? rect_size - (rect_size - since_opened/open_rate) : rect_size;
 	since_opened++;
 	sf::Vector2f start_pos(pos.x+c_offset, pos.y+c_offset);
-	int divisor = std::min((int)displayables.size(),max);
+	int divisor = std::min((int)displayables.size()-start_index,max);
 	for (int i = 0; i < displayables.size(); i++){
 		sf::Transform t;
 		t = t.rotate(i*(360.0f / divisor),pos.x,pos.y);
@@ -49,6 +59,7 @@ void RadialMenu::open(sf::Vector2f pos){
 	closed = false;
 	since_opened = 0;
 	opening = true;
+	start_index = 0;
 }
 bool RadialMenu::handle_event(sf::Event evt,sf::Vector2f coord){
 	if (closed)//If the menu is closed, no event shall be handled.
@@ -86,4 +97,7 @@ int RadialMenu::intersects(sf::Vector2f f)const{
 }
 void RadialMenu::close(){
 	closed = true;
+}
+void RadialMenu::increaseStart(){
+	start_index += max;
 }
