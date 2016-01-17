@@ -4,7 +4,8 @@
 
 #include "PlanRenderer.h"
 #include <sstream>
-
+#include "Hud.h"
+#include "tinyfiledialogs.h"
 PlanRenderer::PlanRenderer() {
     //This was done to allow visual studio to compile. The vile thing doesn't allow non static initializers.
     designation_colors['d'] = sf::Color(200, 200, 0);
@@ -489,6 +490,8 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_colors.erase('I');
         current_designation=designation_colors.begin();
         designationTexture.loadFromImage(designation_src);
+        pot.set_prefix("menu_icons");
+        menu_utility_texture.loadFromFile(pot("menu_texture", "menu_utility_icons.png"));
 		initializeMenu();
     }
     //Reset prefix so that it does not interfere with other things
@@ -500,7 +503,38 @@ void PlanRenderer::initializeMenu(){
 		if (i.first != 'I')//no implied tile
 			menu.addItem(designationTexture, i.second, [=](){this->setDesignation(i.first); });
 	}
-
+    int menu_tex_width = menu_utility_texture.getSize().x / 3;
+    int menu_tex_height = menu_utility_texture.getSize().y;
+    menu.addItem(menu_utility_texture, sf::IntRect(0, 0, menu_tex_width, menu_tex_height),
+        [=](){
+        const char *filters = "*.ser";
+        std::string file_path = the_hud->default_file_path + "/blueprint.ser";
+        const char *filename = tinyfd_saveFileDialog("Save File", file_path.c_str(), 1,
+            &filters,"Serialized File");
+        if (filename != NULL) {
+            serialize(std::string(filename));
+        }
+    });
+    menu.addItem(menu_utility_texture, sf::IntRect(menu_tex_width, 0, menu_tex_width, menu_tex_height),
+        [=](){
+        const char *filters = "*.ser";
+        std::string file_path = the_hud->default_file_path + "/blueprint.ser";
+        const char *filename = tinyfd_openFileDialog("open File", file_path.c_str(), 1,
+            &filters, "Serialized File",false);
+        if (filename != NULL) {
+            deserialize(std::string(filename));
+        }
+    });
+    menu.addItem(menu_utility_texture, sf::IntRect(menu_tex_width*2, 0, menu_tex_width, menu_tex_height),
+        [=](){
+        const char *filters = "*.csv";
+        std::string file_path = the_hud->default_file_path + "/blueprint.csv";
+        const char *filename = tinyfd_saveFileDialog("export File", file_path.c_str(), 1,
+            &filters, "Comma Separated value");
+        if (filename != NULL) {
+            export_csv(std::string(filename));
+        }
+    });
 }
 void PlanRenderer::setDesignation(char e){
 	this->current_designation = designation_colors.find(e);

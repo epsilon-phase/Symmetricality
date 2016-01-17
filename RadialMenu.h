@@ -30,6 +30,10 @@ class RadialMenu :
 public:
 	RadialMenu();
 	~RadialMenu();
+    /**
+    * Add an item to this menu. The texture specified will be used to display the item, and the IntRect will be the texture coordinates.
+    * The function will be called when it it clicked on.
+    */
 	void addItem(const sf::Texture&, sf::IntRect,std::function<void()> act);
 	void open(sf::Vector2f);
 	bool handle_event(sf::Event evt, sf::Vector2f coord);

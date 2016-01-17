@@ -1,7 +1,7 @@
 Symmetricality
 ==============
 
-More symmetry for everyone :)
+Symmetricality is a fortress designer for [Dwarf Fortress](http://bay12games.com/dwarves) which focuses on providing a simple means of building designation commands for Quickfort, with an added focus on providing functions to make building a symmetric design simple.
 
 Basic Usage
 -----------
@@ -24,13 +24,13 @@ Symmetricality supports some very basic mouse input at the moment. Basically you
 | y                | Add Y Axis Symmetry                              |
 | =                | Change Designation type                          |
 | \-               | Change Designation type                          |
-|Control-=         | Zoom in(sort of)|
-|Control-\-        | Zoom out(sort of)|
+|Control-=         | Zoom in(sort of)                                 |
+|Control-\-        | Zoom out(sort of)                                |
 | Period(.)        | Move down a Z-level                              |
 | Comma(,)         | Move up a Z-level                                |
 | F2               | Take a screenshot.                               |
 | F1               | Toggle the text overlay.                         |
-|b				   | Toggle build mode								  |
+|b				         | Toggle build mode								                |
 
 The following mouse based actions are also included.
 
@@ -39,6 +39,8 @@ The following mouse based actions are also included.
 |Right click drag  | Pan around the blueprint|
 |Left click drag   | Designate from one point to another|
 |Right double click|Move back to the center of the blueprint|
+|Right click| Open menu |
+|mousewheel | Zoom in or out |
 
 
 
@@ -48,9 +50,6 @@ format(Yes, quickfort does have support for 3d plans), however supporting that
 as an import format is more difficult than exporting because it has to accept
 most mistakes that a human designer would make in their creation of a Csv file.
 
-As such, the Csv files that this program generates are not quite up to the
-highest orders of the standard, but given the simplicity of the format, most
-spreadsheet programs should handle the output without issue.
 
 How does the Symmetry work?
 ---------------------------
@@ -104,9 +103,7 @@ Here's a table explaining what each color means:
 |![X axis](http://i.imgur.com/B6gxOqw.png)|X axis|
 |![Y axis](http://i.imgur.com/hHd014N.png)|Y axis|
 |![Start point](http://i.imgur.com/xqWElbw.png)|The starting point for the quickfort file generated|
-#### What's this dumb white triangle?
 
-That's the point in the blueprint which the exported CSV starts designating or building from.
 
 ### Turning the damned things off
 
@@ -155,6 +152,7 @@ If you are creating a different texture for the designations, they must appear o
 4) up/down stairs
 5) ramp
 6) channel
+7) remove(x in df)
 
 These glyphs are colorized by replacing the color white in the texture during runtime, so the interface retains the custom colors when using the designation texture.
 

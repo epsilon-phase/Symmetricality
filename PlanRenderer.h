@@ -25,12 +25,13 @@ friend class Hud;
     sf::VertexArray Cursor;
     sf::VertexArray Buildings;
     std::map<std::string,Building> _building_types;
+    Hud* the_hud;
     int Floornum = 0;
     sf::Vector2i cursorpos=sf::Vector2i(0,0);
     int m_square_size = 10;
     Blueprint blueprint;
     sf::Texture buildingTexture;
-
+    sf::Texture menu_utility_texture;
 	/**
 	* Designation stuff
 	*/
@@ -82,6 +83,18 @@ public:
     void loadDesignationConfiguration(GetPot &);
 	void setDesignation(char e);
 	void setBuilding(const std::string& r);
+    /**
+    * Write a serialized representation of the current blueprint to a file
+    */
+    void serialize(const std::string&)const;
+    /**
+    * Export a Csv(Comma separated value) file with z-levels separated by #>
+    */
+    void export_csv(const std::string &)const;
+    /**
+    * Deserialize a file from the serialize function
+    */
+    void deserialize(const std::string &);
 private:
     /**
      * Move up and down z-levels
@@ -98,18 +111,8 @@ private:
     void add_symmetry(Symmetry::Symmetry_Type type);
     void build_designation();
     void change_designation(bool up);
-    /**
-     * Write a serialized representation of the current blueprint to a file
-     */
-    void serialize(const std::string& )const;
-    /**
-     * Export a Csv(Comma separated value) file with z-levels separated by #>
-     */
-    void export_csv(const std::string &)const;
-    /**
-     * Deserialize a file from the serialize function
-     */
-    void deserialize(const std::string &);
+
+
 	bool canPlace()const;
     /**
      * Creates the designation square

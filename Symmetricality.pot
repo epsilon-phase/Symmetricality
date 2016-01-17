@@ -12,7 +12,8 @@ R = 255 G = 0 B = 0
 R = 132 G = 32 B = 132
 [colors/channel]
 R = 132 G = 128 B = 132
-
+[menu_icons]
+menu_texture = 'menu_utility_icons.png'
 [designation]
 designation_tex = 'designations.png'
 use_textures = 1

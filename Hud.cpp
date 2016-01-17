@@ -17,6 +17,7 @@ Hud::Hud(PlanRenderer &r) : renderer(r) {
     Save.setCharacterSize(15);
     Save.setPosition(0, 50);
     Designation_type.setPosition(0, 75);
+    renderer.the_hud = this;
     Location.setPosition(0, 15);
     update_text();
 }

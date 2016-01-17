@@ -7,6 +7,7 @@
 #include "PlanRenderer.h"
 
 class Hud:public sf::Drawable {
+    friend class PlanRenderer;
     sf::Font Hud_font;
     sf::Vector2i old_cursor;
     int old_floor;
