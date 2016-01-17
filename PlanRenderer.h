@@ -15,6 +15,7 @@
 #include "Building.h"
 #include "GetPot"
 #include "RadialMenu.h"
+
 /**
 * Prototype class for terrible circular requirements. Perfect for cold weekends.
 */
@@ -83,7 +84,9 @@ public:
     void setColor(char f,sf::Color c);
     void loadBuildingTexture(const std::string& filename);
     void getLoadBuildings(GetPot& );
+    void getLoadBuildings(Json::Value);
     void loadDesignationConfiguration(GetPot &);
+    void loadDesignationConfiguration(Json::Value &);
 	void setDesignation(char e);
 	void setBuilding(const std::string& r);
     /**

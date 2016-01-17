@@ -142,3 +142,27 @@ Building Building::fromPot(int number, GetPot &conf) {
     conf.set_prefix("");
     return f;
 }
+Building Building::fromJson(Json::Value v){
+    int sx = v.get("size_x", 0).asInt(),
+        sy = v.get("size_y", 0).asInt(),
+        cx = v.get("center_x", 0).asInt(),
+        cy = v.get("center_y", 0).asInt(),
+        rx1 = v.get("render_start_x", sx).asInt(),
+        ry1 = v.get("render_start_y", sy).asInt(),
+        rx2 = v.get("render_end_x", 0).asInt(),
+        ry2 = v.get("render_end_y", 0).asInt();
+    Json::Value texcoord = v.get("texture_coordinates","[0,0,0,0]");
+    int tx1 = texcoord[0].asInt(),
+        tx2 = texcoord[1].asInt(),
+        ty1 = texcoord[2].asInt(),
+        ty2 = texcoord[3].asInt();
+    std::string bname = v.get("name", "").asString(),
+                key_seq = v.get("key_sequence", "").asString();
+    std::string blocking = v.get("blocking", "0").asString();
+    Building f(bname, key_seq, sf::Vector2i(sx, sy), sf::Vector2i(cx, cy), tx1, ty1, tx2, ty2);
+    for (int i = 0; i < blocking.size(); i++)
+        f.passable.push_back(blocking[i] == '1' ? true : false);
+    f.render_end = sf::Vector2i(rx2, ry2);
+    f.render_start = sf::Vector2i(rx1, ry1);
+    return f;
+}
