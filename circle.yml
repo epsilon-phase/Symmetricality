@@ -17,3 +17,6 @@ dependencies:
     - mv LinLibertine_DRah.ttf $CIRCLE_ARTIFACTS
     - cp assets/sprite_sheet.png $CIRCLE_ARTIFACTS/buildings.png
     - cp Symmetricality.pot $CIRCLE_ARTIFACTS
+	- cp assets/designations.png $CIRCLE_ARTIFACTS
+	- cp assets/menu_continuance.png $CIRCLE_ARTIFACTS
+	- cp assets/menu_utility_icons.png $CIRCLE_ARTIFACTS
