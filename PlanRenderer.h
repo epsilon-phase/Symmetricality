@@ -15,7 +15,10 @@
 #include "Building.h"
 #include "GetPot"
 #include "RadialMenu.h"
-
+/**
+* Prototype class for terrible circular requirements. Perfect for cold weekends.
+*/
+class Hud;
 class PlanRenderer : public sf::Drawable, sf::Transformable {
 	std::map<char, sf::Color> designation_colors;
 friend class Hud;
