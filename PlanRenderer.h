@@ -83,9 +83,8 @@ public:
     void handleMouseOver(const sf::Vector2f& b);
     void setColor(char f,sf::Color c);
     void loadBuildingTexture(const std::string& filename);
-    void getLoadBuildings(GetPot& );
+    
     void getLoadBuildings(Json::Value);
-    void loadDesignationConfiguration(GetPot &);
     void loadDesignationConfiguration(Json::Value &);
 	void setDesignation(char e);
 	void setBuilding(const std::string& r);

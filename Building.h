@@ -18,7 +18,6 @@ class Building {
 	sf::Vector2i center;
 	int tx1, tx2, ty1, ty2;
 public:
-	static Building fromPot(int number, GetPot& conf);
     static Building fromJson(Json::Value);
 	Building(const std::string &name, const std::string &keyseq, sf::Vector2i size, sf::Vector2i center,
 		int x1, int y1, int x2, int y2);
