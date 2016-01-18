@@ -5,6 +5,7 @@
 #include "PlanRenderer.h"
 #include <sstream>
 #include "Hud.h"
+#include <iostream>
 #include "tinyfiledialogs.h"
 PlanRenderer::PlanRenderer() {
     //This was done to allow visual studio to compile. The vile thing doesn't allow non static initializers.

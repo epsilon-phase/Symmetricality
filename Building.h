@@ -6,7 +6,6 @@
 #define SYMMETRICALITY_BUILDING_H
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "GetPot"
 #include "utilities.hpp"
 class Building {
 	std::string key_sequence;
