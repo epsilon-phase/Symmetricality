@@ -105,7 +105,7 @@ Here's a table explaining what each color means:
 |![Start point](http://i.imgur.com/xqWElbw.png)|The starting point for the quickfort file generated|
 
 
-### Turning the damned things off
+### Turning off Symmetries
 
 Radial symmetries must have the cursor over them to toggle.
 
@@ -119,75 +119,62 @@ Rotational symmetries must also have the cursor over the same spot as the symmet
 Configuration
 -------------
 
-Configuration support is provided by [GetPot](http://getpot.sourceforge.net/),
-and therefore the issues that come up in configuration may prove to be best
-answered in its own docs. Other than that, it's not terribly complicated.
- 
+Configuration as of now is provided through [jsoncpp](<https://github.com/open-source-parsers/jsoncpp>). This means that all of the previous documentation about configuration no longer applies. Luckily, the configuration has been made more concise as well as reliable.
 
-The configuration file is `Symmetricality.pot`. It *must* be in the working directory of Symmetricality(As will the assets such as the linked libraries(for windows only), the font, the texture files, etc).
+## Top Level Variables
 
-The only top level directive is `default_path` which defines where the save/export/open dialog opens to. If it is not a valid path, it will open the empty path, which is generally not terribly convenient.
+Json is a hierarchic data store format. Luckily that means that you can get away with ignoring other things when editing one item. The top level directives are the most general in affecting your configuration.
 
-The file is divided into sections which work a bit like directories(again, go to the GetPot documentation).
+1) `"default_file_path"` is the path which is opened by default when saving a blueprint.
+2) `"building_sheet"` is the path to the texture file which buildings are stored in.
+3) `"buildings"` is the variable that contains all of the buildings that are configured currently.
+4) `"designation"` contains the variables relevant to the types of designation.
 
-For example, this defines the color of the dig designation:
+Any additional variables will be ignored, so don't bother.
 
-``` 
-[colors/dig]
-R = 200 G = 200 B = 255
+### Building Definition
+
+So let's just run through the process. There are 3 basic steps to take when adding a building to Symmetricality.
+
+1) Create sprite art
+2) Enter details of the building into the json file
+3) Test
+
+#### Create Sprite Art
+
+Okay, so let's say that we're making the statue that is already in the editor by default.
+
+Normally the dimensions of each sprite is `(10*width) x (10*height)`, but this isn't set in stone, unlike this statue, given that normally the user will see the sprites at a 1 to 1 ratio, 10x10 is the same size as the grid resolution by default(you can't set this now). 
+
+![Building texture example](http://i.imgur.com/Baujezg.png)
+
+Great, now add it to a free spot in the `buildings.png` file in the directory of Symmetricality. 
+
+This sprite occupies the ranges from pixel (60,0) to (69,9).
+
+```language=json
+"buildings":[
+{
+  "name":"statue",
+  "key_sequence":"s",
+  "size_x":1,"size_y":1,
+  "render_start_x":0,
+  "render_start_y":0,
+  "render_end_x":1,
+  "render_end_y":1,
+  "texture_coordinates":[
+    60,69,0,9]
+},
+<other buildings>
+]
 ```
 
-The color components are fairly straightforwards here, the subsection names for the designations are `downward_stairs`, `up_down_stairs`,`upwards_stairs`, `ramp`, and `channel`. 
-The section names in full should be `[colors/<designation_type>]` or if following another designation `[../<designation_type]` is acceptable.
+The `"texture_coordinates"` variable is a list of the positions of the pixels in the order \[x_0,x_1,y_0,y_1\].
 
-The `[designation]` section contains information specific to the configuration of a texture for rendering designations in addition to colorizing them. 
-The item `use_textures` toggles this functionality.
-The `width` and `height` directives are the width and height of each designation "glyph".
+The `"size_x"` and `"size_y"` properties mean that the statue takes up a 1x1 space, which is true in Dwarf Fortress.
 
-If you are creating a different texture for the designations, they must appear on a horizontal arrangement across a single image in the order(left to right)
+The `"render_start_x"` and `"render_start_y"` control where the start of the displayed building is, and the `"render_end_x"` and `"render_end_y"` control where the opposing vertex of the square ends up.
 
-1) dig
-2) down stairs
-3) up stairs
-4) up/down stairs
-5) ramp
-6) channel
-7) remove(x in df)
+This will work for the statue, but they may need to be adjusted for larger buildings to display properly(an example of this is in the forge and smelter buildings).
 
-These glyphs are colorized by replacing the color white in the texture during runtime, so the interface retains the custom colors when using the designation texture.
-
-Buildings are significantly more complex
-
-### Buildings
-
-Not all buildings that exist in Dwarf Fortress are also in Symmetricality. The editor is designed so that it is possible to 
-create building entries without editing the code and recompiling. They exist in the same configuration file that is used to 
-set the designation colors and glyphs(right below them actually).
-
-Buildings are more complicated because they are populated by number instead of by name, as `building/building_count` determines the id ranges that it checks.
-
-Also of note in the toplevel building section is `building_sheet` which is the path(or name of) the image file that contains the sprites.
-
-Each building is defined by six variables at the top level.
-
-1) `Buildingname` specifies what the editor calls it on the gui
-2) `key_sequence` defines the string which builds it in Dwarf Fortress
-3) `size_x` specifies the width of the building(in grid units)
-4) `size_y` specifies the height of the building(in grid units)
-5) `center_x` specifies the center of the building(not used right now)
-6) `center_y` specifies the y center of the building(not used right now)
-
-After that, there is another section called `texturecoords` that is inside the `[building/<id>/]` section.
-This defines the area of the spritesheet that are shown when the building is drawn.
-
-1) `X1` is the starting point on the left hand side of the sprite(starting at 0)
-
-2) `X2` is the right side of the sprite.
-
-3) `Y1` is the top of the sprite.
-
-4) `Y2` is the bottom of the sprite.
-
-Strange things happen if any of these are not defined, so check these values if the building is not displayed properly.
-
-Error reporting on the configuration is extremely sparse, and often the only sign that a single syntax error has been made is the absence of buildings or unusual or inaccurate designation colors.
+There are also another two variables that aren't used called `"center_x"` and `"center_y"` which when implemented properly will determine which piece of the building will end up underneath the cursor.

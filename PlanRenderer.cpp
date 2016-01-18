@@ -344,19 +344,17 @@ void PlanRenderer::loadBuildingTexture(const std::string &filename) {
     this->buildingTexture.loadFromFile(filename);
 
 }
-
-void PlanRenderer::getLoadBuildings(GetPot &pot) {
-    int number = pot("buildings/BuildingCount", 0);
-    std::cout << "Found " << number << " Buildings.\n";
-    for (int i = 0; i < number; i++) {
-        Building a = Building::fromPot(i, pot);
-        _building_types[a.getSequence()] = a;
+void PlanRenderer::getLoadBuildings(Json::Value v){
+    Json::Value buildings = v.get("buildings", "[]");
+    std::cout << buildings.size() << " buildings found" << std::endl;
+    for (auto i : buildings){
+        Building b = Building::fromJson(i);
+        _building_types[b.getSequence()] = b;
     }
     current_building = _building_types.begin();
-	for (auto i : _building_types){
-		build_menu.addItem(buildingTexture, i.second.getTextureRect(), [=](){setBuilding(i.first); });
-	}
-	std::cout << "Build menu contains " << build_menu.getSize() << " items" << std::endl;
+    for (auto i : _building_types){
+        build_menu.addItem(buildingTexture, i.second.getTextureRect(), [=](){setBuilding(i.first); });
+    }
 }
 
 void PlanRenderer::buildBuildingArray() {
@@ -441,31 +439,22 @@ void PlanRenderer::generate_designation_tile(int x, int y, char designation, sf:
             c[z].color = designation_colors.find(designation)->second;
 }
 
-void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
-    designationsUseTextures = (bool) pot("designation/use_textures", 0);
-    setColor('d', sf::Color(pot("colors/dig/R", 200), pot("colors/dig/G", 200),
-                            pot("colors/dig/B", 0)));
-    setColor('i', sf::Color(pot("colors/up_down_stairs/R", 0), pot("colors/up_down_stairs/G", 255),
-                            pot("colors/up_down_stairs/B", 0)));
-    setColor('j', sf::Color(pot("colors/downward_stairs/R", 255),
-                            pot("colors/downward_stairs/G", 255), pot("colors/downward_stairs/B", 0)));
-    pot.set_prefix("colors/upward_stairs/");
-    setColor('u', sf::Color(pot("R", 255), pot("G", 0), pot("B", 0)));
-    pot.set_prefix("colors/channel/");
-    setColor('h', sf::Color(pot("R", 132), pot("G", 128), pot("B", 132)));
-    pot.set_prefix("colors/ramp/");
-    setColor('r', sf::Color(pot("R", 132), pot("G", 32), pot("B", 132)));
-    pot.set_prefix("designation/");
-    if (designationsUseTextures) {
-        std::string designation_tex_file = pot("designation_tex", "");
+void PlanRenderer::loadDesignationConfiguration(Json::Value& v){
+    Json::Value designation = v.get("designation", "");
+    designationsUseTextures=designation.get("use_textures", "").asBool();
+    for (auto i : designation.get("colors","")){
+        setColor(i.get("char", "").asString()[0], getFromJson(i.get("color", "")));
+    }
+    if (designationsUseTextures){
+        std::string designation_tex_file = designation.get("texture_file", "").asString();
         if (designation_tex_file ==
             "") {//If there is no designation sheet, then it must not be possible to modify it to fit the required parameters
             designationsUseTextures = false;
             return;
         }
         this->designation_src.loadFromFile(designation_tex_file);
-        int designation_width = pot("width", 10);
-        int designation_height = pot("height", 10);
+        int designation_width = designation.get("width", 10).asInt();
+        int designation_height = designation.get("height", 10).asInt();
         //The order of the designations in the image must be dig,downwards stairs, upwards stairs, up/down stairs, ramp, channel
         designation_texcoords['d'] = sf::IntRect(0, 0, designation_width, designation_height);
         designation_texcoords['j'] = sf::IntRect(designation_width, 0, designation_width, designation_height);
@@ -473,9 +462,9 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
         designation_texcoords['i'] = sf::IntRect(designation_width * 3, 0, designation_width, designation_height);
         designation_texcoords['r'] = sf::IntRect(designation_width * 4, 0, designation_width, designation_height);
         designation_texcoords['h'] = sf::IntRect(designation_width * 5, 0, designation_width, designation_height);
-        designation_texcoords['I'] = sf::IntRect(designation_width*6,0,designation_width,designation_height);
-		designation_texcoords['x'] = sf::IntRect(designation_width * 7, 0, designation_width, designation_height);
-        setColor('I',sf::Color(255,160,0));
+        designation_texcoords['I'] = sf::IntRect(designation_width * 6, 0, designation_width, designation_height);
+        designation_texcoords['x'] = sf::IntRect(designation_width * 7, 0, designation_width, designation_height);
+        setColor('I', sf::Color(255, 160, 0));
         for (auto f : designation_texcoords) {
             sf::Color nc = designation_colors[f.first];
             for (int ix = 0; ix < f.second.width; ix++) {
@@ -488,14 +477,11 @@ void PlanRenderer::loadDesignationConfiguration(GetPot &pot) {
             }
         }
         designation_colors.erase('I');
-        current_designation=designation_colors.begin();
+        current_designation = designation_colors.begin();
         designationTexture.loadFromImage(designation_src);
-        pot.set_prefix("menu_icons");
-        menu_utility_texture.loadFromFile(pot("menu_texture", "menu_utility_icons.png"));
-		initializeMenu();
     }
-    //Reset prefix so that it does not interfere with other things
-    pot.set_prefix("");
+    menu_utility_texture.loadFromFile(v.get("menu_texture", "menu_utility_icons.png").asString());
+    initializeMenu();
 }
 
 void PlanRenderer::initializeMenu(){

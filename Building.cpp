@@ -74,71 +74,27 @@ sf::IntRect Building::getTextureRect()const{
 	f.height = ty2 - ty1;
 	return f;
 }
-Building Building::fromPot(int number, GetPot &conf) {
-    std::stringstream z;
-
-    z << "buildings/" << number << "/";
-    conf.set_prefix(z.str().c_str());
-    z.str("");
-    z << "Buildingname";
-
-    std::string bname = conf(z.str().c_str(), "");
-
-    std::string blocking;
-    std::cout << "Building_name:" << bname << std::endl;
-    z.str("");
-    z << "key_sequence";
-
-    std::string keySeq = conf(z.str().c_str(), "");
-    std::cout << "Key sequence:" << keySeq << std::endl;
-    z.str("");
-    z << "size_x";
-    int sx = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "size_y";
-    int sy = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "center_x";
-    int cx = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "center_y";
-    int cy = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "render_start_x";
-    int rx1 = conf(z.str().c_str(), sx);
-    z.str("");
-    z << "render_start_y";
-    int ry1 = conf(z.str().c_str(), sy);
-    z.str("");
-    z << "render_end_x";
-    int rx2 = conf(z.str().c_str(), sx);
-    z.str("");
-    z << "render_end_y";
-    int ry2 = conf(z.str().c_str(), sy);
-    z.str("");
-    z << "texturecoords/X1";
-
-    int tx1 = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "texturecoords/Y1";
-    int ty1 = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "texturecoords/X2";
-    int tx2 = conf(z.str().c_str(), 0);
-    z.str("");
-    z << "texturecoords/Y2";
-    int ty2 = conf(z.str().c_str(), 0);
-    z.str();
-    z << "/blocking";
-    blocking = conf(z.str().c_str(), "0");
-
-    Building f(bname, keySeq, sf::Vector2i(sx, sy), sf::Vector2i(cx, cy), tx1, ty1, tx2, ty2);
-    f.passable.resize(sx * sy);
+Building Building::fromJson(Json::Value v){
+    int sx = v.get("size_x", 0).asInt(),
+        sy = v.get("size_y", 0).asInt(),
+        cx = v.get("center_x", 0).asInt(),
+        cy = v.get("center_y", 0).asInt(),
+        rx1 = v.get("render_start_x", sx).asInt(),
+        ry1 = v.get("render_start_y", sy).asInt(),
+        rx2 = v.get("render_end_x", 0).asInt(),
+        ry2 = v.get("render_end_y", 0).asInt();
+    Json::Value texcoord = v.get("texture_coordinates","[0,0,0,0]");
+    int tx1 = texcoord[0].asInt(),
+        tx2 = texcoord[1].asInt(),
+        ty1 = texcoord[2].asInt(),
+        ty2 = texcoord[3].asInt();
+    std::string bname = v.get("name", "").asString(),
+                key_seq = v.get("key_sequence", "").asString();
+    std::string blocking = v.get("blocking", "0").asString();
+    Building f(bname, key_seq, sf::Vector2i(sx, sy), sf::Vector2i(cx, cy), tx1, ty1, tx2, ty2);
     for (int i = 0; i < blocking.size(); i++)
         f.passable.push_back(blocking[i] == '1' ? true : false);
-    z << "buildings/" << number << "/";
-    f.render_start = sf::Vector2i(rx1, ry1);
     f.render_end = sf::Vector2i(rx2, ry2);
-    conf.set_prefix("");
+    f.render_start = sf::Vector2i(rx1, ry1);
     return f;
 }

@@ -7,6 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "city.h"
+#include "json/json.h"
 class Vector2iComp{
 public:
     bool operator()(const sf::Vector2i& a,const sf::Vector2i &b){
@@ -26,5 +27,8 @@ inline void textureRectangleToVertex(sf::IntRect a, sf::Vertex* vert){
 	vert[1].texCoords = sf::Vector2f(a.left + a.width, a.top);
 	vert[2].texCoords = sf::Vector2f(a.left + a.width, a.top + a.height);
 	vert[3].texCoords = sf::Vector2f(a.left, a.top + a.height);
+}
+inline sf::Color getFromJson(Json::Value v){
+    return sf::Color(v.get("R", 0).asInt(), v.get("G", 0).asInt(), v.get("B", 0).asInt());
 }
 #endif //SYMMETRICALITY_UTLITIES_HPP

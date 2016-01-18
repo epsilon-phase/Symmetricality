@@ -4,7 +4,7 @@
 #include "Hud.h"
 #include "GetPot"
 #include <string>
-
+#include "utilities.hpp"
 using namespace std;
 
 int main() {
@@ -12,17 +12,18 @@ int main() {
     sf::View view = target.getView();
     view.setCenter(0, 0);
     target.setView(view);
-    GetPot config("Symmetricality.pot");
+    std::ifstream j("Symmetricality.json");
+    Json::Value root;
+    j >> root;
+    j.close();
     PlanRenderer plan;
     Hud display(plan);
-    display.set_default_file_path(config("default_path", "."));
-    std::string building_texture=config("buildings/building_sheet","");
+    display.set_default_file_path(root.get("default_path", "").asString());
+    std::string building_texture = root.get("building_sheet", "").asString();
     if(building_texture.size()>0)
         plan.loadBuildingTexture(building_texture);
-	for (auto i : config.get_variable_names())
-		cout << i << endl;
-    plan.loadDesignationConfiguration(config);
-    plan.getLoadBuildings(config);
+    plan.loadDesignationConfiguration(root);
+    plan.getLoadBuildings(root);
     while (target.isOpen()) {
         sf::Event e;
         while (target.pollEvent(e)) {

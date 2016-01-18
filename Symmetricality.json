@@ -1,0 +1,207 @@
+{
+	"default_path" : "~/python-lnp/df_linux/blueprint",
+	"building_sheet" : "buildings.png",
+	"buildings":[
+	{
+		"name":"Wall",
+		"key_sequence":"Cw",
+		"size_x":1, "size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		0,9,0,9
+		]
+	},
+	{
+		"name":"Well",
+		"key_sequence":"l",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		10,19,0,9
+		]
+	},
+	{
+		"name":"Floor",
+		"key_sequence":"Cf",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		20,29,0,9
+		]
+	},
+	{
+		"name":"Fortification",
+		"key_sequence":"CF",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		30,39,0,9
+		]
+	},
+	{
+		"name":"Remove",
+		"key_sequence":"",
+		"size_x":0,"size_y":0,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		90,99,0,9
+		]
+	},
+	{
+		"name":"Bed",
+		"key_sequence":"b",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"0",
+		"texture_coordinates":[
+		40,49,0,9
+		]
+	},
+	{
+		"name":"door",
+		"key_sequence":"d",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		50,59,0,9
+		]
+	},
+	{
+		"name":"statue",
+		"key_sequence":"s",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		60,69,0,9
+		]
+	},
+	{
+		"name":"Glass Window",
+		"key_sequence":"y",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		70,79,0,9
+		]
+	},
+	{
+		"name":"Gem Window",
+		"key_sequence":"Y",
+		"size_x":1,"size_y":1,
+		"center_x":0,"center_y":0,
+		"render_start_x":0,"render_start_y":0,
+		"render_end_x":1,"render_end_y":1,
+		"blocking":"1",
+		"texture_coordinates":[
+		80,89,0,9
+		]
+	},
+	{
+		"name":"Forge",
+		"key_sequence":"wf",
+		"size_x":3,"size_y":3,
+		"center_x":0,"center_y":0,
+		"render_start_x":-1,"render_start_y":-1,
+		"render_end_x":2,"render_end_y":2,
+		"blocking":"000101000",
+		"texture_coordinates":[
+		0,29,10,49
+		]
+	},
+	{
+		"name":"Smelter",
+		"key_sequence":"es",
+		"size_x":3,"size_y":3,
+		"center_x":0,"center_y":0,
+		"render_start_x":-1,"render_start_y":-1,
+		"render_end_x":2,"render_end_y":3,
+		"blocking":"000101000",
+		"texture_coordinates":[
+		30,59,10,49
+		]
+	}
+	],
+	"designation" : {
+		"texture_file" : "designations.png",
+		"use_textures" : true,
+		"width" : 10,
+		"height" : 10,
+		"colors" : [{
+				"char" : "d",
+				"color" : {
+					"R" : 200,
+					"G" : 200,
+					"B" : 255
+				}
+			}, {
+				"char" : "x",
+				"color" : {
+					"R" : 0,
+					"G" : 0,
+					"B" : 0
+				}
+			}, {
+				"char" : "r",
+				"color" : {
+					"R" : 132,
+					"G" : 32,
+					"B" : 132
+				}
+			}, {
+				"char" : "h",
+				"color" : {
+					"R" : 132,
+					"G" : 128,
+					"B" : 132
+				}
+			}, {
+				"char" : "i",
+				"color" : {
+					"R" : 0,
+					"G" : 255,
+					"B" : 0
+				}
+			}, {
+				"char" : "j",
+				"color" : {
+					"R" : 255,
+					"G" : 255,
+					"B" : 0
+				}
+			}, {
+				"char" : "u",
+				"color" : {
+					"R" : 255,
+					"G" : 0,
+					"B" : 0
+				}
+			}
+		]
+	}
+}
