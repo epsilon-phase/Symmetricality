@@ -17,7 +17,7 @@ class RadialMenu :
 	std::vector<std::function<void()> > actions;
 	mutable bool opening = false;
 	mutable int since_opened = 0;
-	int menu_added_artificially = 0;
+	unsigned int menu_added_artificially = 0;
 	/**
 	* Is the menu closed?
 	*/
