@@ -14,7 +14,7 @@ void RadialMenu::addItem(const sf::Texture&t, sf::IntRect texrect, std::function
 	if (displayables.size() >= max*menu_added_artificially){
 		sf::RectangleShape z;
 		z.setTexture(&continuation);
-		z.setSize(sf::Vector2f(TC(float,rect_size), TC(float,rect_size)));
+		z.setSize(sf::Vector2f(rect_size, rect_size));
 		z.setFillColor(sf::Color(255, 255, 255)); 
 		displayables.push_back(z);
 		actions.push_back([=](){
@@ -23,7 +23,7 @@ void RadialMenu::addItem(const sf::Texture&t, sf::IntRect texrect, std::function
 		menu_added_artificially++;
 	}
 	sf::RectangleShape e;
-	e.setSize(sf::Vector2f(TC(float,rect_size), TC(float,rect_size)));
+	e.setSize(sf::Vector2f(rect_size, rect_size));
 	e.setTexture(&t);
 	e.setTextureRect(texrect);
 	actions.push_back(act);
