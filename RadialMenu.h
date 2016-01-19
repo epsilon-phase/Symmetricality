@@ -35,10 +35,23 @@ public:
     * The function will be called when it it clicked on.
     */
 	void addItem(const sf::Texture&, sf::IntRect,std::function<void()> act);
+    /**
+    * Opens the menu centered at this position.
+    */
 	void open(sf::Vector2f);
+    /**
+    * Handle input events for the menu. Returns true if the menu handled the
+    * event and the owner's method should not continue processing it.
+    */
 	bool handle_event(sf::Event evt, sf::Vector2f coord);
+    /**
+    * Closes the menu. 
+    */
 	void close();
 	void increaseStart();
+    /**
+    * Returns the number of items in the menu.
+    */
 	int getSize()const{ return displayables.size(); }
 protected:
 	virtual void draw(sf::RenderTarget&, sf::RenderStates)const;
