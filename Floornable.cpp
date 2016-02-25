@@ -1,11 +1,8 @@
 #include "Floornable.h"
 
-
-
 Floornable::Floornable()
 {
 }
-
 
 Floornable::~Floornable()
 {

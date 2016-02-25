@@ -17,12 +17,12 @@ class Building {
 	sf::Vector2i center;
 	int tx1, tx2, ty1, ty2;
 public:
-    static Building fromJson(Json::Value);
+	static Building fromJson(Json::Value);
 	Building(const std::string &name, const std::string &keyseq, sf::Vector2i size, sf::Vector2i center,
 		int x1, int y1, int x2, int y2);
-	Building(){}
+	Building() {}
 	~Building();
-	enum overhang_flag{
+	enum overhang_flag {
 		SOLID_REQUIRED = 0,
 		SOLID_OPTIONAL = 1,
 		OVERHANG_REQUIRED = 2
@@ -42,6 +42,5 @@ private:
 	std::vector<overhang_flag> flags;
 	std::vector <signed char> passable;
 };
-
 
 #endif //SYMMETRICALITY_BUILDING_H
