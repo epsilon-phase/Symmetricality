@@ -33,3 +33,10 @@
 *.sdf
 *.sln
 *.v12.suo
+
+#Cmake bullshit
+
+CMakeFiles\
+CMakeCache.txt
+Release\
+Debug\
