@@ -19,11 +19,7 @@ int main() {
     PlanRenderer plan;
     Hud display(plan);
     display.set_default_file_path(root.get("default_path", "").asString());
-    std::string building_texture = root.get("building_sheet", "").asString();
-    if(building_texture.size()>0)
-        plan.loadBuildingTexture(building_texture);
-    plan.loadDesignationConfiguration(root);
-    plan.getLoadBuildings(root);
+	plan.LoadConfiguration(root);
     while (target.isOpen()) {
         sf::Event e;
         while (target.pollEvent(e)) {

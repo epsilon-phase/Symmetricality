@@ -12,6 +12,7 @@ class Hud:public sf::Drawable {
     sf::Vector2i old_cursor;
     int old_floor;
     char old_desig;
+	bool wasBuilding = false;
     sf::Text Designation_type;
     sf::Text Location;
     sf::Text Save;

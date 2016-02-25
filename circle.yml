@@ -7,6 +7,7 @@ dependencies:
     - SFML
     - cmake-3.4.1
   pre:
+    - sudo apt-get update
     - sudo apt-get install cmake-gui libpthread-stubs0-dev libgl1-mesa-dev libx11-dev libxrandr-dev libfreetype6-dev libglew1.5-dev libjpeg8-dev libsndfile1-dev libopenal-dev libudev-dev libxcb-image0-dev
     - bash ./install_dep.sh
     - sudo ldconfig
@@ -17,6 +18,6 @@ dependencies:
     - mv LinLibertine_DRah.ttf $CIRCLE_ARTIFACTS
     - cp assets/sprite_sheet.png $CIRCLE_ARTIFACTS/buildings.png
     - cp Symmetricality.json $CIRCLE_ARTIFACTS
-	- cp assets/designations.png $CIRCLE_ARTIFACTS
-	- cp assets/menu_continuance.png $CIRCLE_ARTIFACTS
-	- cp assets/menu_utility_icons.png $CIRCLE_ARTIFACTS
+    - cp assets/designations.png $CIRCLE_ARTIFACTS
+    - cp assets/menu_continuance.png $CIRCLE_ARTIFACTS
+    - cp assets/menu_utility_icons.png $CIRCLE_ARTIFACTS

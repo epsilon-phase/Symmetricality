@@ -14,15 +14,26 @@
 #include "Blueprint.h"
 #include "Building.h"
 #include "RadialMenu.h"
-
+#include "DesignationFacet.h"
+#include "BuildingFacet.h"
+#include "SymmetryFacet.h"
+#include <set>
 /**
 * Prototype class for terrible circular requirements. Perfect for cold weekends.
 */
 class Hud;
 class PlanRenderer : public sf::Drawable, sf::Transformable {
-	std::map<char, sf::Color> designation_colors;
+	std::set<char> designation_colors;
 friend class Hud;
-    sf::VertexArray Rendering_plan;
+	DesignationFacet designator;
+	BuildingFacet buildings;
+	SymmetryFacet symmetry;
+	std::vector<Configurable*> configurables ;
+	//TODO decide on a better name than floornables
+	std::vector<Floornable*> floornables;
+	std::vector<PlanFacet*> facets;
+	
+//    sf::VertexArray Rendering_plan;
     sf::VertexArray Symmetries;
     sf::VertexArray Designation_preview;
     sf::VertexArray Cursor;
@@ -30,6 +41,11 @@ friend class Hud;
     std::map<std::string,Building> _building_types;
     Hud* the_hud;
     int Floornum = 0;
+	void setFloor(int n) {
+		for (auto i : floornables)
+			i->setFloor(n);
+		Floornum = n;
+	}
     sf::Vector2i cursorpos=sf::Vector2i(0,0);
     int m_square_size = 10;
     Blueprint blueprint;
@@ -45,7 +61,7 @@ friend class Hud;
 	/**
 	* A pointer to the types of designation currently supported(with associated colors)
 	*/
-	std::map<char, sf::Color>::const_iterator current_designation = designation_colors.begin();
+	std::set<char>::const_iterator current_designation = designation_colors.begin();
     
 	bool building_changed=false;
     bool designation_changed=false;
@@ -80,13 +96,12 @@ public:
     void handle_event(sf::Event event);
     void handle_mouse(sf::Event event,const sf::Vector2f& b);
     void handleMouseOver(const sf::Vector2f& b);
-    void setColor(char f,sf::Color c);
-    void loadBuildingTexture(const std::string& filename);
     
-    void getLoadBuildings(Json::Value);
-    void loadDesignationConfiguration(Json::Value &);
+    
+    
 	void setDesignation(char e);
 	void setBuilding(const std::string& r);
+	void LoadConfiguration(Json::Value& v);
     /**
     * Write a serialized representation of the current blueprint to a file
     */
@@ -118,17 +133,11 @@ private:
 
 
 	bool canPlace()const;
-    /**
-     * Creates the designation square
-     */
-    void generate_designation_tile(int x, int y, char designation, sf::Vertex *c);
+
 protected:
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 private:
-    void buildDesignationArray();
-    void buildBuildingArray();
     void buildCursorArray();
-    void buildSymmetryArray();
 	void initializeMenu();
 	RadialMenu menu;
 	RadialMenu build_menu;
