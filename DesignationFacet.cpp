@@ -1,5 +1,5 @@
 #include "DesignationFacet.h"
-
+#include <utility>
 
 
 DesignationFacet::DesignationFacet():PlanFacet(),Configurable()
@@ -39,7 +39,7 @@ void DesignationFacet::LoadConfiguration(Json::Value& v) {
 		designation_texcoords['I'] = sf::IntRect(designation_width * 6, 0, designation_width, designation_height);
 		designation_texcoords['x'] = sf::IntRect(designation_width * 7, 0, designation_width, designation_height);
 		designation_colors['I']= sf::Color(255, 160, 0);
-		for (auto f : designation_texcoords) {
+		for (auto& f : designation_texcoords) {
 			sf::Color nc = designation_colors[f.first];
 			for (int ix = 0; ix < f.second.width; ix++) {
 				for (int iy = 0; iy < f.second.height; iy++) {
@@ -56,6 +56,7 @@ void DesignationFacet::LoadConfiguration(Json::Value& v) {
 	}
 	
 }
+
 void DesignationFacet::UpdateFromBlueprint(Blueprint& blueprint) {
 
 	auto current_floor = &blueprint.getLevelDesignation(floor);
@@ -65,7 +66,7 @@ void DesignationFacet::UpdateFromBlueprint(Blueprint& blueprint) {
 	//TODO figure out if it makes sense to make it more efficient than this.
 	int iter = 0;
 	sf::Vertex *current;
-	for (auto i : *current_floor) {
+	for (auto& i : *current_floor) {
 		current = &FacetArray[iter];
 		generate_designation_tile(i.first.x, i.first.y, i.second, current);
 		iter += 4;

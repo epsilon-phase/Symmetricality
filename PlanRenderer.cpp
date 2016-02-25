@@ -8,14 +8,24 @@
 #include <iostream>
 #include "tinyfiledialogs.h"
 PlanRenderer::PlanRenderer() {
-    //This was done to allow visual studio to compile. The vile thing doesn't allow non static initializers.
-    designation_colors['d'] = sf::Color(200, 200, 0);
-    designation_colors['j'] = sf::Color(255, 255, 0);
-    designation_colors['i'] = sf::Color(0, 255, 0);
-    designation_colors['u'] = sf::Color(255, 0, 0);
-    designation_colors['x'] = sf::Color(0, 0, 0);
+	configurables.push_back(&designator);
+	configurables.push_back(&buildings);
+	floornables.push_back(&designator);
+	floornables.push_back(&buildings);
+	facets.push_back(&designator);
+	facets.push_back(&buildings);
+	facets.push_back(&symmetry);
+	for (auto f : facets)
+		f->set_square_size(m_square_size);
+	//This was done to allow visual studio to compile. The vile thing doesn't allow non static initializers.
+    designation_colors.insert('d');
+    designation_colors.insert('j');
+    designation_colors.insert('i');
+    designation_colors.insert('u');
+    designation_colors.insert('x');
+	setFloor(0);
     current_designation = designation_colors.begin();
-    blueprint.setDesignation(current_designation->first);
+    blueprint.setDesignation(*current_designation);
 }
 
 PlanRenderer::~PlanRenderer() {
@@ -25,15 +35,10 @@ PlanRenderer::~PlanRenderer() {
 void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     states.transform *= getTransform();
 
-    if (designationsUseTextures) {
-        states.texture = &designationTexture;
-    }
-    target.draw(Rendering_plan, states);
-    states.texture = NULL;
-    target.draw(Symmetries, states);
-
-    states.texture = &buildingTexture;
-    target.draw(Buildings, states);
+    
+	target.draw(designator, states);
+    target.draw(buildings, states);
+	target.draw(symmetry, states);
     if (blueprint.isDesignating())
         target.draw(Designation_preview, states);
     states.texture = NULL;
@@ -41,41 +46,29 @@ void PlanRenderer::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	target.draw(building_mode?build_menu:menu);
     viewable_area=target.getView();
 }
-
+void PlanRenderer::LoadConfiguration(Json::Value& v) {
+	for (auto i : configurables)
+		i->LoadConfiguration(v);
+	auto b = buildings.GetMenuEntries();
+	for (auto& f : b.second) {
+		build_menu.addItem(*b.first, f.second.getTextureRect(), [=]() {this->setBuilding(f.first); });
+		_building_types.insert(std::make_pair(f.second.getName(),f.second));
+	}
+	current_building = _building_types.begin();
+	blueprint.setBuilding(&current_building->second);
+	auto a = designator.GetMenuEntries();
+	for (auto& f : a.second) {
+		build_menu.addItem(*a.first, f.second, [=]() {this->setDesignation(f.first); });
+	}
+	
+}
 void PlanRenderer::build_vertex_array() {
-    buildDesignationArray();
+	for (auto i : facets)
+		i->UpdateFromBlueprint(blueprint);
     buildCursorArray();
-    buildBuildingArray();
-    buildSymmetryArray();
     build_designation();
 }
 
-void PlanRenderer::buildDesignationArray() {
-
-    auto current_floor = &blueprint.getLevelDesignation(Floornum);
-    Rendering_plan.resize(current_floor->size() * 4);
-    Rendering_plan.setPrimitiveType(sf::Quads);
-    //TODO figure out a more efficient way to do this..
-    //TODO figure out if it makes sense to make it more efficient than this.
-    int iter = 0;
-    sf::Vertex *current;
-    for (auto i:*current_floor) {
-        current = &Rendering_plan[iter];
-        generate_designation_tile(i.first.x, i.first.y, i.second, current);
-        iter += 4;
-    }
-    auto current_implications=blueprint.getImpliedDesignation(Floornum);
-    if(!current_implications.empty()){
-        for(auto i : current_implications){
-            if(current_floor->find(i)!=current_floor->end())
-                continue;//This has already been drawn
-            Rendering_plan.resize(4+Rendering_plan.getVertexCount());
-            current=&Rendering_plan[Rendering_plan.getVertexCount()-4];
-            generate_designation_tile(i.x,i.y,'I',current);
-
-        }
-    }
-}
 
 void PlanRenderer::set_pos(sf::Vector2i i, char i1) {
     build_vertex_array();
@@ -108,7 +101,7 @@ void PlanRenderer::handle_event(sf::Event event) {
                 }
                 else {
                     designation_changed = true;
-                    blueprint.insert(cursorpos.x, cursorpos.y, Floornum, current_designation->first);
+                    blueprint.insert(cursorpos.x, cursorpos.y, Floornum, *current_designation);
                 }
                 break;
             case sf::Keyboard::Comma:
@@ -132,12 +125,16 @@ void PlanRenderer::handle_event(sf::Event event) {
             case sf::Keyboard::Equal:
                 if (event.key.control) {
                     m_square_size++;
+					for (auto f : facets)
+						f->set_square_size(m_square_size);
                 } else
                     change_designation(true);
                 break;
             case sf::Keyboard::Dash:
                 if (event.key.control) {
                     m_square_size--;
+					for (auto f : facets)
+						f->set_square_size(m_square_size);
                 } else
                     change_designation(false);
                 break;
@@ -145,7 +142,7 @@ void PlanRenderer::handle_event(sf::Event event) {
                 building_mode = !building_mode;
                 break;
             case sf::Keyboard::Return:
-                blueprint.setDesignation(current_designation->first);
+                blueprint.setDesignation(*current_designation);
                 blueprint.setDesignationToggle(cursorpos.x, cursorpos.y, Floornum,
                                                event.key.shift ? Blueprint::CIRCLE : (event.key.control
                                                                                       ? Blueprint::LINE
@@ -172,7 +169,8 @@ void PlanRenderer::handle_event(sf::Event event) {
         if (event.key.code == sf::Keyboard::C) {
             if (clear_primed) {
                 blueprint = Blueprint();
-                Floornum = 0;
+                setFloor(0);
+				
             }
             clear_primed = true;
         } else
@@ -202,7 +200,7 @@ void PlanRenderer::move_cursor(int x, int y) {
 }
 
 void PlanRenderer::move_z(int offset) {
-    this->Floornum += offset;
+    setFloor(offset+Floornum);
     build_vertex_array();
 }
 
@@ -259,7 +257,7 @@ void PlanRenderer::change_designation(bool up) {
         }
     }
 
-    blueprint.setDesignation(current_designation->first);
+    blueprint.setDesignation(*current_designation);
     blueprint.setBuilding(&current_building->second);
 }
 
@@ -299,6 +297,8 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
     }
     if(event.type==sf::Event::MouseWheelMoved){
         m_square_size+=event.mouseWheel.delta;
+		for (auto f : facets)
+			f->set_square_size(m_square_size);
     }
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == 1) {
         right_button_down = false;
@@ -337,45 +337,9 @@ void PlanRenderer::handleMouseOver(const sf::Vector2f &relative_to_view) {
 
 }
 
-void PlanRenderer::setColor(char f, sf::Color c) {
-    designation_colors[f] = c;
-}
 
-void PlanRenderer::loadBuildingTexture(const std::string &filename) {
-    this->buildingTexture.loadFromFile(filename);
 
-}
-void PlanRenderer::getLoadBuildings(Json::Value v){
-    Json::Value buildings = v.get("buildings", "[]");
-    std::cout << buildings.size() << " buildings found" << std::endl;
-    for (auto i : buildings){
-        Building b = Building::fromJson(i);
-        _building_types[b.getSequence()] = b;
-    }
-    current_building = _building_types.begin();
-    for (auto i : _building_types){
-        build_menu.addItem(buildingTexture, i.second.getTextureRect(), [=](){setBuilding(i.first); });
-    }
-}
 
-void PlanRenderer::buildBuildingArray() {
-    sf::Vertex *current;
-    const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(Floornum);
-    Buildings.resize(f.size() * 4);
-    Buildings.setPrimitiveType(sf::Quads);
-    if (f.size() == 0)
-        return;
-    current = &Buildings[0];
-    for (auto i:f) {
-        std::string e = i.second;
-        _building_types[e].getTexCoords(current);
-        _building_types[e].getAdjustedCoords(i.first.x, i.first.y, m_square_size, current);
-        current++;
-        current++;
-        current++;
-        current++;
-    }
-}
 
 void PlanRenderer::buildCursorArray() {
     sf::Vertex *current;
@@ -394,104 +358,18 @@ void PlanRenderer::buildCursorArray() {
                 : sf::Color::White;//the building can be built.
 }
 
-void PlanRenderer::buildSymmetryArray() {
-    sf::Vertex *current;
-    auto symmetries = blueprint.getSymmetries();
-    size_t s = 0;
-    for (auto z : symmetries)
-        s += z.getVertexCount();
-    Symmetries.resize(s + 4);
-    Symmetries.setPrimitiveType(sf::PrimitiveType::Lines);
-    int index = 0;
-    for (int i = 0; i < symmetries.size(); i++) {
-        symmetries[i].buildSymmetryArray(&Symmetries[index], m_square_size);
-        index += symmetries[i].getVertexCount();
-    }
-    auto blueprint_start_point = blueprint.getStartPoint();
-    current = &Symmetries[Symmetries.getVertexCount() - 4];
-    current[0].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
-                                       (blueprint_start_point.y) * m_square_size);
-    current[1].position = sf::Vector2f((1 + blueprint_start_point.x) * m_square_size,
-                                       (1 + blueprint_start_point.y) * m_square_size);
-    current[2].position = sf::Vector2f((blueprint_start_point.x) * m_square_size,
-                                       (blueprint_start_point.y + 1) * m_square_size);
-    current[3].position = sf::Vector2f((blueprint_start_point.x + 1) * m_square_size,
-                                       (blueprint_start_point.y) * m_square_size);
-    current[0].color = sf::Color::Magenta;
-    current[1].color = sf::Color::Cyan;
-    current[2].color = sf::Color::White;
-    current[3].color = current[0].color;
-}
+
 
 bool PlanRenderer::canPlace() const {
     return Cursor[0].color != sf::Color::Red;
 }
 
-void PlanRenderer::generate_designation_tile(int x, int y, char designation, sf::Vertex *c) {
-    c[0].position = sf::Vector2f(x * m_square_size, y * m_square_size);
-    c[1].position = sf::Vector2f((x + 1) * m_square_size, y * m_square_size);
-    c[2].position = sf::Vector2f((x + 1) * m_square_size, (1 + y) * m_square_size);
-    c[3].position = sf::Vector2f((x) * m_square_size, (1 + y) * m_square_size);
 
-    if (designationsUseTextures) {
-        textureRectangleToVertex(designation_texcoords[designation], c);
-    } else
-        for (int z = 0; z < 4; z++)
-            c[z].color = designation_colors.find(designation)->second;
-}
-
-void PlanRenderer::loadDesignationConfiguration(Json::Value& v){
-    Json::Value designation = v.get("designation", "");
-    designationsUseTextures=designation.get("use_textures", "").asBool();
-    for (auto i : designation.get("colors","")){
-        setColor(i.get("char", "").asString()[0], getFromJson(i.get("color", "")));
-    }
-    if (designationsUseTextures){
-        std::string designation_tex_file = designation.get("texture_file", "").asString();
-        if (designation_tex_file ==
-            "") {//If there is no designation sheet, then it must not be possible to modify it to fit the required parameters
-            designationsUseTextures = false;
-            return;
-        }
-        this->designation_src.loadFromFile(designation_tex_file);
-        int designation_width = designation.get("width", 10).asInt();
-        int designation_height = designation.get("height", 10).asInt();
-        //The order of the designations in the image must be dig,downwards stairs, upwards stairs, up/down stairs, ramp, channel
-        designation_texcoords['d'] = sf::IntRect(0, 0, designation_width, designation_height);
-        designation_texcoords['j'] = sf::IntRect(designation_width, 0, designation_width, designation_height);
-        designation_texcoords['u'] = sf::IntRect(designation_width * 2, 0, designation_width, designation_height);
-        designation_texcoords['i'] = sf::IntRect(designation_width * 3, 0, designation_width, designation_height);
-        designation_texcoords['r'] = sf::IntRect(designation_width * 4, 0, designation_width, designation_height);
-        designation_texcoords['h'] = sf::IntRect(designation_width * 5, 0, designation_width, designation_height);
-        designation_texcoords['I'] = sf::IntRect(designation_width * 6, 0, designation_width, designation_height);
-        designation_texcoords['x'] = sf::IntRect(designation_width * 7, 0, designation_width, designation_height);
-        setColor('I', sf::Color(255, 160, 0));
-        for (auto f : designation_texcoords) {
-            sf::Color nc = designation_colors[f.first];
-            for (int ix = 0; ix < f.second.width; ix++) {
-                for (int iy = 0; iy < f.second.height; iy++) {
-                    auto pp = designation_src.getPixel(f.second.left + ix, f.second.top + iy);
-                    if (sf::Color::White.toInteger() == pp.toInteger()) {
-                        designation_src.setPixel(f.second.left + ix, f.second.top + iy, nc);
-                    }
-                }
-            }
-        }
-        designation_colors.erase('I');
-        current_designation = designation_colors.begin();
-        designationTexture.loadFromImage(designation_src);
-    }
-    menu_utility_texture.loadFromFile(v.get("menu_texture", "menu_utility_icons.png").asString());
-    initializeMenu();
-}
 
 void PlanRenderer::initializeMenu(){
-	for (auto i : designation_texcoords){
-		if (i.first != 'I')//no implied tile
-			menu.addItem(designationTexture, i.second, [=](){this->setDesignation(i.first); });
-	}
-    int menu_tex_width = menu_utility_texture.getSize().x / 3;
-    int menu_tex_height = menu_utility_texture.getSize().y;
+	
+	int menu_tex_width = menu_utility_texture.getSize().x / 3;
+	int menu_tex_height = menu_utility_texture.getSize().y;
     menu.addItem(menu_utility_texture, sf::IntRect(0, 0, menu_tex_width, menu_tex_height),
         [=](){
         const char *filters = "*.ser";

@@ -82,11 +82,11 @@ void Hud::update_text() {
     if (renderer.building_mode) {
         f << "Building:" << renderer.current_building->second.getName()<<(renderer.canPlace()?"":" can't build");
         Designation_type.setString(f.str());
-    } else if (old_desig != renderer.current_designation->first) {
+    } else if (old_desig != *renderer.current_designation) {
 
-        f << "Designating: " << renderer.current_designation->first;
+        f << "Designating: " << *renderer.current_designation;
         Designation_type.setString(f.str());
-        old_desig = renderer.current_designation->first;
+        old_desig = *renderer.current_designation;
     }
 
     f.str("");//empty the stringstream
