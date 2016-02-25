@@ -40,3 +40,5 @@ CMakeFiles\
 CMakeCache.txt
 Release\
 Debug\
+Win32\
+*.coati*
