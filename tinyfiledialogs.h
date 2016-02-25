@@ -49,7 +49,7 @@ tested with C & C++ compilers
 on Windows Visual Studio MinGW Mac OSX LINUX FREEBSD ILLUMOS SOLARIS
 using Gnome Kde Enlightenment Mate Cinnamon Unity
 Lxde Lxqt Xfce WindowMaker IceWm Cde Jds OpenBox
- 
+
 - License -
 
 This software is provided 'as-is', without any express or implied
@@ -84,74 +84,71 @@ and the corresponding closing bracket:
 extern "C" {
 #endif /* __cplusplus */
 
+	int tinyfd_messageBox(
+		char const * const aTitle, /* "" */
+		char const * const aMessage, /* "" may contain \n and \t */
+		char const * const aDialogType, /* "ok" "okcancel" "yesno" */
+		char const * const aIconType, /* "info" "warning" "error" "question" */
+		int const aDefaultButton); /* 0 for cancel/no , 1 for ok/yes */
+		/* returns 0 for cancel/no , 1 for ok/yes */
 
-int tinyfd_messageBox (
-    char const * const aTitle , /* "" */
-    char const * const aMessage , /* "" may contain \n and \t */
-    char const * const aDialogType , /* "ok" "okcancel" "yesno" */
-    char const * const aIconType , /* "info" "warning" "error" "question" */
-    int const aDefaultButton ) ; /* 0 for cancel/no , 1 for ok/yes */
-	/* returns 0 for cancel/no , 1 for ok/yes */
+	char const * tinyfd_inputBox(
+		char const * const aTitle, /* "" */
+		char const * const aMessage, /* "" may NOT contain \n nor \t on windows */
+		char const * const aDefaultInput);  /* "" , if NULL it's a passwordBox */
+		/* returns NULL on cancel */
 
-char const * tinyfd_inputBox (
-	char const * const aTitle , /* "" */
-	char const * const aMessage , /* "" may NOT contain \n nor \t on windows */
-	char const * const aDefaultInput ) ;  /* "" , if NULL it's a passwordBox */
-	/* returns NULL on cancel */
+	char const * tinyfd_saveFileDialog(
+		char const * const aTitle, /* "" */
+		char const * const aDefaultPathAndFile, /* "" */
+		int const aNumOfFilterPatterns, /* 0 */
+		char const * const * const aFilterPatterns, /* NULL or {"*.jpg","*.png"} */
+		char const * const aSingleFilterDescription); /* NULL or "image files" */
+		/* returns NULL on cancel */
 
-char const * tinyfd_saveFileDialog (
-    char const * const aTitle , /* "" */
-    char const * const aDefaultPathAndFile , /* "" */
-    int const aNumOfFilterPatterns , /* 0 */
-    char const * const * const aFilterPatterns , /* NULL or {"*.jpg","*.png"} */
-    char const * const aSingleFilterDescription ) ; /* NULL or "image files" */
-	/* returns NULL on cancel */
+	char const * tinyfd_openFileDialog(
+		char const * const aTitle, /* "" */
+		char const * const aDefaultPathAndFile, /* "" */
+		int const aNumOfFilterPatterns, /* 0 */
+		char const * const * const aFilterPatterns, /* NULL or {"*.jpg","*.png"} */
+		char const * const aSingleFilterDescription, /* NULL or "image files" */
+		int const aAllowMultipleSelects); /* 0 or 1 */
+		/* in case of multiple files, the separator is | */
+		/* returns NULL on cancel */
 
-char const * tinyfd_openFileDialog (
-    char const * const aTitle , /* "" */
-    char const * const aDefaultPathAndFile , /* "" */
-    int const aNumOfFilterPatterns , /* 0 */
-    char const * const * const aFilterPatterns , /* NULL or {"*.jpg","*.png"} */
-    char const * const aSingleFilterDescription , /* NULL or "image files" */
-    int const aAllowMultipleSelects ) ; /* 0 or 1 */
-	/* in case of multiple files, the separator is | */
-	/* returns NULL on cancel */
+	char const * tinyfd_selectFolderDialog(
+		char const * const aTitle, /* "" */
+		char const * const aDefaultPath); /* "" */
+		/* returns NULL on cancel */
 
-char const * tinyfd_selectFolderDialog (
-	char const * const aTitle , /* "" */
-    char const * const aDefaultPath ) ; /* "" */
-	/* returns NULL on cancel */
+	char const * tinyfd_colorChooser(
+		char const * const aTitle, /* "" */
+		char const * const aDefaultHexRGB, /* NULL or "#FF0000" */
+		unsigned char const aDefaultRGB[3], /* { 0 , 255 , 255 } */
+		unsigned char aoResultRGB[3]); /* { 0 , 0 , 0 } */
+		/* returns the hexcolor as a string "#FF0000" */
+		/* aoResultRGB also contains the result */
+		/* aDefaultRGB is used only if aDefaultHexRGB is NULL */
+		/* aDefaultRGB and aoResultRGB can be the same array */
+		/* returns NULL on cancel */
 
-char const * tinyfd_colorChooser(
-	char const * const aTitle , /* "" */
-	char const * const aDefaultHexRGB , /* NULL or "#FF0000" */
-	unsigned char const aDefaultRGB[3] , /* { 0 , 255 , 255 } */
-	unsigned char aoResultRGB[3] ) ; /* { 0 , 0 , 0 } */
-	/* returns the hexcolor as a string "#FF0000" */
-	/* aoResultRGB also contains the result */
-	/* aDefaultRGB is used only if aDefaultHexRGB is NULL */
-	/* aDefaultRGB and aoResultRGB can be the same array */
-	/* returns NULL on cancel */
+	extern int tinyfd_forceConsole;  /* 0 (default) or 1
+	can be modified at run time.
+	for unix & windows: 0 (graphic mode) or 1 (console mode).
+	0: try to use a graphic solution, if it fails then it uses console mode.
+	1: forces all dialogs into console mode even when the X server is present,
+	   if the package dialog (and a console is present) or dialog.exe is installed.
+	on windows it only make sense for console applications */
 
-extern int tinyfd_forceConsole ;  /* 0 (default) or 1
-can be modified at run time.
-for unix & windows: 0 (graphic mode) or 1 (console mode).
-0: try to use a graphic solution, if it fails then it uses console mode.
-1: forces all dialogs into console mode even when the X server is present,
-   if the package dialog (and a console is present) or dialog.exe is installed.
-on windows it only make sense for console applications */
-
-/* #define TINYFD_WIN_CONSOLE_ONLY //*/
-/* On windows, Define this if you don't want to include the code
-creating the GUI dialogs. Then you don't need link against Comdlg32.lib */
-
+	/* #define TINYFD_WIN_CONSOLE_ONLY //*/
+	/* On windows, Define this if you don't want to include the code
+	creating the GUI dialogs. Then you don't need link against Comdlg32.lib */
 
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* TINYFILEDIALOGS_H */
-
 
 /*
 - This is not for android nor ios.
@@ -192,8 +189,8 @@ creating the GUI dialogs. Then you don't need link against Comdlg32.lib */
 - If dialog is missing, it will switch to basic console input.
 
 - Here is the Hello World (and a bit more):
-    if a console is missing, it will use graphic dialogs
-    if a graphical display is absent, it will use console dialogs
+	if a console is missing, it will use graphic dialogs
+	if a graphical display is absent, it will use console dialogs
 
 /* hello.c
 #include <stdio.h>
@@ -208,19 +205,19 @@ int main()
 	char lBuffer[1024];
 
   tinyfd_forceConsole = tinyfd_messageBox("Hello World",
-    "force dialogs into console mode?\
-    \n\t(it's better if dialog is installed)",
-    "yesno", "question", 0);
+	"force dialogs into console mode?\
+	\n\t(it's better if dialog is installed)",
+	"yesno", "question", 0);
 
   lThePassword =  tinyfd_inputBox(
-    "a password box","your password will be revealed",NULL);
+	"a password box","your password will be revealed",NULL);
 
   lTheSaveFileName = tinyfd_saveFileDialog (
 	"let's save this password",
-    "passwordFile.txt",
-    0,
-    NULL,
-    NULL );
+	"passwordFile.txt",
+	0,
+	NULL,
+	NULL );
 
 	lIn = fopen(lTheSaveFileName, "w");
 	if (!lIn)
@@ -236,7 +233,7 @@ int main()
 	fputs(lThePassword, lIn);
 	fclose(lIn);
 
-    lTheOpenFileName = tinyfd_openFileDialog (
+	lTheOpenFileName = tinyfd_openFileDialog (
 		"let's read this password",
 		"",
 		0,
@@ -259,19 +256,19 @@ int main()
 	fclose(lIn);
 
   if ( lBuffer )
-    tinyfd_messageBox("your password is", lBuffer, "ok", "info", 1);
+	tinyfd_messageBox("your password is", lBuffer, "ok", "info", 1);
 }
 #pragma warning(default:4996)
 
 OSX :
 $ gcc -o hello.app hello.c tinyfiledialogs.c
- 
+
 UNIX :
 $ gcc -o hello hello.c tinyfiledialogs.c
 
 MinGW :
 > gcc -o hello.exe hello.c tinyfiledialogs.c -LC:/mingw/lib -lcomdlg32
- 
+
 VisualStudio :
   Create a console application project, it links against Comdlg32.lib.
 	Right click on your Project, select Properties.

@@ -1,11 +1,8 @@
 #include "SymmetryFacet.h"
 
-
-
 SymmetryFacet::SymmetryFacet()
 {
 }
-
 
 SymmetryFacet::~SymmetryFacet()
 {

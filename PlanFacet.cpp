@@ -1,11 +1,8 @@
 #include "PlanFacet.h"
 
-
-
 PlanFacet::PlanFacet()
 {
 }
-
 
 PlanFacet::~PlanFacet()
 {

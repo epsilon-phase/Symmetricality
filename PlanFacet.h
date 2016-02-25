@@ -2,9 +2,8 @@
 #define PLAN_FACET_H
 #include <SFML/Graphics.hpp>
 #include "Blueprint.h"
-class PlanFacet:public sf::Drawable, sf::Transformable
+class PlanFacet :public sf::Drawable, sf::Transformable
 {
-	
 protected:
 	int m_square_size;
 	sf::Texture* texture = nullptr;
@@ -13,7 +12,7 @@ protected:
 public:
 	PlanFacet();
 	~PlanFacet();
-	virtual void UpdateFromBlueprint(Blueprint& b)=0;
+	virtual void UpdateFromBlueprint(Blueprint& b) = 0;
 	void set_square_size(int s) {
 		m_square_size = s;
 	}
