@@ -19,7 +19,6 @@ void DesignationFacet::LoadConfiguration(Json::Value& v) {
 	for (auto i : designation.get("colors", "")) {
 		designation_colors[i.get("char", "").asString()[0]] = getFromJson(i.get("color", ""));
 	}
-	if (designationsUseTextures) {
 		std::string designation_tex_file = designation.get("texture_file", "").asString();
 		if (designation_tex_file ==
 			"") {//If there is no designation sheet, then it must not be possible to modify it to fit the required parameters
@@ -51,9 +50,13 @@ void DesignationFacet::LoadConfiguration(Json::Value& v) {
 			}
 		}
 		designation_colors.erase('I');
+    if(designationsUseTextures){
 		texture = new sf::Texture();
 		texture->loadFromImage(designation_src);
-	}
+	}else{
+        texture=nullptr;
+        designationTexture.loadFromImage(designation_src);
+    }
 	
 }
 

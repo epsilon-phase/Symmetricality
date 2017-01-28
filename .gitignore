@@ -42,3 +42,7 @@ Release\
 Debug\
 Win32\
 *.coati*
+
+#output of program
+#
+*.ser *.csv

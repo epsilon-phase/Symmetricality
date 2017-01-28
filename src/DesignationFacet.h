@@ -23,7 +23,10 @@ public:
 		for (auto& r : designation_texcoords)
             if(r.first!='I')
 			result.push_back(r);
-		return std::make_pair(texture, result);
+        if(texture!=nullptr)
+    		return std::make_pair(texture, result);
+        sf::Texture* r=const_cast<sf::Texture*>(&designationTexture);
+    		return std::make_pair(r, result);
 	}
 private:
 	void generate_designation_tile(int x, int y, char designation, sf::Vertex* c);
