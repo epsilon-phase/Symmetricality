@@ -15,6 +15,7 @@ void RadialMenu::addItem(const sf::Texture&t, sf::IntRect texrect, std::function
 		z.setTexture(&continuation);
 		z.setSize(sf::Vector2f(rect_size, rect_size));
 		z.setFillColor(sf::Color(255, 255, 255));
+        z.setOutlineColor(sf::Color::White);
 		displayables.push_back(z);
 		actions.push_back([=]() {
 			this->increaseStart();

@@ -5,7 +5,7 @@
 #include "Blueprint.h"
 #include <fstream>
 #include <iostream>
-
+#include <cmath>
 Blueprint::Blueprint() {
     _Designations[0] = std::unordered_map<sf::Vector2i, char>();
     _Designations[0].reserve(0);

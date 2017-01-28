@@ -7,7 +7,9 @@
 #include "Hud.h"
 #include <iostream>
 #include "tinyfiledialogs.h"
+#include <cmath>
 PlanRenderer::PlanRenderer() {
+    menu_utility_texture.loadFromFile("assets/menu_utility_icons.png");
 	configurables.push_back(&designator);
 	configurables.push_back(&buildings);
 	floornables.push_back(&designator);
@@ -23,9 +25,11 @@ PlanRenderer::PlanRenderer() {
     designation_colors.insert('i');
     designation_colors.insert('u');
     designation_colors.insert('x');
+    designation_colors.insert('h');
 	setFloor(0);
     current_designation = designation_colors.begin();
     blueprint.setDesignation(*current_designation);
+    initializeMenu();
 }
 
 PlanRenderer::~PlanRenderer() {
@@ -58,7 +62,7 @@ void PlanRenderer::LoadConfiguration(Json::Value& v) {
 	blueprint.setBuilding(&current_building->second);
 	auto a = designator.GetMenuEntries();
 	for (auto& f : a.second) {
-		build_menu.addItem(*a.first, f.second, [=]() {this->setDesignation(f.first); });
+		menu.addItem(*a.first, f.second,[=](){setDesignation(f.first);});
 	}
 	
 }
@@ -274,6 +278,7 @@ void PlanRenderer::deserialize(const std::string &string) {
 }
 
 void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
+    using std::floor;
 	if(!building_mode&&menu.handle_event(event,b))return ;
 	if (building_mode&&build_menu.handle_event(event, b))return;
     auto transformed = getInverseTransform().transformPoint(b);

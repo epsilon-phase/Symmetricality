@@ -19,6 +19,7 @@ int main() {
     PlanRenderer plan;
     Hud display(plan);
     display.set_default_file_path(root.get("default_path", "").asString());
+    target.setFramerateLimit(60);
 	plan.LoadConfiguration(root);
     while (target.isOpen()) {
         sf::Event e;

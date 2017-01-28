@@ -21,6 +21,7 @@ public:
 	std::pair<sf::Texture*,std::vector<std::pair<char, sf::IntRect> > > GetMenuEntries()const {
 		std::vector<std::pair<char, sf::IntRect> > result;
 		for (auto& r : designation_texcoords)
+            if(r.first!='I')
 			result.push_back(r);
 		return std::make_pair(texture, result);
 	}

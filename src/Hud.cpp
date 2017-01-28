@@ -6,7 +6,7 @@
 #include "Hud.h"
 #include "tinyfiledialogs.h"
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
 Hud::Hud(PlanRenderer &r) : renderer(r) {
     this->Hud_font.loadFromFile("LinLibertine_DRah.ttf");
     this->Location.setCharacterSize(15);
@@ -80,8 +80,12 @@ void Hud::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 void Hud::update_text() {
     std::stringstream f;
     if (renderer.building_mode) {
-        f << "Building:" << renderer.current_building->second.getName()<<(renderer.canPlace()?"":" can't build");
-        Designation_type.setString(f.str());
+        try{
+            f << "Building:" << renderer.current_building->second.getName()<<(renderer.canPlace()?"":" can't build");
+            Designation_type.setString(f.str());
+        }catch(std::bad_alloc c){
+            std::cerr<<c.what()<<std::endl;
+        }
 		wasBuilding = true;
     } else if (old_desig != *renderer.current_designation||wasBuilding) {
 		wasBuilding = false;
