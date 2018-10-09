@@ -111,4 +111,7 @@ void RadialMenu::close() {
 }
 void RadialMenu::increaseStart() {
 	start_index += max;
+  if(start_index>actions.size()){
+    start_index=0;
+  }
 }
