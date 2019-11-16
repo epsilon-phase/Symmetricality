@@ -235,12 +235,14 @@ void Blueprint::designateRectangle(bool building) {
 void Blueprint::designateCircle(bool building) {
     int dx = designation_start.x - designation_end.x,
             dy = designation_start.y - designation_end.y;
-    int radius = (int) std::sqrt(dx * dx + dy * dy);
-    for (int x = designation_start.x - radius; x <= designation_start.x + radius; x++) {
-        for (int y = designation_start.y - radius; y <= designation_start.y + radius; y++) {
+	int rx = abs(dx), ry=abs(dy);
+	float rx2 = rx * rx, ry2 = ry * ry;;
+	
+    for (int x = designation_start.x - rx; x <= designation_start.x + rx; x++) {
+        for (int y = designation_start.y - ry; y <= designation_start.y + ry; y++) {
             dx = designation_start.x - x;
             dy = designation_start.y - y;
-            if (std::sqrt(dx * dx + dy * dy) <= radius) {
+            if (std::pow(x - designation_start.x, 2) / rx2 + std::pow(y - designation_start.y, 2) / ry2 <=1) {
                 for (int z = designation_start.z; z <= designation_end.z; z++)
                     if (building) {
                         placeBuilding(x, y, z, *current_building);
