@@ -45,7 +45,10 @@ int main() {
                 plan.handle_event(e);
             if (e.type == sf::Event::KeyPressed) {
                 if (e.key.code == sf::Keyboard::F2) {
-                    display.save_screenshot(target.capture());
+                    sf::Texture c;
+                    c.create(target.getSize().x,target.getSize().y);
+                    c.update(target);
+                    display.save_screenshot(c.copyToImage());
                 }
             }
         }

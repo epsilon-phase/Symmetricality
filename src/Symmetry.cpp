@@ -79,6 +79,7 @@ sf::Color Symmetry::getColor() const {
 	case Radial:
 		return sf::Color::Blue;
 	case Rotational:
+	default:
 		return sf::Color::Magenta;
 	}
 }
@@ -158,6 +159,7 @@ int Symmetry::getVertexCount() const {
 	case Radial:
 		return 10;
 	case Rotational:
+	default:
 		return 12;
 	}
 }
