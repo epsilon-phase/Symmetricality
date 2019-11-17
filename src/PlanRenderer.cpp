@@ -180,7 +180,10 @@ void PlanRenderer::handle_event(sf::Event event) {
         } else
             clear_primed = false;
     }
-
+    if(designation_changed){
+        build_vertex_array();
+        designation_changed=false;
+    }
 }
 
 void PlanRenderer::move_cursor(int x, int y) {
