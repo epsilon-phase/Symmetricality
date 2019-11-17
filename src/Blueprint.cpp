@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cmath>
 Blueprint::Blueprint() {
-    _Designations[0] = std::unordered_map<sf::Vector2i, char>();
+    _Designations[0] = coordinate_map<char>();
     _Designations[0].reserve(0);
     _occupation[0].reserve(0);
 }
@@ -23,9 +23,9 @@ void Blueprint::insert(int x, int y, int z, char designation) {
     }
 }
 
-const std::unordered_map<sf::Vector2i, char> &Blueprint::getLevelDesignation(int level) {
+const coordinate_map<char> &Blueprint::getLevelDesignation(int level) {
     if (_Designations.find(level) == _Designations.end())
-        _Designations[level] = std::unordered_map<sf::Vector2i, char>();
+        _Designations[level] = coordinate_map< char>();
     return _Designations.find(level)->second;
 }
 
@@ -443,7 +443,7 @@ void Blueprint::placeBuilding(int x, int y, int z, const Building &building) {
     }
 }
 
-const std::unordered_map<sf::Vector2i, std::string> Blueprint::getLevelBuildings(int level) {
+const coordinate_map<std::string> Blueprint::getLevelBuildings(int level) {
     return _Buildings[level];
 }
 
@@ -471,7 +471,7 @@ std::vector<sf::Vector2i> Blueprint::getInRadius(int x, int y, sf::Vector2i rad)
     return result;
 }
 
-const std::unordered_set<sf::Vector2i> &Blueprint::getImpliedDesignation(int level) {
+const coordinate_set &Blueprint::getImpliedDesignation(int level) {
     return _implied[level];
 }
 

@@ -14,14 +14,14 @@ public:
 		return a.x == b.x ? a.y < b.y : a.x < b.x;
 	}
 };
-namespace std {
-	template<> struct hash<sf::Vector2i> {
-	public:
-		std::size_t operator()(const sf::Vector2i &a)const {
-			return static_cast<size_t>(CityHash64((char *)&a, sizeof(a)));
-		}
-	};
-}
+
+struct vector2i_hash{
+public:
+	std::size_t operator()(const sf::Vector2i &a)const {
+		return CityHash64((char*)&a, sizeof(a));
+	}
+};
+
 inline void textureRectangleToVertex(sf::IntRect a, sf::Vertex* vert) {
 	vert[0].texCoords = sf::Vector2f(float(a.left), float(a.top));
 	vert[1].texCoords = sf::Vector2f(float(a.left + a.width), float(a.top));

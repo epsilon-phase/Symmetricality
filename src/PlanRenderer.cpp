@@ -9,7 +9,7 @@
 #include "tinyfiledialogs.h"
 #include <cmath>
 PlanRenderer::PlanRenderer() {
-    menu_utility_texture.loadFromFile("assets/menu_utility_icons.png");
+    menu_utility_texture.loadFromFile("menu_utility_icons.png");
 	configurables.push_back(&designator);
 	configurables.push_back(&buildings);
 	floornables.push_back(&designator);

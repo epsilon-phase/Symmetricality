@@ -21,7 +21,7 @@ void BuildingFacet::LoadConfiguration(Json::Value& v) {
 }
 void BuildingFacet::UpdateFromBlueprint(Blueprint& blueprint) {
 	sf::Vertex *current;
-	const std::unordered_map<sf::Vector2i, std::string> &f = blueprint.getLevelBuildings(floor);
+	const std::unordered_map<sf::Vector2i, std::string,vector2i_hash> &f = blueprint.getLevelBuildings(floor);
 	FacetArray.resize(f.size() * 4);
 	FacetArray.setPrimitiveType(sf::Quads);
 	if (f.size() == 0)

@@ -11,6 +11,8 @@
 #include <unordered_set>
 #include <map>
 #include "Building.h"
+template<class T> using coordinate_map= std::unordered_map<sf::Vector2i, T, vector2i_hash>;
+using coordinate_set=std::unordered_set<sf::Vector2i, vector2i_hash>;
 class Blueprint {
 public:
 	enum application_pattern {
@@ -22,8 +24,8 @@ public:
 	Blueprint();
 	~Blueprint();
 	void insert(int x, int y, int z, char designation);
-	const std::unordered_map<sf::Vector2i, char>& getLevelDesignation(int level);
-	const std::unordered_set<sf::Vector2i> & getImpliedDesignation(int level);
+	const coordinate_map<char>& getLevelDesignation(int level);
+	const coordinate_set& getImpliedDesignation(int level);
 	void setDesignationToggle(int x, int y, int z, application_pattern e = RECTANGLE, bool build = false);
 	void setDesignationToggle(sf::Vector3i, application_pattern e = RECTANGLE, bool build = false);
 	void serialize(const std::string& file)const;
@@ -38,7 +40,7 @@ public:
 	void setStart(int, int);
 	bool canPlace(int x, int y, int z, const Building &building);
 	void placeBuilding(int x, int y, int z, const Building& building);
-	const std::unordered_map<sf::Vector2i, std::string> getLevelBuildings(int level);
+	const coordinate_map<std::string> getLevelBuildings(int level);
 	void setBuilding(const Building* the_thing);
 private:
 	void getBounds(int& minx, int& miny, int&maxx, int&maxy)const;
@@ -55,12 +57,12 @@ private:
 	sf::Vector2i blueprint_start_point;
 	char current_designation;
 	const Building* current_building = NULL;
-	std::map<int, std::unordered_map<sf::Vector2i, char> > _Designations;
-	std::map<int, std::unordered_map<sf::Vector2i, std::string> > _Buildings;
-	std::map<int, std::unordered_map<sf::Vector2i, sf::Vector2i> > _Buildings_size;
+	std::map<int, coordinate_map<char> > _Designations;
+	std::map<int, coordinate_map<std::string> > _Buildings;
+	std::map<int, coordinate_map<sf::Vector2i> > _Buildings_size;
 	std::vector<sf::Vector2i> getInRadius(int x, int y, sf::Vector2i rad);
-	std::map<int, std::unordered_set<sf::Vector2i> > _occupation;
-	std::map<int, std::unordered_set<sf::Vector2i> > _implied;
+	std::map<int, coordinate_set> _occupation;
+	std::map<int, coordinate_set> _implied;
 	std::vector<Symmetry> _symmetries;
 	bool start_set = false;
 };
