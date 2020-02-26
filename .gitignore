@@ -46,3 +46,6 @@ Win32\
 #output of program
 #
 *.ser *.csv
+
+#The build Directory
+build/
