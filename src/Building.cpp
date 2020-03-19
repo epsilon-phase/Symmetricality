@@ -1,5 +1,5 @@
 //
-// Created by awhite on 1/2/16.
+// Created by Violet White on 1/2/16.
 //
 
 #include "Building.h"
