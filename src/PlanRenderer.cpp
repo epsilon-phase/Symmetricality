@@ -167,6 +167,12 @@ void PlanRenderer::handle_event(sf::Event event) {
     case sf::Keyboard::S:
       blueprint.setStart(cursorpos.x, cursorpos.y);
       break;
+    case sf::Keyboard::Escape:
+      if (blueprint.isDesignating()) {
+        auto c = blueprint.getLastStart();
+        move_cursor(c.x - cursorpos.x, c.y - cursorpos.y);
+      }
+      blueprint.stop_designation();
     default:
       break;
     }
@@ -309,9 +315,15 @@ void PlanRenderer::handle_mouse(sf::Event event, const sf::Vector2f &b) {
                      : Blueprint::RECTANGLE),
           building_mode);
     else if (event.mouseButton.button == 1) {
-      right_button_down = true;
-      since_last_click = sf::Clock();
-      this->old_mouse_pos = b;
+      // if there is an active designation, cancel it
+      if (blueprint.isDesignating()) {
+        blueprint.stop_designation();
+      } else {
+        right_button_down = true;
+        since_last_click = sf::Clock();
+        this->old_mouse_pos = b;
+      }
+    } else if (event.mouseButton.button == 2) {
     }
   }
   if (event.type == sf::Event::MouseWheelMoved) {
